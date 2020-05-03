@@ -63,7 +63,8 @@ setup(
         "pandas",
         "numpy",
         "opencv-python",
-        "tqdm"
+        "tqdm",
+        "scikit-image"
     ],
     extras_require=extras,
 )
