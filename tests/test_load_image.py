@@ -1,8 +1,6 @@
 from covidxpert.utils import load_image
-from tqdm.auto import tqdm
-from glob import glob
+from .utils import multiprocessing_execution
 
 
 def test_load_image():
-    for path in tqdm(glob("sample_dataset/*")):
-        load_image(path)
+    multiprocessing_execution(load_image)
