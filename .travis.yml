@@ -6,48 +6,7 @@ addons:
   sonarcloud:
     organization: "lucacappelletti94-github"
     token:
-      secure: Usage: travis COMMAND ...
-
-Available commands:
-
-	accounts               displays accounts and their subscription status
-	branches               displays the most recent build for each branch
-	cache                  lists or deletes repository caches
-	cancel                 cancels a job or build
-	console                interactive shell
-	disable                disables a project
-	enable                 enables a project
-	encrypt                encrypts values for the .travis.yml
-	encrypt-file           encrypts a file and adds decryption steps to .travis.yml
-	endpoint               displays or changes the API endpoint
-	env                    show or modify build environment variables
-	help                   helps you out when in dire need of information
-	history                displays a projects build history
-	init                   generates a .travis.yml and enables the project
-	lint                   display warnings for a .travis.yml
-	login                  authenticates against the API and stores the token
-	logout                 deletes the stored API token
-	logs                   streams test logs
-	monitor                live monitor for what's going on
-	open                   opens a build or job in the browser
-	pubkey                 prints out a repository's public key
-	raw                    makes an (authenticated) API call and prints out the result
-	report                 generates a report useful for filing issues
-	repos                  lists repositories the user has certain permissions on
-	requests               lists recent requests
-	restart                restarts a build or job
-	settings               access repository settings
-	setup                  sets up an addon or deploy target
-	show                   displays a build or job
-	sshkey                 checks, updates or deletes an SSH key
-	status                 checks status of the latest build
-	sync                   triggers a new sync with GitHub
-	token                  outputs the secret API token
-	version                outputs the client version
-	whatsup                lists most recent builds
-	whoami                 outputs the current user
-
-run `/usr/local/bin/travis help COMMAND` for more infos
+      secure: "fRZs8S8hgIwFD0P4JvwQP4RA0ggV7h23TM2vr05pyVS4nG/hdUSSs6DCD3kdGEzVrnXfTRO9UHjRzmX4xZBxvq47edNd/AfxnABCnKEDkWv9OkNp2/JgqRz6We0DibUPo/OpYQGHYwLk5xn44hQRrOFN5/DJ7XsHPuz7eSqZf7OK9J0rhCfJIta0776/mxBv9iJa8bFG1kTxVcBOPabN66Fz+FcUeoe7DYcWiAWm5DxRKsyQT2USco1TcfrRDEOPWyE4h+tNO46g4iW4/q9Rn4sN0Rgbd/Mh5VCkhSoHZ7/Xoe5Id4xSzO/Bsm8tcHhkCOLloKH3nTjzl8CQeG1HN+HR5D3d/4xo277a8bp1rtwvIoS+zXlTod8aUMefs3LRYRsfES2WIzxmXPEPL8YiAmiQ7dZExtXrIWAkKCk8p2abfPQmFX3jP16SP7XKNQVetnkQehilHaNBAuG2a69Ow8e8Fgekj0/bXitb+xKkv6Ij6EHJtCeRPWT6iyNU9ca+/U7s1KrFgUDRoNHSwQcsV0IkbWuOJjW+ZINHCte118QQaHvdtdwQW4Snbi2iAVtM6y5K8lJPNaiLDNpgyyf9zYsLwlHyZnZo1NIue3s03wt5IgfDrSG1uEsKq/6CD3Pf0GiXR9Ljc4vEd1cUOiZiUQvOXPt3ze1wdYycLg2BQMQ="
 language: python
 python:
 - '3.6'
