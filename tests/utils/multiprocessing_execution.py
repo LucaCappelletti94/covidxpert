@@ -11,7 +11,7 @@ def multiprocessing_execution(test: Callable):
         list(tqdm(
             p.imap(test, paths),
             total=len(paths),
-            desc="Executing test {}".format(test.__name__)
+            desc="Executing test"
         ))
         p.close()
         p.join()
