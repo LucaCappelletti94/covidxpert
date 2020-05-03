@@ -64,7 +64,8 @@ setup(
         "numpy",
         "opencv-python",
         "tqdm",
-        "scikit-image"
+        "scikit-image",
+        "tensorflow"
     ],
     extras_require=extras,
 )
