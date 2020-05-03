@@ -4,31 +4,35 @@ git:
   depth: false
 addons:
   sonarcloud:
-    organization: "lucacappelletti94-github"
+    organization: lucacappelletti94-github
     token:
-      secure: "fRZs8S8hgIwFD0P4JvwQP4RA0ggV7h23TM2vr05pyVS4nG/hdUSSs6DCD3kdGEzVrnXfTRO9UHjRzmX4xZBxvq47edNd/AfxnABCnKEDkWv9OkNp2/JgqRz6We0DibUPo/OpYQGHYwLk5xn44hQRrOFN5/DJ7XsHPuz7eSqZf7OK9J0rhCfJIta0776/mxBv9iJa8bFG1kTxVcBOPabN66Fz+FcUeoe7DYcWiAWm5DxRKsyQT2USco1TcfrRDEOPWyE4h+tNO46g4iW4/q9Rn4sN0Rgbd/Mh5VCkhSoHZ7/Xoe5Id4xSzO/Bsm8tcHhkCOLloKH3nTjzl8CQeG1HN+HR5D3d/4xo277a8bp1rtwvIoS+zXlTod8aUMefs3LRYRsfES2WIzxmXPEPL8YiAmiQ7dZExtXrIWAkKCk8p2abfPQmFX3jP16SP7XKNQVetnkQehilHaNBAuG2a69Ow8e8Fgekj0/bXitb+xKkv6Ij6EHJtCeRPWT6iyNU9ca+/U7s1KrFgUDRoNHSwQcsV0IkbWuOJjW+ZINHCte118QQaHvdtdwQW4Snbi2iAVtM6y5K8lJPNaiLDNpgyyf9zYsLwlHyZnZo1NIue3s03wt5IgfDrSG1uEsKq/6CD3Pf0GiXR9Ljc4vEd1cUOiZiUQvOXPt3ze1wdYycLg2BQMQ="
+      secure: fRZs8S8hgIwFD0P4JvwQP4RA0ggV7h23TM2vr05pyVS4nG/hdUSSs6DCD3kdGEzVrnXfTRO9UHjRzmX4xZBxvq47edNd/AfxnABCnKEDkWv9OkNp2/JgqRz6We0DibUPo/OpYQGHYwLk5xn44hQRrOFN5/DJ7XsHPuz7eSqZf7OK9J0rhCfJIta0776/mxBv9iJa8bFG1kTxVcBOPabN66Fz+FcUeoe7DYcWiAWm5DxRKsyQT2USco1TcfrRDEOPWyE4h+tNO46g4iW4/q9Rn4sN0Rgbd/Mh5VCkhSoHZ7/Xoe5Id4xSzO/Bsm8tcHhkCOLloKH3nTjzl8CQeG1HN+HR5D3d/4xo277a8bp1rtwvIoS+zXlTod8aUMefs3LRYRsfES2WIzxmXPEPL8YiAmiQ7dZExtXrIWAkKCk8p2abfPQmFX3jP16SP7XKNQVetnkQehilHaNBAuG2a69Ow8e8Fgekj0/bXitb+xKkv6Ij6EHJtCeRPWT6iyNU9ca+/U7s1KrFgUDRoNHSwQcsV0IkbWuOJjW+ZINHCte118QQaHvdtdwQW4Snbi2iAVtM6y5K8lJPNaiLDNpgyyf9zYsLwlHyZnZo1NIue3s03wt5IgfDrSG1uEsKq/6CD3Pf0GiXR9Ljc4vEd1cUOiZiUQvOXPt3ze1wdYycLg2BQMQ=
 language: python
 python:
 - '3.6'
 before_install:
-  - pip install --upgrade pytest
+- pip install --upgrade pytest
 install:
 - pip install .[test]
 before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 script:
 - rm -rf .coverage
 - coverage erase
-- pytest --cov=covidxpert --cov-report xml:coverage.xml 
+- pytest --cov=covidxpert --cov-report xml:coverage.xml
 - coverage combine --append || true
 - coverage report
 - coverage xml
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then sonar-scanner; fi' # sonar only on non-PRs
-
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then sonar-scanner; fi
 after_success:
-  - coveralls
-  - python-codacy-coverage -r coverage.xml
+- coveralls
+- python-codacy-coverage -r coverage.xml
+env:
+  global:
+  - secure: gmzreDuBtUVzXn0ysalKNqg35uaDOEBk0g+N4YZ/YLUl5SypgGNln6gNk8xXMDLOgM37UqFT8j2cMcQGs2+ID2ufWXjWJKXhcpdClWqBbcWDlnHfoIKe1DbKvXIg0DSO9EgTmb6T7muxvZljsoLke20uiZXWYDjpJy9XXzMCiitrxNUIIXqweWS5Chk1C8fxWkmaKAXyAgBZiMJba7BOPkwuVJUSt30FcdRU2M6xKK8tzTMS5pwW4ARiYFNuT3TYYT7No9fahsPswTURv8sahHgoA3li3SQ/lrpUVOxsry2Xu+YwfkOaN4wW2fayDDzfL9rMX25Rac2bbAZO5zK0HCSHoGmEpRNSo/8AbjVz84STAEgrjGpZzGUrt02evHUCdLQy90BjtwIrWKikcXjuH54Vc0ORYDQJ6YKghixH74nnE80BlDhcIljc1Ratupg7Hu++bl/jCwcoPgTFc2M8VU1Zy+GPpLi99y+XZu/TwflGzokYE4YsoN+fqlIcirIqTQXf0R9WQHcKdvJTkZkKIbQTLXmCbhCDbbk+Q5csUj4satdiuWOxGA/ceQz/J8iJE7MLJ/NyEDacuBAcRwgZi1J2i9Et3NZGv+9r4kwhsLOInx1zTB5xvg3qcSbRTI1nifhe2p+khcdVIOnvZNkLSP/1JiNRIjMV/KDk1F0Lfp8=
+  - secure: US4zhgbzCLW2uK7j0zNIgY5iZ1lOLCXNV/uA9p7OWSub68vRQaP98WIvGDlU3792W+EDUJ6AGY60cu8PaqDyb9faUs/BQ5dE1ZgSog6jxPdygH/eFG1WXXXpsjRcRx/nN2C2uTxPdtAGaqOcvIKmltt2gTyZ4fQ/6krY1rAms0aYzNgJ1LXTZt4uqhDDPosjXv9CLGvxtiea+rRo461PCiAp8exTLsUXSvd3nG/hZnmjkIDzlE8mZsprUMdLwikN7X0XwOD+Pw2WyPEXO1EyMsy5FVy6vmj7k1bu+noZFepJ4mjS2jp9bdcLn9lfo8ZNaztFg8kZYKUVVdvyVLimRoB+d2md+hqzrHRDhX6Vjg19QHLAvg8Dt8CMZcrOpewDgxbm82hvNCq6t1fw0RD4gwkG35cKNyGX26o6eXgJSAXR5FwNZjsLeiuw8ASfI1lfJQzExE9iA0lFjrtw86osVrKLkwiMT6DPC1zpp2XRlPMrjbLVxV/N2doZlbK8n4mwUmFycLWxR+PiOQsU0VMTNyWQZcKCS6EGrfFFnUkgn8+aVo7eyDXncAsoMT97kpqI1znTxw7zQYvPIsfl0PETTnxosYsU93eKqja2IBRYwhdLOQqLDTj8Dt7xY1uM0xfd0peIyC2T/NJXMWkH9tQgVJbXQpkirFWRQSQhDzLtTS8=
