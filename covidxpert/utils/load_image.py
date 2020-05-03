@@ -15,8 +15,6 @@ def load_image(path: str) -> np.ndarray:
     ----------------
     Return numpy array containing loaded image.
     """
-    if not os.path.exists(path):
-        raise ValueError("Image at given path '{}' does not exists.".format(path))
     image = cv2.imread(path, 0)
     image = (image - image.min()) / (image.max() - image.min())
     return image
