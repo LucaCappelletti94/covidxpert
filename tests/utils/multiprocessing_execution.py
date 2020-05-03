@@ -13,3 +13,5 @@ def multiprocessing_execution(test: Callable):
             total=len(paths),
             desc="Executing test {}".format(test.__name__)
         ))
+        p.close()
+        p.join()
