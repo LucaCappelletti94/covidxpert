@@ -1,11 +1,11 @@
-from covidxpert.utils import load_image, convex_mask, cut_bounding_box
+from covidxpert.utils import load_image
+from covidxpert import perspective_correction
 from .utils import multiprocessing_execution
 
 
 def job(path: str):
-    image = load_image(path)
-    cut_bounding_box(image, convex_mask(image))
+    perspective_correction(load_image(path))
 
 
-def test_cut_bounding_box():
+def test_perspective_correction():
     multiprocessing_execution(job)
