@@ -1,0 +1,1 @@
+include covidxper/lung_segmentation/cxr_reg_weights.best.hdf5

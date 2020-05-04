@@ -49,7 +49,6 @@ def unet(input_size=(512, 512, 1)):
     conv10 = Conv2D(1, (1, 1), activation='sigmoid')(conv9)
 
     model = Model(inputs=[inputs], outputs=[conv10])
-    model = unet()
     model.compile(optimizer="nadam", loss=dice_coef_loss,
                   metrics=[dice_coef, 'binary_accuracy'])
     model.load_weights(

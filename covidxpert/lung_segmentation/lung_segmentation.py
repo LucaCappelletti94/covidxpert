@@ -10,9 +10,5 @@ class LungSegmenter:
         self._shape = shape
 
     def predict(self, image: np.ndarray)->np.ndarray:
-        thumb = cv2.resize(
-            src=image,
-            dsize=self._shape[:2],
-            interpolation=cv2.CV_INTER_AREA
-        )
-        return self._model.predict([thumb.reshape(self._shape)])
+        thumb = cv2.resize(image, self._shape[:2])
+        return self._model.predict([thumb.reshape(1, *self._shape)]).reshape(self._shape[:2])
