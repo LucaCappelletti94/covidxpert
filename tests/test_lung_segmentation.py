@@ -1,3 +1,4 @@
+import silence_tensorflow.auto
 from covidxpert.utils import load_image
 from covidxpert.lung_segmentation import LungSegmenter
 from covidxpert import perspective_correction
