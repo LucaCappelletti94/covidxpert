@@ -1,7 +1,5 @@
 import silence_tensorflow.auto
-from covidxpert.utils import load_image
-from covidxpert.lung_segmentation import LungSegmenter
-from covidxpert import perspective_correction
+from covidxpert import load_image, LungSegmenter, perspective_correction
 import matplotlib.pyplot as plt
 from glob import glob
 from tqdm.auto import tqdm

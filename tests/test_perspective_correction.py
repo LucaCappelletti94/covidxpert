@@ -1,5 +1,4 @@
-from covidxpert.utils import load_image
-from covidxpert import perspective_correction
+from covidxpert import load_image, perspective_correction
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 import os
