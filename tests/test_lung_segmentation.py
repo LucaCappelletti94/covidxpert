@@ -5,7 +5,7 @@ from glob import glob
 from tqdm.auto import tqdm
 
 
-def test_perspective_correction():
+def test_lung_segmentation():
     segmenter = LungSegmenter()
     for i, path in enumerate(tqdm(glob("sample_dataset/*")[:5])):
         original = load_image(path)

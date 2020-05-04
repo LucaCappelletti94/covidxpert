@@ -5,4 +5,4 @@ import numpy as np
 
 def get_corners(image: np.ndarray, chull: np.ndarray) -> List:
     """Return image corners."""
-    return corner_peaks(corner_harris(chull), min_distance=5, num_peaks=4)
+    return corner_peaks(corner_harris(chull), min_distance=10, num_peaks=4)
