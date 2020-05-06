@@ -17,14 +17,15 @@ def test_perspective_correction():
         cut_image = perspective_correction(original)
         fig, axes = plt.subplots(nrows=2, ncols=2)
         axes = axes.ravel()
+        
         axes[0].imshow(original, cmap="gray")
         axes[0].set_title("Original image")
         padded = add_padding(original)
-        corners, requires_correction = get_corners(padded)
+        corners, requires_correction, score = get_corners(padded)
 
         axes[1].imshow(get_masked_image(padded), cmap="gray")
-        axes[1].scatter(*corners.T)
-        axes[1].set_title("Identified corners")
+        axes[1].scatter(*corners.T, marker='.')
+        axes[1].set_title("Identified corners ({0:0.4})".format(score))
 
         if requires_correction:
             padded = cut_bounding_box(padded, corners)
@@ -32,8 +33,8 @@ def test_perspective_correction():
             new_corners = get_new_cardinals(padded)
 
             axes[2].imshow(padded, cmap="gray")
-            axes[2].scatter(*corners.T)
-            axes[2].scatter(*new_corners.T)
+            axes[2].scatter(*corners.T, marker='.')
+            axes[2].scatter(*new_corners.T, marker='.')
             axes[2].set_title("Repositioned corners")
             
         axes[3].imshow(cut_image, cmap="gray")

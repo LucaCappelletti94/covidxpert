@@ -35,7 +35,7 @@ def get_image_white_area(image):
     return (image == 255).sum() / image.size
 
 
-def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: float = 0.01) -> Tuple[np.ndarray, bool]:
+def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: float = 0.03) -> Tuple[np.ndarray, bool]:
     """Return image convex mask."""
     image_mask = get_masked_image(image)
 
@@ -50,5 +50,7 @@ def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: f
 
     polygon_rate = get_polygon_area(*corners.T) / np.prod(image_mask.shape)
     image_white_area = get_image_white_area(image_mask)
+    
+    score = np.abs(1 - polygon_rate / image_white_area)
 
-    return corners, np.abs(1 - polygon_rate / image_white_area) < area_threshold
+    return corners, score < area_threshold, score

@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 
 def get_masked_image(image: np.ndarray):
-    _, thresholded_mask = cv2.threshold(image, 0, 255, cv2.THRESH_TRIANGLE)
+    # Applying the threshold
+    _, thresholded_mask = cv2.threshold(image, image.min(), 255, cv2.THRESH_BINARY)
 
     _, output, stats, _ = cv2.connectedComponentsWithStats(
         thresholded_mask,
@@ -25,7 +26,12 @@ def get_masked_image(image: np.ndarray):
     image_mask = cv2.fillPoly(
         image_mask,
         pts=[contours[0]],
-        color=(255, 255, 255)
+        color=255
     )
 
-    return image_mask
+    # Computing the chull of the mask
+    chull = cv2.convexHull(contours[0])
+
+    merged_mask = cv2.fillPoly(image_mask, [chull], 255)
+
+    return merged_mask

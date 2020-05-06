@@ -4,7 +4,6 @@ from .add_padding import add_padding
 from .get_corners import get_corners
 from .cut_bounding_box import cut_bounding_box
 
-
 def get_new_cardinals(image: np.ndarray) -> np.ndarray:
     return np.float32([
         [0.0, 0.0],  # top_left,
@@ -16,7 +15,7 @@ def get_new_cardinals(image: np.ndarray) -> np.ndarray:
 
 def perspective_correction(image: np.ndarray) -> np.ndarray:
     padded = add_padding(image)
-    corners, requires_correction = get_corners(padded)
+    corners, requires_correction, _ = get_corners(padded)
     if not requires_correction:
         return image
     padded = cut_bounding_box(padded, corners)
