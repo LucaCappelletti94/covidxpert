@@ -12,7 +12,7 @@ from glob import glob
 
 
 def test_perspective_correction():
-    for path in tqdm(glob("tests/perspective_correction_tests/*")):
+    for path in tqdm(glob("tests/test_images/*")):
         original = load_image(path)
         cut_image = perspective_correction(original)
         fig, axes = plt.subplots(nrows=2, ncols=2)

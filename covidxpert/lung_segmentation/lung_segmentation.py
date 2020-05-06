@@ -11,4 +11,6 @@ class LungSegmenter:
 
     def predict(self, image: np.ndarray)->np.ndarray:
         thumb = cv2.resize(image, self._shape[:2])
+        thumb = np.float32(thumb)
+        thumb = (thumb - thumb.min()) / (thumb.max() - thumb.min())
         return self._model.predict([thumb.reshape(1, *self._shape)]).reshape(self._shape[:2])

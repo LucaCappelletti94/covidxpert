@@ -3,11 +3,12 @@ from covidxpert import load_image, LungSegmenter, perspective_correction
 import matplotlib.pyplot as plt
 from glob import glob
 from tqdm.auto import tqdm
+import os
 
 
 def test_lung_segmentation():
     segmenter = LungSegmenter()
-    for i, path in enumerate(tqdm(glob("sample_dataset/*")[:5])):
+    for path in tqdm(glob("tests/test_images/*")):
         original = load_image(path)
         cut_image = perspective_correction(original)
         segmented = segmenter.predict(cut_image)
@@ -20,5 +21,7 @@ def test_lung_segmentation():
         axes[2].set_title("Lung segmentation")
         [ax.set_axis_off() for ax in axes.ravel()]
         fig.tight_layout()
-        fig.savefig(f"{i}.jpg")
+        path = f"tests/lung_segmentation/{os.path.basename(path)}"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        fig.savefig(path)
         plt.close(fig)
