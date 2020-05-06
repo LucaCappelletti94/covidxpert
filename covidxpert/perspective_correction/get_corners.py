@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from .get_masked_image import get_masked_image
 from typing import Tuple
 
 
@@ -36,31 +37,7 @@ def get_image_white_area(image):
 
 def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: float = 0.01) -> Tuple[np.ndarray, bool]:
     """Return image convex mask."""
-    _, thresholded_mask = cv2.threshold(image, 0, 255, cv2.THRESH_TRIANGLE)
-
-    _, output, stats, _ = cv2.connectedComponentsWithStats(
-        thresholded_mask,
-        connectivity=8
-    )
-
-    max_sizeR = np.argmax(stats[1:, -1])
-    image_mask = np.zeros((output.shape), dtype=np.uint8)
-    image_mask[output == max_sizeR + 1] = 255
-
-    # We determine the contours of the mask
-    contours, _ = cv2.findContours(
-        image=image_mask,
-        mode=cv2.RETR_TREE,
-        method=cv2.CHAIN_APPROX_NONE
-    )
-
-    # And fill up the mask within thr contours
-    # as they might remain holes within.
-    image_mask = cv2.fillPoly(
-        image_mask,
-        pts=[contours[0]],
-        color=(255, 255, 255)
-    )
+    image_mask = get_masked_image(image)
 
     # Get up to corners_number corners
     # and filter up only the 4 cardinal corners
