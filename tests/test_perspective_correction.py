@@ -1,6 +1,10 @@
 from covidxpert import load_image, perspective_correction
+from covidxpert.perspective_correction.get_corners import get_corners
+from covidxpert.perspective_correction.add_padding import add_padding
+from covidxpert.perspective_correction.cut_bounding_box import cut_bounding_box
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
+import numpy as np
 import os
 from glob import glob
 
@@ -9,11 +13,33 @@ def test_perspective_correction():
     for path in tqdm(glob("tests/perspective_correction_tests/*")):
         original = load_image(path)
         cut_image = perspective_correction(original)
-        fig, axes = plt.subplots(ncols=2)
+        fig, axes = plt.subplots(nrows=2, ncols=2)
+        axes = axes.ravel()
         axes[0].imshow(original, cmap="gray")
         axes[0].set_title("Original image")
-        axes[1].imshow(cut_image, cmap="gray")
-        axes[1].set_title("Perspective correction")
+        padded = add_padding(original)
+        corners, requires_correction = get_corners(padded)
+        if requires_correction:
+            axes[1].imshow(padded, cmap="gray")
+            axes[1].scatter(*corners.T)
+            axes[1].set_title("Identified corners")
+
+            padded = cut_bounding_box(padded, corners)
+            corners -= corners.min(axis=0)
+            new_corners = np.float32([
+                [0.0, 0.0],  # top_left,
+                [padded.shape[1], 0],  # top_right
+                [padded.shape[1], padded.shape[0]],  # bottom_right,
+                [0, padded.shape[0]],  # bottom_left,
+            ])
+
+            axes[2].imshow(padded, cmap="gray")
+            axes[2].scatter(*corners.T)
+            axes[2].scatter(*new_corners.T)
+            axes[2].set_title("Repositioned corners")
+            
+        axes[3].imshow(cut_image, cmap="gray")
+        axes[3].set_title("Perspective correction")
         [ax.set_axis_off() for ax in axes.ravel()]
         fig.tight_layout()
         path = f"tests/perspective_correction/{os.path.basename(path)}"

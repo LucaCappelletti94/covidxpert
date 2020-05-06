@@ -1,35 +1,22 @@
 import numpy as np
 import cv2
 from .add_padding import add_padding
-from .convex_mask import convex_mask
 from .get_corners import get_corners
 from .cut_bounding_box import cut_bounding_box
-from .transpose_corners import transpose_corners
-from .sort_corners import sort_corners
 
 
 def perspective_correction(image: np.ndarray) -> np.ndarray:
     padded = add_padding(image)
-    chull = convex_mask(padded)
-    corners = get_corners(padded, chull)
-
-    if len(corners) < 4:
+    corners, requires_correction = get_corners(padded)
+    if not requires_correction:
         return image
-
-    padded = cut_bounding_box(padded, chull)
-    corners = transpose_corners(corners, chull)
-    corners = np.float32(sort_corners(corners))
+    padded = cut_bounding_box(padded, corners)
+    corners -= corners.min(axis=0)
     new_corners = np.float32([
         [0.0, 0.0],  # top_left,
-        [0.0, padded.shape[1]],  # top_right
-        [padded.shape[0], padded.shape[1]],  # bottom_right,
-        [padded.shape[0], 0],  # bottom_left,
-    ])
-    new_corners = np.float32([
-        (x, y) for y, x in new_corners.tolist()
-    ])
-    corners = np.float32([
-        (x, y) for y, x in corners.tolist()
+        [padded.shape[1], 0],  # top_right
+        [padded.shape[1], padded.shape[0]],  # bottom_right,
+        [0, padded.shape[0]],  # bottom_left,
     ])
     M, _ = cv2.findHomography(
         corners,

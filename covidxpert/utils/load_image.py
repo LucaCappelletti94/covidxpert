@@ -16,8 +16,4 @@ def load_image(path: str) -> np.ndarray:
     ----------------
     Return numpy array containing loaded image.
     """
-    image = cv2.imread(path, 0)
-    image = ndimage.median_filter(image, 3)
-    image = ndimage.gaussian_filter(image, sigma=5)
-    image = (image - image.min()) / (image.max() - image.min())
-    return image
+    return cv2.imread(path, 0)
