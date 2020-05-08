@@ -3,36 +3,32 @@ import cv2
 from .normalize_image import normalize_image
 
 
-def compute_artefacts(image: np.ndarray, sigma: float = 15) -> np.ndarray:
+def compute_artefacts(image: np.ndarray) -> np.ndarray:
     """Return the artefacts identified in given image.
 
     Parameters
     -----------------------------
     image: np.ndarray,
         The image from where to extract the artefacts.
-    sigma: float = 15,
-        The sigma to use for the Gaussian blur.
 
     Returns
     -----------------------------
     Boolean mask with the artefacts identified.
     """
-    blur = cv2.GaussianBlur(image, (5, 5), sigma, sigma).astype(float)
-    result = image - blur
-    result = normalize_image(image)
     result = cv2.threshold(
-        result,
-        thresh=np.median(result),
+        image,
+        thresh=np.median(image),
         maxval=255,
         type=cv2.THRESH_BINARY
     )[1]
-    _, output, stats, _ = cv2.connectedComponentsWithStats(result, connectivity=8)
+    _, output, stats, _ = cv2.connectedComponentsWithStats(
+        result, connectivity=8)
     sizes = stats[1:, -1]
     area = np.prod(result.shape)
     artefacts = np.zeros(result.shape, dtype=bool)
 
     for i, size in enumerate(sizes):
-        if size < area/10:
+        if size < area/400:
             artefacts |= output == i+1
 
     kernel = np.ones((3, 3), np.uint8)
@@ -42,21 +38,19 @@ def compute_artefacts(image: np.ndarray, sigma: float = 15) -> np.ndarray:
     return artefacts
 
 
-def remove_artefacts(image: np.ndarray, sigma: float = 15) -> np.ndarray:
+def remove_artefacts(image: np.ndarray) -> np.ndarray:
     """Return image without identified artefacts.
 
     Parameters
     -----------------------------
     image: np.ndarray,
         The image from where to extract the artefacts.
-    sigma: float = 15,
-        The sigma to use for the Gaussian blur.
 
     Returns
     -----------------------------
     Image without the identified artefacts.
     """
-    artefacts = compute_artefacts(image, sigma)
+    artefacts = compute_artefacts(image)
     cleared_image = image.copy()
     cleared_image[artefacts] = 0
 

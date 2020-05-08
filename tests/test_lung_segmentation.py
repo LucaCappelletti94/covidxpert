@@ -1,5 +1,4 @@
-import silence_tensorflow.auto
-from covidxpert import load_image, LungSegmenter, perspective_correction
+from covidxpert import load_image, LungSegmenter, perspective_correction, blur_bbox
 import matplotlib.pyplot as plt
 from glob import glob
 from tqdm.auto import tqdm
@@ -11,12 +10,13 @@ def test_lung_segmentation():
     for path in tqdm(glob("tests/test_images/*")):
         original = load_image(path)
         cut_image = perspective_correction(original)
+        cut_image = blur_bbox(cut_image)
         segmented = segmenter.predict(cut_image)
         fig, axes = plt.subplots(ncols=3)
         axes[0].imshow(original, cmap="gray")
         axes[0].set_title("Original image")
         axes[1].imshow(cut_image, cmap="gray")
-        axes[1].set_title("Perspective correction")
+        axes[1].set_title("Cut and reshape")
         axes[2].imshow(segmented, cmap="gray")
         axes[2].set_title("Lung segmentation")
         [ax.set_axis_off() for ax in axes.ravel()]
