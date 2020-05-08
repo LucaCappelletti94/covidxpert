@@ -19,9 +19,9 @@ def compute_artefacts(image: np.ndarray, sigma: float = 15) -> np.ndarray:
     """
     blur = cv2.GaussianBlur(image, (5, 5), sigma, sigma).astype(float)
     result = image - blur
-    result = normalize_image(image)
+    result = normalize_image(result)
     result = cv2.threshold(
-        result,
+        image,
         thresh=np.median(result),
         maxval=255,
         type=cv2.THRESH_BINARY

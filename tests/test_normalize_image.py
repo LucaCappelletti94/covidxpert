@@ -10,5 +10,5 @@ def test_normalize_image():
         cut_image = perspective_correction(original)
         cleared_image = remove_artefacts(cut_image)
 
-        assert cleared_image.max() <= 255
-        assert cleared_image.min() >= 0
+        assert cleared_image.max() == 255
+        assert cleared_image.min() == 0
