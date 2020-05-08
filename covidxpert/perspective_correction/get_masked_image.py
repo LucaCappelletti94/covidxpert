@@ -10,9 +10,8 @@ def get_masked_image(image: np.ndarray):
         connectivity=8
     )
 
-    max_sizeR = np.argmax(stats[1:, -1])
     image_mask = np.zeros((output.shape), dtype=np.uint8)
-    image_mask[output == max_sizeR + 1] = 255
+    image_mask[output == np.argmax(stats[1:, -1]) + 1] = 255
 
     # We determine the contours of the mask
     contours, _ = cv2.findContours(
