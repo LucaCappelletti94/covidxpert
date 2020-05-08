@@ -23,7 +23,7 @@ def compute_artefacts(image: np.ndarray, sigma: float = 15) -> np.ndarray:
     result = cv2.threshold(
         result,
         thresh=np.median(result),
-        maxval=s255,
+        maxval=255,
         type=cv2.THRESH_BINARY
     )[1]
     _, output, stats, _ = cv2.connectedComponentsWithStats(result, connectivity=8)
