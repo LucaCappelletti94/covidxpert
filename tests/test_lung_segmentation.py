@@ -1,4 +1,3 @@
-import silence_tensorflow.auto
 from covidxpert import load_image, LungSegmenter, perspective_correction
 import matplotlib.pyplot as plt
 from glob import glob
