@@ -7,5 +7,6 @@ __all__ = [
     "load_image",
     "normalize_image",
     "remove_artefacts",
-    "trim_padding"
+    "trim_padding",
+    "add_padding"
 ]
