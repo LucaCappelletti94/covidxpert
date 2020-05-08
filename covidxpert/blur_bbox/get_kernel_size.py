@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def get_kernel_size(image: np.ndarray) -> int:
     """Return the kernel size based on the image size.
 
