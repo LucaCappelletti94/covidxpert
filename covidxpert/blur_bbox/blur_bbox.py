@@ -48,7 +48,7 @@ def compute_median_threshold(mask: np.ndarray) -> float:
 
 def get_blur_mask(image: np.ndarray, padding: int):
     blurred = add_padding(image, padding)
-    blurred, _ = remove_artefacts(blurred)
+    blurred = remove_artefacts(blurred)
     kernel = get_kernel_size(blurred)
     blurred = cv2.medianBlur(blurred, kernel)
     blurred = cv2.threshold(blurred, np.median(
