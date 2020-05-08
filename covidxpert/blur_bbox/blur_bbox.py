@@ -1,6 +1,7 @@
 import numpy as np
 from .get_kernel_size import get_kernel_size
 from ..utils import trim_padding, add_padding, remove_artefacts
+import cv2
 
 
 def count_from_left_side(mask: np.ndarray):
