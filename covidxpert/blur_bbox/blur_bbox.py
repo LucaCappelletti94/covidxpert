@@ -1,3 +1,8 @@
+import numpy as np
+from .get_kernel_size import get_kernel_size
+from ..utils import trim_padding, add_padding, remove_artefacts
+
+
 def count_from_left_side(mask: np.ndarray):
     counter = 0
     for boolean in mask:
@@ -35,16 +40,18 @@ def strip_black(image: np.ndarray, mask: np.ndarray, v_threshold: float, h_thres
 
 def compute_median_threshold(mask: np.ndarray) -> float:
     masked_mask = strip_black(mask, mask, 0, 0)
-    v_white_median = np.median(mask.mean(axis=0))
-    h_white_median = np.median(mask.mean(axis=1))
+    v_white_median = np.median(masked_mask.mean(axis=0))
+    h_white_median = np.median(masked_mask.mean(axis=1))
     return v_white_median/2, h_white_median/2
 
 
 def get_blur_mask(image: np.ndarray, padding: int):
     blurred = add_padding(image, padding)
     blurred, _ = remove_artefacts(blurred)
-    blurred = apply_mean_blur(blurred)
-    blurred = apply_median_threshold(blurred)
+    kernel = get_kernel_size(blurred)
+    blurred = cv2.medianBlur(blurred, kernel)
+    blurred = cv2.threshold(blurred, np.median(
+        blurred)/2, 255, cv2.THRESH_BINARY)[1]
     return trim_padding(blurred, padding)
 
 

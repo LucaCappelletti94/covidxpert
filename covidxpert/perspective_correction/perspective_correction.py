@@ -1,8 +1,9 @@
 import numpy as np
 import cv2
-from .add_padding import add_padding
+from ..utils import add_padding
 from .get_corners import get_corners
 from .cut_bounding_box import cut_bounding_box
+
 
 def get_new_cardinals(image: np.ndarray) -> np.ndarray:
     return np.float32([
