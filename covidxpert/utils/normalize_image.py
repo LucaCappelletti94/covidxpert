@@ -13,4 +13,5 @@ def normalize_image(image: np.ndarray) -> np.ndarray:
     ----------------------
     Return the normalized image.
     """
+    image = image.astype(float)
     return np.uint8(((image - image.min()) / (image.max() - image.min()))*255)
