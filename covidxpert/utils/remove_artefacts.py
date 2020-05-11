@@ -28,14 +28,16 @@ def compute_artefacts(image: np.ndarray) -> np.ndarray:
     artefacts = np.zeros(result.shape, dtype=bool)
 
     for i, size in enumerate(sizes):
-        if size < area/400:
+        if size < area/400 and size > 10:
             artefacts |= output == i+1
 
-    kernel = np.ones((3, 3), np.uint8)
+    kernel = np.ones((10, 10), np.uint8)
 
-    artefacts = cv2.dilate(artefacts.astype(np.uint8), kernel).astype(bool)
+    artefacts = cv2.dilate(artefacts.astype(np.uint8), kernel)
+    artefacts = cv2.morphologyEx(
+        artefacts, cv2.MORPH_CLOSE, kernel=np.ones((3, 3)), iterations=10)
 
-    return artefacts
+    return artefacts.astype(bool)
 
 
 def remove_artefacts(image: np.ndarray) -> np.ndarray:
@@ -50,8 +52,7 @@ def remove_artefacts(image: np.ndarray) -> np.ndarray:
     -----------------------------
     Image without the identified artefacts.
     """
-    artefacts = compute_artefacts(image)
-    cleared_image = image.copy()
-    cleared_image[artefacts] = 0
-
-    return cleared_image
+    artefacts = normalize_image(compute_artefacts(image))
+    backtorgb = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    cleared_image = cv2.inpaint(backtorgb, artefacts, 11, cv2.INPAINT_TELEA)
+    return cv2.cvtColor(cleared_image, cv2.COLOR_RGB2GRAY)
