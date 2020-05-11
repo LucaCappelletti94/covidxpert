@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from .normalize_image import normalize_image
+from .inpaint import inpaint
 
 
 def compute_artefacts(image: np.ndarray) -> np.ndarray:
@@ -52,7 +52,4 @@ def remove_artefacts(image: np.ndarray) -> np.ndarray:
     -----------------------------
     Image without the identified artefacts.
     """
-    artefacts = normalize_image(compute_artefacts(image))
-    backtorgb = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    cleared_image = cv2.inpaint(backtorgb, artefacts, 11, cv2.INPAINT_TELEA)
-    return cv2.cvtColor(cleared_image, cv2.COLOR_RGB2GRAY)
+    return inpaint(image, compute_artefacts(image))
