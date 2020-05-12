@@ -7,7 +7,7 @@ from glob import glob
 
 
 def test_remove_artifacts():
-    for path in tqdm(glob("tests/test_images/*")):
+    for path in tqdm(glob("tests/test_images/*"), desc="Test artefacts removal"):
         original = load_image(path)
         cut_image = perspective_correction(original)
 

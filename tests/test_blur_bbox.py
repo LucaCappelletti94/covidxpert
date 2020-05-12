@@ -7,7 +7,7 @@ import os
 
 
 def test_blur_bbox():
-    for path in tqdm(glob("tests/test_images/*")):
+    for path in tqdm(glob("tests/test_images/*"), desc="Testing blur bbox"):
         original = load_image(path)
         cut_image = perspective_correction(original)
         blurred_image = blur_bbox(cut_image)

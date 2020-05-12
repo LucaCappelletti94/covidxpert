@@ -23,8 +23,8 @@ def build_slice(left: int, right: int, maximum: int):
 
 
 def strip_black(image: np.ndarray, mask: np.ndarray, v_threshold: float, h_threshold: float) -> np.ndarray:
-    vertical_mask = mask.mean(axis=1) < v_threshold
-    horizzontal_mask = mask.mean(axis=0) < h_threshold
+    vertical_mask = mask.mean(axis=1) <= v_threshold
+    horizzontal_mask = mask.mean(axis=0) <= h_threshold
 
     h_slice = build_slice(
         count_from_left_side(horizzontal_mask),
@@ -43,7 +43,7 @@ def compute_median_threshold(mask: np.ndarray) -> float:
     masked_mask = strip_black(mask, mask, 0, 0)
     v_white_median = np.median(masked_mask.mean(axis=0))
     h_white_median = np.median(masked_mask.mean(axis=1))
-    return v_white_median/2, h_white_median/2
+    return v_white_median*0.6, h_white_median*0.6
 
 
 def get_blur_mask(image: np.ndarray, padding: int):

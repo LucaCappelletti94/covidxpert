@@ -3,14 +3,17 @@ import matplotlib.pyplot as plt
 from glob import glob
 from tqdm.auto import tqdm
 import os
+import cv2
 
 
 def test_lung_segmentation():
     segmenter = LungSegmenter()
-    for path in tqdm(glob("tests/test_images/*")):
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(9,9))
+    for path in tqdm(glob("tests/test_images/*"), desc="Test lung segmentation"):
         original = load_image(path)
         cut_image = perspective_correction(original)
         cut_image = blur_bbox(cut_image)
+        cut_image = clahe.apply(cut_image)
         segmented = segmenter.predict(cut_image)
         fig, axes = plt.subplots(ncols=3)
         axes[0].imshow(original, cmap="gray")
