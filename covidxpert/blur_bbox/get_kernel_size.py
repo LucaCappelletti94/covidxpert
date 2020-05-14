@@ -18,4 +18,4 @@ def get_kernel_size(image: np.ndarray) -> int:
     if kernel_size % 2 == 0:
         kernel_size += 1
 
-    return kernel_size
+    return np.uint8(kernel_size)
