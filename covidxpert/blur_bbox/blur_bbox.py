@@ -43,7 +43,7 @@ def compute_median_threshold(mask: np.ndarray) -> float:
     masked_mask = strip_black(mask, mask, 0, 0)
     v_white_median = np.median(masked_mask.mean(axis=0))
     h_white_median = np.median(masked_mask.mean(axis=1))
-    return v_white_median*0.6, h_white_median*0.6
+    return v_white_median/2, h_white_median/2
 
 
 def get_blur_mask(image: np.ndarray, padding: int):
