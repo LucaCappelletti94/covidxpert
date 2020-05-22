@@ -1,5 +1,6 @@
-from .blur_bbox import blur_bbox
+from .blur_bbox import blur_bbox, strip_sides
 
 __all__ = [
-    "blur_bbox"
+    "blur_bbox",
+    "strip_sides"
 ]
