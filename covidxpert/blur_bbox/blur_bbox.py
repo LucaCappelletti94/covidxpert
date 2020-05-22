@@ -22,21 +22,19 @@ def build_slice(left: int, right: int, maximum: int):
     return slice(left, maximum if right == 0 else right)
 
 
+def strip_sides(image: np.ndarray, flat_mask: np.ndarray) -> np.ndarray:
+    return build_slice(
+        count_from_left_side(flat_mask),
+        -count_from_right_side(flat_mask),
+        flat_mask.size
+    )
+
+
 def strip_black(image: np.ndarray, mask: np.ndarray, v_threshold: float, h_threshold: float) -> np.ndarray:
     vertical_mask = mask.mean(axis=1) <= v_threshold
     horizzontal_mask = mask.mean(axis=0) <= h_threshold
 
-    h_slice = build_slice(
-        count_from_left_side(horizzontal_mask),
-        -count_from_right_side(horizzontal_mask),
-        image.shape[1]
-    )
-    v_slice = build_slice(
-        count_from_left_side(vertical_mask),
-        -count_from_right_side(vertical_mask),
-        image.shape[0]
-    )
-    return image[v_slice, h_slice]
+    return image[strip_sides(image, vertical_mask), strip_sides(image, horizzontal_mask)]
 
 
 def compute_median_threshold(mask: np.ndarray) -> float:
