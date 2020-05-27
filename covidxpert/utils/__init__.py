@@ -6,6 +6,8 @@ from .inpaint import inpaint
 from .darken import darken
 from .difference_of_gaussians_pyramid import difference_of_gaussians_pyramid
 from .compute_linear_coefficients import compute_linear_coefficients
+from .get_projected_points import get_projected_points
+from .polar2cartesian import polar2cartesian
 
 __all__ = [
     "load_image",
@@ -15,5 +17,7 @@ __all__ = [
     "add_padding",
     "inpaint",
     "darken",
-    "difference_of_gaussians_pyramid"
+    "difference_of_gaussians_pyramid",
+    "get_projected_points",
+    "polar2cartesian"
 ]
