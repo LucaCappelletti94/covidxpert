@@ -34,7 +34,8 @@ test_deps =[
     "coveralls",
     "validate_version_code",
     "codacy-coverage",
-    "silence_tensorflow"
+    "silence_tensorflow",
+    "tqdm"
 ]
 
 extras = {

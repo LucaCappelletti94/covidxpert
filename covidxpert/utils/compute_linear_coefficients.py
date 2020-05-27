@@ -1,5 +1,5 @@
 from typing import Tuple
-import numpy np
+import numpy as np
 
 
 def compute_linear_coefficients(
@@ -22,10 +22,10 @@ def compute_linear_coefficients(
     Return the tuple of linear coefficients, the first one being the
     angular coefficient and the second one being the intercept.
     """
-    if (x0 != x1):
-        m = (y1-y0)/(x1-x0)
-        q = -x0*m+y0
-    else:
+    if np.isclose(x0, x1):
         m = np.inf
         q = x0
+    else:
+        m = (y1-y0)/(x1-x0)
+        q = y0 - m*x0
     return m, q
