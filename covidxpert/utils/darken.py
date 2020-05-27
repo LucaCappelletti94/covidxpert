@@ -1,6 +1,8 @@
+from typing import Tuple
+
 import cv2
 import numpy as np
-from typing import Tuple
+
 
 def darken(image: np.ndarray, clip: float = 2.0, kernel: Tuple = (3, 3)) -> np.ndarray:
     """Return the image with both global and local normalization.
@@ -18,9 +20,8 @@ def darken(image: np.ndarray, clip: float = 2.0, kernel: Tuple = (3, 3)) -> np.n
     --------------------
     Return the darkened image.
     """
-    kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
-    image = cv2.filter2D(image, -1, kernel)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(3, 3))
+    image = cv2.filter2D(image, -1, np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]))
+    clahe = cv2.createCLAHE(clipLimit=clip, tileGridSize=kernel)
     image = clahe.apply(image)
     image = cv2.equalizeHist(image)
     return image
