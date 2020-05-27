@@ -1,4 +1,5 @@
-from covidxpert import load_image
+from covidxpert import load_image, perspective_correction
+from covidxpert import blur_bbox
 from covidxpert.utils import darken
 from tqdm.auto import tqdm
 from glob import glob
@@ -9,9 +10,11 @@ import os
 def test_darken():
     for path in tqdm(glob("test_images/*"), desc="Testing darken"):
         original = load_image(path)
-        darkened_standard = darken(original)
-        darkened_configured = darken(original, 4, (5, 5))
-        darkened_configured_2 = darken(original, 1, (7, 7))
+        cut_image = perspective_correction(original)
+        blurred_image = blur_bbox(cut_image)
+        darkened_standard = darken(blurred_image)
+        darkened_configured = darken(blurred_image, 4, (5, 5))
+        darkened_configured_2 = darken(blurred_image, 1, (7, 7))
 
         fig, axes = plt.subplots(ncols=2, nrows=2)
         axes = axes.ravel()
