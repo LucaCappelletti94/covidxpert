@@ -1,6 +1,6 @@
 from .load_image import load_image
 from .normalize_image import normalize_image
-from .remove_artefacts import remove_artefacts
+from .remove_artefacts import remove_artefacts, fill_small_white_blobs, fill_small_black_blobs
 from .padding import trim_padding, add_padding
 from .inpaint import inpaint
 from .darken import darken
@@ -19,5 +19,7 @@ __all__ = [
     "darken",
     "difference_of_gaussians_pyramid",
     "get_projected_points",
-    "polar2cartesian"
+    "polar2cartesian",
+    "fill_small_white_blobs",
+    "fill_small_black_blobs"
 ]

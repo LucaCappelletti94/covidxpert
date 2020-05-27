@@ -53,3 +53,33 @@ def remove_artefacts(image: np.ndarray) -> np.ndarray:
     Image without the identified artefacts.
     """
     return inpaint(image, compute_artefacts(image))
+
+
+def fill_small_white_blobs(mask, fact):
+    """Return mask without white blobs smaller than area divided by factor."""
+    _, output, stats, _ = cv2.connectedComponentsWithStats(
+        mask, connectivity=8
+    )
+    sizes = stats[1:, -1]
+    area = np.prod(mask.shape)
+
+    for i, size in enumerate(sizes):
+        if size < area/fact:
+            mask[output == i+1] = 0
+
+    return mask
+
+
+def fill_small_black_blobs(mask, factor: int):
+    """Return mask without black blobs smaller than area divided by factor."""
+    inverted = mask.max() - mask
+    _, output, stats, _ = cv2.connectedComponentsWithStats(
+        inverted, connectivity=8)
+    sizes = stats[1:, -1]
+    area = np.prod(inverted.shape)
+
+    for i, size in enumerate(sizes):
+        if size < area/factor:
+            mask[output == i+1] = 255
+
+    return mask
