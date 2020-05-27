@@ -3,6 +3,7 @@ from .normalize_image import normalize_image
 from .remove_artefacts import remove_artefacts
 from .padding import trim_padding, add_padding
 from .inpaint import inpaint
+from .darken import darken
 
 __all__ = [
     "load_image",
@@ -10,5 +11,6 @@ __all__ = [
     "remove_artefacts",
     "trim_padding",
     "add_padding",
-    "inpaint"
+    "inpaint",
+    "darken"
 ]
