@@ -4,6 +4,7 @@ from .remove_artefacts import remove_artefacts
 from .padding import trim_padding, add_padding
 from .inpaint import inpaint
 from .darken import darken
+from .difference_of_gaussians_pyramid import difference_of_gaussians_pyramid
 
 __all__ = [
     "load_image",
@@ -12,5 +13,6 @@ __all__ = [
     "trim_padding",
     "add_padding",
     "inpaint",
-    "darken"
+    "darken",
+    "difference_of_gaussians_pyramid"
 ]

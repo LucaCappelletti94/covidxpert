@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def darken(image: np.ndarray, clip: float = 2.0, kernel: Tuple = (3, 3)): -> np.ndarray:
+def darken(image: np.ndarray, clip: float = 2.0, kernel: Tuple = (3, 3)) -> np.ndarray:
     """Return the image with both global and local normalization.
 
     Parameters
