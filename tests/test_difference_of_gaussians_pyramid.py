@@ -8,16 +8,6 @@ import os
 import pytest
 import numpy as np
 
-"""
-def difference_of_gaussians_pyramid(
-    image: np.ndarray,
-    sigma: float = 1,
-    start_sigma: float = 5,
-    end_sigma: float = 50,
-    steps: int = 50
-) -> np.ndarray:
-"""
-
 def test_difference_of_gaussian_pyramid_wrong_parameters():
     mock_img = np.ndarray(shape=(1,1,3)) 
     with pytest.raises(ValueError):
