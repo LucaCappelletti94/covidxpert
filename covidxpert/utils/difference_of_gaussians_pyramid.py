@@ -39,8 +39,9 @@ def difference_of_gaussians_pyramid(
         returns the sum image
     """
 
-    # TODO: exceptions for invalid sigmas (negative etc..)
-
+    # TODO: Add exceptions for invalid parameter (negative etc..)
+    check_parameters(image, sigma, start_sigma, end_sigma, steps)
+    
     # Normalizing the provided image.
     image = cv2.normalize(image.astype(float), None, 0, 255, cv2.NORM_MINMAX)
 
@@ -64,3 +65,8 @@ def difference_of_gaussians_pyramid(
         foregrounds[subtraction > 0] += 1
 
     return normalize_image(backgrounds), normalize_image(foregrounds)
+
+def check_parameters(image: np.ndarray, sigma: float, start_sigma: float, end_sigma: float, steps: int):
+    if sigma <= 0:
+        raise ValueError('sigma <=0')
+
