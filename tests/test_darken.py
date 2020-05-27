@@ -28,7 +28,7 @@ def test_darken():
         axes[2].imshow(darkened_configured, cmap="gray")
         axes[2].set_title("Darkened image (clip=4, Tuple=(5, 5))")
 
-        axes[3].imshow(darkened_configured, cmap="gray")
+        axes[3].imshow(darkened_configured_2, cmap="gray")
         axes[3].set_title("Darkened image (clip=1, Tuple=(7, 7))")
 
         [ax.set_axis_off() for ax in axes.ravel()]
