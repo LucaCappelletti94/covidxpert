@@ -12,6 +12,7 @@ def test_darken():
         original = load_image(path)
         cut_image = perspective_correction(original)
         blurred_image = blur_bbox(cut_image)
+
         darkened_standard = darken(blurred_image)
         darkened_configured = darken(blurred_image, 4, (5, 5))
         darkened_configured_2 = darken(blurred_image, 1, (7, 7))
