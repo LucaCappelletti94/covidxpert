@@ -34,7 +34,7 @@ def test_difference_of_gaussian_pyramid():
 
         [ax.set_axis_off() for ax in axes.ravel()]
         fig.tight_layout()
-        path = f"tests/simmetry_diff_gaussian_pyramid/{os.path.basename(path)}"
+        path = f"tests/diff_gaussian_pyramid/{os.path.basename(path)}"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         fig.savefig(path)
         plt.close(fig)
