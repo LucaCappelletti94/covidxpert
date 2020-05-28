@@ -33,7 +33,7 @@ def get_dominant_lines(
             continue
         # Otherwise we get the projection of the points to the lower and upper
         # sides of the image, using the provided heights.
-        x0, y0, x1, y1 = get_projected_points(m, q, height)
+        x0, y0, x1, y1 = get_projected_points(m, q, x0, height)
         # If the middle point of the line does no fall within the central
         # fifth of the image (e.i. the line is vertically inclined but close
         # to either sides)
@@ -46,6 +46,7 @@ def get_dominant_lines(
         # we drop also this line.
         if min(x0, width-x0) < width/5 or min(x1, width-x1) < width/5:
             # We skip this line
+            print("51")
             continue
         # If the line has a angular coefficient that is greater than the given
         # one we return the projected points.
