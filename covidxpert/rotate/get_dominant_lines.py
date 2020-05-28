@@ -51,3 +51,4 @@ def get_dominant_lines(
         # one we return the projected points.
         if np.abs(m) >= np.tan(max_inclination):
             yield x0, y0, x1, y1
+

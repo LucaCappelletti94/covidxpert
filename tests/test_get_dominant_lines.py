@@ -12,8 +12,8 @@ def test_get_dominant_lines():
     line_on_side = [
         [[0, 0, 10, 1]],  # diagonal
         [[0, 0.5, 10, 0.5]],  # horizzontal line
-        [[0, 0, 0, 1]],  # vertical line on the side
-        [[1, 0, 1, 1]],  # vertical line on the side
+        [[1.9, 0, 6.1, 1]],  # almost vertical line on the side
+        [[0, 0, 1, 1]],  # not in the center
         [[4.1, 0, 5.9, 1]]  # inclined line
     ]
 
