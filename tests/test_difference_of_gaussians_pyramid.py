@@ -20,7 +20,6 @@ def test_difference_of_gaussian_pyramid():
         background, foreground = difference_of_gaussians_pyramid(original)
         assert isinstance(background, np.ndarray)
         assert isinstance(foreground, np.ndarray)
-        print(f"- Loaded image: {path.split('/')[-1]}")
         fig, axes = plt.subplots(ncols=3)
         axes = axes.ravel()
 
