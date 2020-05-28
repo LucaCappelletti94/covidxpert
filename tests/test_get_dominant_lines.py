@@ -1,4 +1,5 @@
 from covidxpert.rotate.get_dominant_lines import get_dominant_lines
+import numpy as np
 
 
 def test_get_dominant_lines():
@@ -17,4 +18,12 @@ def test_get_dominant_lines():
         [[4.1, 0, 5.9, 1]]  # inclined line
     ]
 
-    assert not list(get_dominant_lines(line_on_side, 1, 10, max_inclination=89))
+    assert not list(get_dominant_lines(
+        line_on_side, 1, 10, max_inclination=89))
+
+    # Fuzzying
+    list(get_dominant_lines(
+        np.random.uniform(0, 10, size=(1000, 1, 4)),
+        height=10,
+        width=10
+    ))
