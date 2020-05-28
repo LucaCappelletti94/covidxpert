@@ -13,6 +13,9 @@ def test_difference_of_gaussian_pyramid_wrong_parameters():
     with pytest.raises(ValueError):
         difference_of_gaussians_pyramid(mock_img, sigma=-1)
 
+def test_difference_of_gaussian_pyramid_sigma_zero():
+    mock_img = np.ndarray(shape=(1,1,3)) 
+    difference_of_gaussians_pyramid(mock_img, sigma=0)
 
 def test_difference_of_gaussian_pyramid():
     for path in tqdm(glob("tests/test_images/*"), desc="Testing Difference of Gaussian Pyramid"):

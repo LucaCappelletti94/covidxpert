@@ -67,6 +67,6 @@ def difference_of_gaussians_pyramid(
     return normalize_image(backgrounds), normalize_image(foregrounds)
 
 def check_parameters(image: np.ndarray, sigma: float, start_sigma: float, end_sigma: float, steps: int):
-    if sigma <= 0:
-        raise ValueError('sigma <=0')
+    if sigma < 0:
+        raise ValueError('sigma < 0')
 
