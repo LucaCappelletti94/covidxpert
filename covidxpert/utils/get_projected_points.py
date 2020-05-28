@@ -1,4 +1,5 @@
 from typing import Tuple
+import numpy as np
 
 
 def get_projected_points(m: float, q: float, height: int) -> Tuple[float]:
@@ -17,8 +18,8 @@ def get_projected_points(m: float, q: float, height: int) -> Tuple[float]:
     ---------------------
     Tuple containing the two projected points.
     """
-    x0 = -q/m
+    x0 = 0 if np.isinf(m) else -q/m
     y0 = 0
-    x1 = (height - q) / m
+    x1 = height if np.isinf(m) else (height - q) / m
     y1 = height
     return x0, y0, x1, y1
