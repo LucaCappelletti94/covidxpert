@@ -1,10 +1,14 @@
 from itertools import chain
+import numpy as np
+from ..utils import polar2cartesian
+from .get_dominant_lines import get_dominant_lines
+
 
 def detect_almost_vertical_lines(
-    image:np.ndarray,
-)->np.ndarray:   
+    image: np.ndarray,
+) -> np.ndarray:
     """Return image containing almost vertical lines.
-    
+
     Parameters
     ------------------
     image: np.ndarray,
@@ -14,9 +18,7 @@ def detect_almost_vertical_lines(
     ------------------
     Returns binary image containing vertical lines.
     """
-    # Allocate the lines image.
-    median_image = 
-    
+
     # Compute almost vertical lines with Hough from given image
     lines = get_dominant_lines(polar2cartesian(
         cv2.HoughLines(image, 1, np.pi / 180, 100, None, 0, 0)[:1000]
@@ -30,7 +32,7 @@ def detect_almost_vertical_lines(
         threshold=100,
         minLineLength=image.shape[1]//10
     )[:1000], *image.shape)
-    
+
     # Drawing the lines on the image.
     x0, y0, x1, y1 = np.median(
         chain(lines, probabilistic_lines),
