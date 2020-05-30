@@ -20,7 +20,6 @@ def darken(image: np.ndarray, clip: float = 2.0, kernel: Tuple = (9, 9)) -> np.n
     --------------------
     Return the darkened image.
     """
-    #image = cv2.filter2D(image, -1, np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]))
     clahe = cv2.createCLAHE(clipLimit=clip, tileGridSize=kernel)
     image = clahe.apply(image)
     image = cv2.equalizeHist(image)
