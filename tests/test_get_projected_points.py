@@ -19,7 +19,7 @@ def test_static_get_projected_points():
     static_test(get_projected_points,    l_tests)
 
 
-def test_fuzzy_get_projected_points2():
+def test_fuzzy_get_projected_points():
     tests_size = (100, 4)
     min_val, max_val = -1000, 1000
 
