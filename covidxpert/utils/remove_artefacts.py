@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from .inpaint import inpaint
+print(cv2.useOptimized())
 
 
 def compute_artefacts(image: np.ndarray) -> np.ndarray:
@@ -55,8 +56,20 @@ def remove_artefacts(image: np.ndarray) -> np.ndarray:
     return inpaint(image, compute_artefacts(image))
 
 
-def fill_small_white_blobs(mask, fact):
-    """Return mask without white blobs smaller than area divided by factor."""
+def fill_small_white_blobs(mask: np.ndarray, fact: float):
+    """Return mask without white blobs smaller than area divided by factor.
+
+    Parameters
+    -----------------------------
+    mask: np.ndarray,
+        Input mask.
+    fact: float,
+        Mask smoothing factor.
+
+    Returns
+    -----------------------------
+    Mask without white blobs smaller than area divided by factor.
+    """
     _, output, stats, _ = cv2.connectedComponentsWithStats(
         mask, connectivity=8
     )
@@ -71,7 +84,18 @@ def fill_small_white_blobs(mask, fact):
 
 
 def fill_small_black_blobs(mask, factor: int):
-    """Return mask without black blobs smaller than area divided by factor."""
+    """Return mask without black blobs smaller than area divided by factor.
+    Parameters
+    -----------------------------
+    mask: np.ndarray,
+        Input mask.
+    fact: float,
+        Mask smoothing factor.
+
+    Returns
+    -----------------------------
+    Mask without black blobs smaller than area divided by factor.
+    """
     inverted = mask.max() - mask
     _, output, stats, _ = cv2.connectedComponentsWithStats(
         inverted, connectivity=8)
