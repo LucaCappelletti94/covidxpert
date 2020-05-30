@@ -1,7 +1,9 @@
 from typing import Tuple
 import numpy as np
+from numba import njit
 
 
+@njit
 def compute_linear_coefficients(
     x0: float,
     y0: float,

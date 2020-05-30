@@ -8,13 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 from typing import Tuple
-
-
-def darken(image, clip: float = 15, kernel: Tuple = (15, 15)):
-    clahe = cv2.createCLAHE(clipLimit=clip, tileGridSize=kernel)
-    image = clahe.apply(image)
-    image = cv2.equalizeHist(image)
-    return image
+from ..utils import darken
 
 
 def simmetry_trim(image, x):
@@ -49,33 +43,6 @@ def simmetry_axis(image: np.ndarray, n: int = 1000) -> int:
             min_loss = loss
 
     return best_x
-
-
-def remove_small_artefacts(image, factor: int):
-    _, output, stats, _ = cv2.connectedComponentsWithStats(
-        image, connectivity=8)
-    sizes = stats[1:, -1]
-    area = np.prod(image.shape)
-
-    for i, size in enumerate(sizes):
-        if size < area/factor:
-            image[output == i+1] = 0
-
-    return image
-
-
-def fill_in_small_artefacts(image, factor: int):
-    inverted = image.max() - image
-    _, output, stats, _ = cv2.connectedComponentsWithStats(
-        inverted, connectivity=8)
-    sizes = stats[1:, -1]
-    area = np.prod(inverted.shape)
-
-    for i, size in enumerate(sizes):
-        if size < area/factor:
-            image[output == i+1] = 255
-
-    return image
 
 
 def get_black_border_regions(image, border_size: int = 3):
