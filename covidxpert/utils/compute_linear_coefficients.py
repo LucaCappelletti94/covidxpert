@@ -24,7 +24,8 @@ def compute_linear_coefficients(
     Return the tuple of linear coefficients, the first one being the
     angular coefficient and the second one being the intercept.
     """
-    if np.isclose(x0, x1):
+    # Instead of using numpy.isclose we use this to have the numbas support.
+    if abs(x0-x1)<1e-08:
         m = np.inf
         q = x0
     else:

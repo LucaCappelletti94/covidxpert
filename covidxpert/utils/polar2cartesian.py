@@ -3,7 +3,6 @@ import numpy as np
 from numba import njit
 
 
-@njit
 def polar2cartesian(lines: np.ndarray) -> Generator:
     """Return given lines converted from polar to cartesian representation.
 
