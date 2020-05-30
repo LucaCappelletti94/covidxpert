@@ -1,7 +1,9 @@
 from typing import Tuple
 import numpy as np
+from numba import njit
 
 
+@njit
 def get_projected_points(m: float, q: float, x: float, height: int) -> Tuple[float]:
     """Return the points projected on the upper and lower border.
 
