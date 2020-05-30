@@ -1,6 +1,5 @@
 from covidxpert import perspective_correction, blur_bbox
-from covidxpert.utils import load_image
-from covidxpert.simmetry_mask.get_simmetry_axis import get_simmetry_axis
+from covidxpert.utils import load_image, get_simmetry_axis, remove_artefacts
 from tqdm.auto import tqdm
 from glob import glob
 import matplotlib.pyplot as plt
@@ -9,7 +8,7 @@ import os
 
 def test_get_simmetry_axis():
     for path in tqdm(glob("tests/test_images/*"), desc="Testing simmetry axis"):
-        original = blur_bbox(perspective_correction(load_image(path)))
+        original = remove_artefacts(blur_bbox(perspective_correction(load_image(path))))
 
         fig, axes = plt.subplots(ncols=1)
 

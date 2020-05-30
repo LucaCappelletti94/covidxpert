@@ -25,7 +25,7 @@ def compute_linear_coefficients(
     angular coefficient and the second one being the intercept.
     """
     # Instead of using numpy.isclose we use this to have the numbas support.
-    if abs(x0-x1)<1e-08:
+    if abs(x0-x1) < 1e-08:
         m = np.inf
         q = x0
     else:

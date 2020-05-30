@@ -8,6 +8,7 @@ from .difference_of_gaussians_pyramid import difference_of_gaussians_pyramid
 from .compute_linear_coefficients import compute_linear_coefficients
 from .get_projected_points import get_projected_points
 from .polar2cartesian import polar2cartesian
+from .get_simmetry_axis import get_simmetry_axis, trim_flip
 
 __all__ = [
     "load_image",
@@ -21,5 +22,7 @@ __all__ = [
     "get_projected_points",
     "polar2cartesian",
     "fill_small_white_blobs",
-    "fill_small_black_blobs"
+    "fill_small_black_blobs",
+    "get_simmetry_axis",
+    "trim_flip"
 ]
