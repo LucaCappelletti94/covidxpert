@@ -67,7 +67,8 @@ setup(
         "opencv-python",
         "tqdm",
         "scikit-image",
-        "tensorflow"
+        "tensorflow",
+        "numba"
     ],
     extras_require=extras,
 )
