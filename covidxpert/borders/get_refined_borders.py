@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from numba import njit
-from ..utils import (normalize_image, trim_flip, darken,
+from ..utils import (normalize_image, trim_flip, darken, median_mask,
                      fill_small_black_blobs, add_padding, trim_padding)
 
 
@@ -37,22 +37,6 @@ def get_border_regions(image: np.ndarray, radius: int = 3) -> np.ndarray:
     return border_regions
 
 
-@njit
-def median_mask(image: np.ndarray) -> np.ndarray:
-    """Return median-based binary mask.
-
-    Parameters
-    -----------------------
-    image: np.ndarray,
-        Image to be thresholded.
-
-    Returns
-    -----------------------
-    Median-based binary mask.
-    """
-    return image > np.median(image)/2
-
-
 def get_borders(image: np.ndarray, x: int) -> np.ndarray:
     """Return the borders on given image using given simmetry axis.
 
@@ -85,6 +69,7 @@ def get_borders(image: np.ndarray, x: int) -> np.ndarray:
     borders = fill_small_black_blobs(borders, 20)
 
     return borders
+
 
 def get_refined_borders(image: np.ndarray, x: int, padding: int = 10) -> np.ndarray:
     """Return the borders on given image using given simmetry axis.
