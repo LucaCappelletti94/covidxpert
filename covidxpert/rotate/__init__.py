@@ -1,5 +1,5 @@
-from .detect_almost_vertical_lines import detect_almost_vertical_lines
+from .get_rotation import get_rotation
 
 __all__ = [
-    "detect_almost_vertical_lines"
+    "get_rotation"
 ]
