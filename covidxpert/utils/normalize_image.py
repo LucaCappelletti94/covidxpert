@@ -1,4 +1,5 @@
 import numpy as np
+from numba import njit
 
 
 def normalize_image(image: np.ndarray) -> np.ndarray:
@@ -13,5 +14,5 @@ def normalize_image(image: np.ndarray) -> np.ndarray:
     ----------------------
     Return the normalized image.
     """
-    image = image.astype(float)
-    return np.uint8(((image - image.min()) / (image.max() - image.min()))*255)
+    image = image.astype(np.float64)
+    return (((image - image.min()) / (image.max() - image.min()))*255).astype(np.uint8)
