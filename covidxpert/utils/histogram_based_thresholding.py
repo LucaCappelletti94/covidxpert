@@ -1,9 +1,7 @@
 import numpy as np
 from ..blur_bbox.blur_bbox import build_slice, count_from_right_side
-from numba import njit
 
 
-@njit
 def histogram_based_vertical_thresholding(image: np.ndarray, mask: np.ndarray, percentage: float = 0.6) -> np.ndarray:
     """Return the filtered image according to the histograms of the given mask.
 
