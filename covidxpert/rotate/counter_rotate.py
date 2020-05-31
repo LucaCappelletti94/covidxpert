@@ -1,2 +1,5 @@
-def counter_rotate(image:np.ndarray)->np.ndarray:
+import numpy as np
+
+
+def counter_rotate(image: np.ndarray) -> np.ndarray:
     pass
