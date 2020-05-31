@@ -12,6 +12,7 @@ from .get_simmetry_axis import get_simmetry_axis, trim_flip
 from .fill_lower_max import fill_lower_max
 from .median_mask import median_mask
 from .rotate_image import rotate_image
+from .histogram_based_thresholding import histogram_based_vertical_thresholding
 
 __all__ = [
     "load_image",
@@ -30,5 +31,6 @@ __all__ = [
     "trim_flip",
     "fill_lower_max",
     "median_mask",
-    "rotate_image"
+    "rotate_image",
+    "histogram_based_vertical_thresholding"
 ]
