@@ -37,27 +37,11 @@ def get_rotation(image: np.ndarray) -> float:
     prob_lines = get_dominant_lines(prob_lines, *image.shape)
 
     all_lines = list(chain(lines, prob_lines))
-    
-    # Drawing the lines on the image.
-    x0, y0, x1, y1 = np.median(all_lines, axis=0).astype(int)
 
-    composite = np.zeros_like(image, dtype=np.float64)
-    for line in all_lines:
-        p1, p2, p3, p4 = line
-        partial = cv2.cvtColor(np.zeros_like(image), cv2.COLOR_GRAY2BGR)
-        cv2.line(partial, (int(p1), int(p2)), (int(p3), int(p4)), (1, 1, 1), 5, cv2.LINE_AA)
-        composite += partial[:, :, 2]
+    if not all_lines:
+        return 0
 
-    # use this line to counter rotate the original image (calculate the coeficient compute_linear_coeficient)
+    points = np.median(all_lines, axis=0)
 
-    median_image = cv2.cvtColor(np.zeros_like(image), cv2.COLOR_GRAY2BGR)
-    cv2.line(median_image, (x0, y0), (x1, y1), (255, 255, 255), 5, cv2.LINE_AA)
-
-    # Convert the image back to grayscale
-    # return normalize_image(cv2.cvtColor(median_image, cv2.COLOR_BGR2GRAY))
-
-    m, _ = compute_linear_coefficients(x0, y0, x1, y1)
-
-    composite = normalize_image(composite)
-
-    return np.degrees(np.arctan(m)), median_image, composite
+    m, _ = compute_linear_coefficients(*points)
+    return np.degrees(np.arctan(m))
