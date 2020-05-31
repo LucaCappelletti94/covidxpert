@@ -24,3 +24,6 @@ def test_get_rotation():
         ))
         rotation = get_rotation(image)
         assert np.isclose(expected, rotation, atol=2)
+
+    rotation = get_rotation(baseline)
+    assert np.isclose(0, rotation, atol=2)

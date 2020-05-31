@@ -8,6 +8,8 @@ import cv2
 def get_rotation(image: np.ndarray) -> float:
     """Return angle for rotation.
 
+    If no rotation is detected, zero is returned.
+
     Parameters
     ------------------
     image: np.ndarray,
