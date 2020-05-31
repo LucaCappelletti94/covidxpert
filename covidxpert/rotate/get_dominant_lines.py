@@ -31,7 +31,7 @@ def get_dominant_lines(
         if abs(m) < height/width:
             # We skip this line
             continue
-        if np.sqrt((x0-x1)**2 + (y0-y1)**2) < 2:
+        if np.sqrt((x0-x1)**2 + (y0-y1)**2) < 3:
             continue
         # Otherwise we get the projection of the points to the lower and upper
         # sides of the image, using the provided heights.
