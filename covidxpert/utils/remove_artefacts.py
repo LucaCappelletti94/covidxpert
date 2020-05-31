@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 from .inpaint import inpaint
-print(cv2.useOptimized())
 
 
 def compute_artefacts(image: np.ndarray) -> np.ndarray:

@@ -23,8 +23,6 @@ def static_test(f: Callable, l_tests: List[Dict[str, Tuple]],
         raise KeyError(f"{key_in} or {key_out} is not a valid key.")
 
     for test in l_tests:
-        print(test)
-
         if not isinstance(test[key_out], tuple):
             with pytest.raises(test[key_out]):
                 f(*test[key_in])
