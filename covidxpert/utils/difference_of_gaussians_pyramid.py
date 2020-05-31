@@ -56,9 +56,9 @@ def difference_of_gaussians_pyramid(
 
     for sigma in np.linspace(start_sigma, end_sigma, steps):
         # Applying blur to the provided image with the current step sigma.
-        imgG = cv2.GaussianBlur(image, (0, 0), sigma, cv2.BORDER_REPLICATE)
+        blur = cv2.GaussianBlur(image, (0, 0), sigma, cv2.BORDER_REPLICATE)
         # Compute diffences between gaussian blur and provided image.
-        subtraction = image - imgG
+        subtraction = image - blur
         # Summing obtained background mask to backgrounds.
         backgrounds[subtraction < 0] += 1
         # Summing obtained foreground mask to foregrounds.

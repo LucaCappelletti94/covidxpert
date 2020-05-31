@@ -11,6 +11,7 @@ from .polar2cartesian import polar2cartesian
 from .get_simmetry_axis import get_simmetry_axis, trim_flip
 from .fill_lower_max import fill_lower_max
 from .median_mask import median_mask
+from .rotate_image import rotate_image
 
 __all__ = [
     "load_image",
@@ -28,5 +29,6 @@ __all__ = [
     "get_simmetry_axis",
     "trim_flip",
     "fill_lower_max",
-    "median_mask"
+    "median_mask",
+    "rotate_image"
 ]
