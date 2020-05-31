@@ -13,7 +13,6 @@ def test_get_rotation():
     line_image[line_image<10] = 0
 
     rotation, result, composite = get_rotation(line_image)
-    print(rotation)
     fig, axes = plt.subplots(ncols=3)
     axes = axes.flatten()
     axes[0].imshow(line_image, cmap="gray")
