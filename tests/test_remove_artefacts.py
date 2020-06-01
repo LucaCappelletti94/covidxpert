@@ -72,8 +72,16 @@ def test_fill_small_blobs():
         plt.close(fig)
 
 
+def test_fill_small_blobs_fact_0():
+    mock_img = np.ndarray(shape=(1, 1, 3))
+    with pytest.raises(ValueError):
+        fill_small_black_blobs(mock_img, factor=0)
+    with pytest.raises(ValueError):
+        fill_small_white_blobs(mock_img, factor=0)
+
+
 def test_fill_small_blobs_fact():
-    factors = (-20, 0, 20, 40)
+    factors = (-20, 20, 100, 200)
     for path in list(tqdm(glob("tests/test_images/*"), desc="Testing Fill Small Blobs"))[:4]:
         original = load_image(path)
         for fact in factors:

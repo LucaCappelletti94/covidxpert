@@ -78,7 +78,7 @@ def fill_small_white_blobs(mask: np.ndarray, factor: float):
     area = np.prod(mask.shape)
 
     for i, size in enumerate(sizes):
-        if size < area/fact:
+        if size < area/factor:
             mask[output == i+1] = 0
 
     return mask
