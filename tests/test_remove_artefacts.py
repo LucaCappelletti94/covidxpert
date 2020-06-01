@@ -29,10 +29,10 @@ def test_remove_artefacts():
         axes[1].set_title("Corrected image")
 
         axes[2].imshow(artefacts, cmap="gray")
-        axes[2].set_title("Foreground image")
+        axes[2].set_title("Artefacts image")
 
         axes[3].imshow(cleared_image, cmap="gray")
-        axes[3].set_title("Foreground image")
+        axes[3].set_title("Cleared image")
 
         [ax.set_axis_off() for ax in axes.ravel()]
         fig.tight_layout()
@@ -47,7 +47,7 @@ def test_fill_small_blobs():
     for path in tqdm(glob("tests/test_images/*"), desc="Testing Fill Small Blobs"):
         original = load_image(path)
         small_black = fill_small_black_blobs(original, fact)
-        small_white = fill_small_black_blobs(original, fact)
+        small_white = fill_small_white_blobs(original, fact)
 
         assert isinstance(small_black, np.ndarray)
         assert isinstance(small_white, np.ndarray)
@@ -78,7 +78,7 @@ def test_fill_small_blobs_fact():
         original = load_image(path)
         for fact in factors:
             small_black = fill_small_black_blobs(original, fact)
-            small_white = fill_small_black_blobs(original, fact)
+            small_white = fill_small_white_blobs(original, fact)
 
             assert isinstance(small_black, np.ndarray)
             assert isinstance(small_white, np.ndarray)
