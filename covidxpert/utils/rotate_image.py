@@ -3,13 +3,15 @@ import cv2
 from typing import Tuple
 
 
-def rotate_image(image: np.ndarray, angle: float, center: Tuple[int, int] = None) -> np.ndarray:
-    # TODO! Write the docstring of this method! 
+def rotate_image(image: np.ndarray, angle: float, x: int = None, y: int = None) -> np.ndarray:
+    # TODO! Write the docstring of this method!
     # grab the dimensions of the image and then determine the
     # center
     (h, w) = image.shape[:2]
-    if center is None:
-        (x, y) = (w // 2, h // 2)
+    if x is None:
+        x = w // 2
+    if y is None:
+        y = h // 2
     # grab the rotation matrix (applying the negative of the
     # angle to rotate clockwise), then grab the sine and cosine
     # (i.e., the rotation components of the matrix)
