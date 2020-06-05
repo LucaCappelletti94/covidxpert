@@ -8,7 +8,7 @@ from .difference_of_gaussians_pyramid import difference_of_gaussians_pyramid
 from .compute_linear_coefficients import compute_linear_coefficients
 from .get_projected_points import get_projected_points
 from .polar2cartesian import polar2cartesian
-from .get_simmetry_axis import get_simmetry_axis, trim_flip
+from .get_simmetry_axis import get_simmetry_axis, trim_flip, simmetry_loss
 from .fill_lower_max import fill_lower_max
 from .median_mask import median_mask
 from .rotate_image import rotate_image
@@ -31,6 +31,7 @@ __all__ = [
     "trim_flip",
     "fill_lower_max",
     "median_mask",
+    "simmetry_loss",
     "rotate_image",
     "histogram_based_vertical_thresholding"
 ]
