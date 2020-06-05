@@ -55,7 +55,7 @@ def remove_artefacts(image: np.ndarray) -> np.ndarray:
     return inpaint(image, compute_artefacts(image))
 
 
-def fill_small_white_blobs(mask: np.ndarray, fact: float):
+def fill_small_white_blobs(mask: np.ndarray, factor: float):
     """Return mask without white blobs smaller than area divided by factor.
 
     Parameters
@@ -69,6 +69,8 @@ def fill_small_white_blobs(mask: np.ndarray, fact: float):
     -----------------------------
     Mask without white blobs smaller than area divided by factor.
     """
+    if factor == 0:
+        raise ValueError('Factor must be different from 0')
     _, output, stats, _ = cv2.connectedComponentsWithStats(
         mask, connectivity=8
     )
@@ -76,7 +78,7 @@ def fill_small_white_blobs(mask: np.ndarray, fact: float):
     area = np.prod(mask.shape)
 
     for i, size in enumerate(sizes):
-        if size < area/fact:
+        if size < area/factor:
             mask[output == i+1] = 0
 
     return mask
@@ -95,6 +97,9 @@ def fill_small_black_blobs(mask, factor: int):
     -----------------------------
     Mask without black blobs smaller than area divided by factor.
     """
+    if factor == 0:
+        raise ValueError('Factor must be different from 0')
+
     inverted = mask.max() - mask
     _, output, stats, _ = cv2.connectedComponentsWithStats(
         inverted, connectivity=8)
