@@ -41,7 +41,8 @@ def simmetry_loss(image: np.ndarray, x: int) -> float:
     Return score for the simmetry at given simmetry axis.
     """
     cut_image, flipped = trim_flip(image, x)
-    return np.mean((cut_image-flipped)**2)
+    differences = (cut_image-flipped)**2
+    return np.mean(differences[cut_image==0 | flipped==0])
 
 
 @njit

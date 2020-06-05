@@ -8,19 +8,26 @@ import os
 import pytest
 import numpy as np
 
+
 def test_difference_of_gaussian_pyramid_wrong_parameters():
-    mock_img = np.ndarray(shape=(1,1,3)) 
+    mock_img = np.ndarray(shape=(1, 1, 3))
     with pytest.raises(ValueError):
         difference_of_gaussians_pyramid(mock_img, sigma=-1)
 
+
 def test_difference_of_gaussian_pyramid_sigma_zero():
-    mock_img = np.ndarray(shape=(1,1,3)) 
+    mock_img = np.ndarray(shape=(1, 1, 3))
     difference_of_gaussians_pyramid(mock_img, sigma=0)
+
 
 def test_difference_of_gaussian_pyramid():
     for path in tqdm(glob("tests/test_images/*"), desc="Testing Difference of Gaussian Pyramid"):
         original = load_image(path)
-        background, foreground = difference_of_gaussians_pyramid(original)
+        background, foreground = difference_of_gaussians_pyramid(
+            original,
+            end_sigma=10,
+            steps=10
+        )
         assert isinstance(background, np.ndarray)
         assert isinstance(foreground, np.ndarray)
         fig, axes = plt.subplots(ncols=3)
