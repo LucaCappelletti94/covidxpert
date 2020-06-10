@@ -40,8 +40,10 @@ def simmetry_loss(image: np.ndarray, x: int) -> float:
     Return score for the simmetry at given simmetry axis.
     """
     cut_image, flipped = trim_flip(image, x)
-    differences = (cut_image-flipped)**2
-    return np.mean(differences[cut_image == 0 | flipped == 0])
+    differences = (cut_image.astype(float)-flipped.astype(float))**2
+    mask = np.all([cut_image != 0, flipped != 0], axis=0)
+    mask[mask.shape[0]//2:] = False
+    return differences[mask].sum() / mask.sum(), mask
 
 
 def numba_simmetry_axis(image: np.ndarray, width: int, padding: float) -> int:
