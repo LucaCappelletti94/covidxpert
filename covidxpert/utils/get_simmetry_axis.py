@@ -25,7 +25,6 @@ def trim_flip(image: np.ndarray, x: int) -> Tuple[np.ndarray, np.ndarray]:
     return cut_image, flipped
 
 
-@njit
 def simmetry_loss(image: np.ndarray, x: int) -> float:
     """Return score for the simmetry at given simmetry axis.
 
@@ -42,10 +41,9 @@ def simmetry_loss(image: np.ndarray, x: int) -> float:
     """
     cut_image, flipped = trim_flip(image, x)
     differences = (cut_image-flipped)**2
-    return np.mean(differences[cut_image==0 | flipped==0])
+    return np.mean(differences[cut_image == 0 | flipped == 0])
 
 
-@njit
 def numba_simmetry_axis(image: np.ndarray, width: int, padding: float) -> int:
     """Return optimal simmetry axis.
 
