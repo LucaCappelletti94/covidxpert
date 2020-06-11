@@ -15,6 +15,7 @@ from .rotate_image import rotate_image
 from .thumbnail import get_thumbnail
 from .peaks_and_valleys import valleys_cut
 from .histogram_based_thresholding import histogram_based_vertical_thresholding
+from .retinex import automated_msrcr
 
 __all__ = [
     "load_image",
@@ -38,5 +39,6 @@ __all__ = [
     "histogram_based_vertical_thresholding",
     "get_thumbnail",
     "valleys_cut",
-    "get_simmetry_axis"
+    "get_simmetry_axis",
+    "automated_msrcr"
 ]
