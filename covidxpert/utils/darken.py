@@ -41,7 +41,7 @@ def darken_msrcr(image: np.ndarray, sigma_darken: list=[10, 20, 30]) -> np.ndarr
     --------------------
     Return the darkened image.
     """
-  darken = automated_msrcr(image, sigma_darken)
-  return darken
+    darken = automated_msrcr(image, sigma_darken)
+    return darken
 
 
