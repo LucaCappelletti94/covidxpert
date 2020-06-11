@@ -13,6 +13,7 @@ from .fill_lower_max import fill_lower_max
 from .median_mask import median_mask
 from .rotate_image import rotate_image
 from .histogram_based_thresholding import histogram_based_vertical_thresholding
+from .retinex import automated_msrcr
 
 __all__ = [
     "load_image",
@@ -33,5 +34,6 @@ __all__ = [
     "median_mask",
     "simmetry_loss",
     "rotate_image",
-    "histogram_based_vertical_thresholding"
+    "histogram_based_vertical_thresholding",
+    "automated_msrcr"
 ]
