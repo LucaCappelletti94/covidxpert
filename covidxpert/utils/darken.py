@@ -18,7 +18,8 @@ def darken(image: np.ndarray) -> np.ndarray:
     --------------------
     Return the darkened image.
     """
-    sigma_darken = range(50, max(image.shape), 100) 
+    min_side = min(image.shape)
+    sigma_darken = min_side/5, min_side/4, min_side/3
     darken = automated_msrcr(image, sigma_darken)
     return darken
 

@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 def test_perspective_correction():
     for path in tqdm(glob("tests/test_images/*") + glob("tests/rotated_images/*"), desc="Test counter rotation"):
         original = remove_artefacts(blur_bbox(perspective_correction(load_image(path))))
-        print(path)
         rotated, _, x = counter_rotate(original)
 
         fig, axes = plt.subplots(ncols=2, figsize=(10, 5))

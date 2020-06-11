@@ -10,8 +10,8 @@ def normalize_angle(angle: float) -> float:
     return np.sign(angle)*(90 - abs(angle)) if abs(angle) < 90 else abs(angle) - 90
 
 
-def get_lines_based_rotation(image: np.ndarray) -> Tuple[float, int]:
-    """Return tuple with best rotation angle and best rotation axis.
+def get_lines_based_rotation(image: np.ndarray) -> float:
+    """Return best rotation angle.
 
     If no rotation is detected, zero is returned.
 
@@ -24,7 +24,7 @@ def get_lines_based_rotation(image: np.ndarray) -> Tuple[float, int]:
 
     Returns
     ------------------
-    Tuple with best angle and simmetry axis.
+    Best rotation angle.
     """
 
     # Compute almost vertical lines with Hough from given image
@@ -46,7 +46,7 @@ def get_lines_based_rotation(image: np.ndarray) -> Tuple[float, int]:
     all_lines = list(chain(lines, prob_lines))
 
     if not all_lines:
-        return 0, get_simmetry_axis(image, 0.4)
+        return 0
 
     points = np.median(all_lines, axis=0)
 
@@ -54,4 +54,4 @@ def get_lines_based_rotation(image: np.ndarray) -> Tuple[float, int]:
 
     m, _ = compute_linear_coefficients(*points)
     angle = np.degrees(np.arctan(m))
-    return normalize_angle(angle), int((x0+x1)/2)
+    return normalize_angle(angle)

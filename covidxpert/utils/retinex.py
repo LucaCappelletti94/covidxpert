@@ -18,7 +18,8 @@ def single_scale_retinex(image: np.ndarray, sigma: int) -> np.ndarray:
     -----------------------------
     Retinexed image for a given sigma
     """
-    retinex = np.log10(image) - np.log10(cv2.GaussianBlur(image, (0, 0), sigma))
+    retinex = np.log10(image) - \
+        np.log10(cv2.GaussianBlur(image, (0, 0), sigma))
 
     return retinex
 
@@ -64,7 +65,8 @@ def automated_msrcr(image: np.ndarray, sigma_list: List) -> np.ndarray:
     img_retinex = multi_scale_retinex(image, sigma_list)
 
     unique, count = np.unique(np.int32(img_retinex * 100), return_counts=True)
-    zero_count = count[np.argwhere(unique == 0)]
+    counts = count[np.argwhere(unique == 0)]
+    zero_count = 0 if counts.size == 0 else counts[0][0]
 
     low_val = unique[0] / 100.0
     high_val = unique[-1] / 100.0
@@ -76,7 +78,8 @@ def automated_msrcr(image: np.ndarray, sigma_list: List) -> np.ndarray:
             break
 
     img_retinex = np.maximum(np.minimum(img_retinex, high_val), low_val)
-    img_retinex = (img_retinex - np.min(img_retinex)) / (np.max(img_retinex) - np.min(img_retinex)) * 255
+    img_retinex = (img_retinex - np.min(img_retinex)) / \
+        (np.max(img_retinex) - np.min(img_retinex)) * 255
     img_retinex = np.uint8(img_retinex)
 
     return img_retinex

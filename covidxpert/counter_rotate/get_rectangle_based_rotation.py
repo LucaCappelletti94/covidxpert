@@ -41,8 +41,8 @@ def get_inclined_rectangle(image_shape: Tuple[int, int], x: int, angle: float, w
     return rectangle
 
 
-def get_rectangle_based_rotation(mask: np.ndarray) -> Tuple[float, float]:
-    """Return tuple with best rotation angle and best rotation axis.
+def get_rectangle_based_rotation(mask: np.ndarray) -> float:
+    """Return best rotation angle.
 
     Parameters
     ------------------
@@ -52,10 +52,9 @@ def get_rectangle_based_rotation(mask: np.ndarray) -> Tuple[float, float]:
 
     Returns
     ------------------
-    Tuple with best angle and simmetry axis.
+    Best rotation angle.
     """
     best_score = 0
-    best_x = None
     best_angle = None
 
     spine_width = mask.shape[1]//10
@@ -75,7 +74,6 @@ def get_rectangle_based_rotation(mask: np.ndarray) -> Tuple[float, float]:
             score = mask[rectangle].sum()
             if score > best_score:
                 best_score = score
-                best_x = x
                 best_angle = angle
 
-    return 90 - best_angle, best_x
+    return 90 - best_angle

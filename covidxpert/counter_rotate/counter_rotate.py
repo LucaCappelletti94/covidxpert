@@ -1,5 +1,5 @@
 import numpy as np
-from ..utils import get_thumbnail, rotate_image, get_simmetry_axis, simmetry_loss
+from ..utils import get_thumbnail, rotate_image, get_simmetry_axis, simmetry_loss, darken
 from .get_spinal_cord_mask import get_spinal_cord_mask
 from .get_rectangle_based_rotation import get_rectangle_based_rotation
 from .get_lines_based_rotation import get_lines_based_rotation
@@ -38,23 +38,23 @@ def counter_rotate(
     )
 
     # TODO: Maybe we can compute the optimal padding from the spine!
-    angle0, x0 = 0, get_simmetry_axis(thumb, 0.4)
-    angle1, x1 = get_rectangle_based_rotation(spine)
-    angle2, x2 = get_lines_based_rotation(spine)
+    angle0 = 0
+    angle1 = get_rectangle_based_rotation(spine)
+    angle2 = get_lines_based_rotation(spine)
 
     blurred0 = cv2.blur(thumb, (21, 21))
     blurred1 = rotate_image(blurred0, angle1)
     blurred2 = rotate_image(blurred0, angle2)
 
-    losses = [
-        simmetry_loss(blurred0, x0),
-        simmetry_loss(blurred1, x1),
-        simmetry_loss(blurred2, x2)
-    ]
+    x1 = get_simmetry_axis(blurred0, 0.4)
+    x2 = get_simmetry_axis(blurred1, 0.4)
+    x3 = get_simmetry_axis(blurred2, 0.4)
 
-    print(x0, x1, x2)
-    print(angle0, angle1, angle2)
-    print(losses)
+    losses = [
+        simmetry_loss(blurred0, x1),
+        simmetry_loss(blurred1, x2),
+        simmetry_loss(blurred2, x3)
+    ]
 
     best_rotation = np.argmin(losses)
 
@@ -63,7 +63,7 @@ def counter_rotate(
     ][best_rotation]
 
     best_x = [
-        x0, x1, x2
+        x1, x2, x3
     ][best_rotation]
 
     return rotate_image(image, best_angle), best_angle, best_x/width*image.shape[1]
