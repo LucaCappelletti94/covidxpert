@@ -46,15 +46,13 @@ def simmetry_loss(image: np.ndarray, x: int) -> float:
     return differences[mask].sum() / mask.sum()
 
 
-def numba_simmetry_axis(image: np.ndarray, width: int, padding: float) -> int:
+def get_simmetry_axis(image: np.ndarray, padding: float) -> int:
     """Return optimal simmetry axis.
 
     Parameters
     --------------------
     image: np.ndarray,
         Image for which to compute the optimal simmetry axis.
-    width: int,
-        Width to which to resize before processing the image.
     padding: float,
         Percentage of image to skip from left and ride.
 
@@ -62,6 +60,7 @@ def numba_simmetry_axis(image: np.ndarray, width: int, padding: float) -> int:
     --------------------
     Return optimal simmetry axis.
     """
+    width = image.shape[1]
     best_axis = width//2
     min_loss = simmetry_loss(image, best_axis)
     candidates = np.arange(int(width*padding), int(width*(1-padding)))
@@ -73,27 +72,3 @@ def numba_simmetry_axis(image: np.ndarray, width: int, padding: float) -> int:
             min_loss = loss
 
     return best_axis
-
-
-def get_simmetry_axis(image: np.ndarray, width: int = 256, padding: float = 0.45) -> int:
-    """Return optimal simmetry axis.
-
-    Parameters
-    --------------------
-    image: np.ndarray,
-        Image for which to compute the optimal simmetry axis.
-    width: int = 256,
-        Width to which to resize before processing the image.
-    padding: float = 0.45,
-        Percentage of image to skip from left and ride.
-
-    Returns
-    --------------------
-    Return optimal simmetry axis.
-    """
-    height = int(image.shape[0] * width/image.shape[1])
-    resized_image = cv2.resize(image, (width, height), cv2.INTER_AREA)
-    return int(
-        numba_simmetry_axis(resized_image, width, padding) /
-        width * image.shape[1]
-    )

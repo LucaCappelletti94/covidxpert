@@ -1,4 +1,4 @@
-from covidxpert.rotate.get_dominant_lines import get_dominant_lines
+from covidxpert.counter_rotate.get_dominant_lines import get_dominant_lines
 import numpy as np
 
 

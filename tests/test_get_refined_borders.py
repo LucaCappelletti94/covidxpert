@@ -11,7 +11,7 @@ def test_get_refined_borders():
     for path in tqdm(glob("tests/test_images/*"), desc="Testing refined borders"):
         original = remove_artefacts(blur_bbox(perspective_correction(load_image(path))))
 
-        x = get_simmetry_axis(original)
+        x = get_simmetry_axis(original, 0.4)
 
         fig, axes = plt.subplots(ncols=2)
         axes = axes.ravel()
