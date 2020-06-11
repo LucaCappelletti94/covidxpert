@@ -52,6 +52,10 @@ def counter_rotate(
         simmetry_loss(blurred2, x2)
     ]
 
+    print(x0, x1, x2)
+    print(angle0, angle1, angle2)
+    print(losses)
+
     best_rotation = np.argmin(losses)
 
     best_angle = [
