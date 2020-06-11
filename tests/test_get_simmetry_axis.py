@@ -13,7 +13,7 @@ def test_get_simmetry_axis():
         fig, axes = plt.subplots(ncols=1)
 
         axes.imshow(original, cmap="gray")
-        axes.axvline(get_simmetry_axis(original))
+        axes.axvline(get_simmetry_axis(original, 0.4))
         axes.axvline(original.shape[1]//2)
         axes.set_title("Simmetry axis and actual center of image.")
 

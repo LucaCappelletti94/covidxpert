@@ -44,7 +44,7 @@ def get_simmetry_mask(image: np.ndarray) -> np.ndarray:
     Boolean mask based on simmetry.
     """
     # Getting simmetry mask.
-    x = get_simmetry_axis(image)
+    x = get_simmetry_axis(image, 0.4)
     # Getting the refined borders.
     borders = get_refined_borders(image, x)
 
