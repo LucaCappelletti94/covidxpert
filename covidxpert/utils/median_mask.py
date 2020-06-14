@@ -19,5 +19,5 @@ def median_mask(image: np.ndarray, median: float = None, factor: float = 2) -> n
     Median-based binary mask.
     """
     if median is None:
-        median = np.nanmedian(image)
+        median = np.median(image)
     return image > median/factor
