@@ -28,7 +28,7 @@ def get_default_mask(image: np.ndarray, borders: np.ndarray, padding: float = 0.
     return mask
 
 
-def get_simmetry_mask(image: np.ndarray) -> np.ndarray:
+def get_simmetry_mask(image: np.ndarray, x: float) -> np.ndarray:
     """Return simmetry-based mask for given image.
 
     IMPORTANT: the simmetry mask DOES not have the same size of the input image
@@ -38,17 +38,17 @@ def get_simmetry_mask(image: np.ndarray) -> np.ndarray:
     -----------------------
     image: np.ndarray,
         Image for which to compute the simmetry mask.
+    x: float,
+        The simmetry axis to use.
 
     Returns
     -----------------------
     Boolean mask based on simmetry.
     """
-    # Getting simmetry mask.
-    x = get_simmetry_axis(image, 0.4)
     # Getting the refined borders.
     borders = get_refined_borders(image, x)
 
-    darkened_image = darken(image, 1, (9, 9))
+    darkened_image = darken(image)
     darkened_image[darkened_image < np.median(darkened_image)] = 0
     darkened_image = fill_small_black_blobs(darkened_image, 200)
     cut, flipped = trim_flip(darkened_image, x)

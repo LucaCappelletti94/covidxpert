@@ -53,11 +53,10 @@ def get_borders(image: np.ndarray, x: int) -> np.ndarray:
     """
     cut, flipped = trim_flip(image, x)
 
-    cut_mask = normalize_image(median_mask(cut))
-    flipped_mask = normalize_image(median_mask(flipped))
+    cut_mask = normalize_image(median_mask(cut, 3))
+    flipped_mask = normalize_image(median_mask(flipped, 3))
     sum_mask = normalize_image(median_mask(
-        cut.astype(float) + flipped.astype(float)
-    ))
+        cut.astype(float) + flipped.astype(float), 3))
 
     cut_borders = get_border_regions(cut_mask)
     flipped_borders = get_border_regions(flipped_mask)
@@ -71,7 +70,7 @@ def get_borders(image: np.ndarray, x: int) -> np.ndarray:
     return borders
 
 
-def get_refined_borders(image: np.ndarray, x: int, padding: int = 10) -> np.ndarray:
+def get_refined_borders(image: np.ndarray, x: int, padding: int = 5) -> np.ndarray:
     """Return the borders on given image using given simmetry axis.
 
     Parameters
@@ -80,7 +79,7 @@ def get_refined_borders(image: np.ndarray, x: int, padding: int = 10) -> np.ndar
         Image from which to extract the borders.
     x: int,
         Simmetry axis to use.
-    padding: int = 25,
+    padding: int = 5,
         Padding of white space to add on every border.
 
     Returns
