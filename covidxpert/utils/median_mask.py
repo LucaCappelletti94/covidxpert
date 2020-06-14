@@ -1,15 +1,16 @@
 import numpy as np
-from numba import njit
 
 
-@njit
-def median_mask(image: np.ndarray, factor: float = 2) -> np.ndarray:
+def median_mask(image: np.ndarray, median: float = None, factor: float = 2) -> np.ndarray:
     """Return median-based binary mask.
 
     Parameters
     -----------------------
     image: np.ndarray,
         Image to be thresholded.
+    median: float = None,
+        The median to use. If not provided (default), it is compute using
+        the provided image.
     factor: float,
         Divider factor for median threshold.
 
@@ -17,4 +18,6 @@ def median_mask(image: np.ndarray, factor: float = 2) -> np.ndarray:
     -----------------------
     Median-based binary mask.
     """
-    return image > np.median(image)/factor
+    if median is None:
+        median = np.nanmedian(image)
+    return image > median/factor
