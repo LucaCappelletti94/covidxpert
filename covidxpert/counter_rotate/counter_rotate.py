@@ -46,6 +46,8 @@ def counter_rotate(
     blurred1 = rotate_image(blurred0, angle1)
     blurred2 = rotate_image(blurred0, angle2)
 
+    spine_x = spine_x/blurred0.shape[1]*image.shape[1]
+
     x1 = get_simmetry_axis(blurred0, 0.4)
     x2 = get_simmetry_axis(blurred1, 0.4)
     x3 = get_simmetry_axis(blurred2, 0.4)
@@ -66,4 +68,4 @@ def counter_rotate(
         x1, x2, x3
     ][best_rotation]
 
-    return rotate_image(image, best_angle), best_angle, spine_x/width*image.shape[1]
+    return rotate_image(image, best_angle), best_angle, spine_x
