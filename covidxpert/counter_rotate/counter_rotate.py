@@ -39,7 +39,7 @@ def counter_rotate(
 
     # TODO: Maybe we can compute the optimal padding from the spine!
     angle0 = 0
-    angle1 = get_rectangle_based_rotation(spine)
+    angle1, spine_x = get_rectangle_based_rotation(spine)
     angle2 = get_lines_based_rotation(spine)
 
     blurred0 = cv2.blur(thumb, (21, 21))
@@ -66,4 +66,4 @@ def counter_rotate(
         x1, x2, x3
     ][best_rotation]
 
-    return rotate_image(image, best_angle), best_angle, best_x/width*image.shape[1]
+    return rotate_image(image, best_angle), best_angle, spine_x/width*image.shape[1]

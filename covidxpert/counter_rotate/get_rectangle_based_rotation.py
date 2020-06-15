@@ -56,6 +56,7 @@ def get_rectangle_based_rotation(mask: np.ndarray) -> float:
     """
     best_score = 0
     best_angle = None
+    spine_x = None
 
     spine_width = mask.shape[1]//10
 
@@ -73,7 +74,8 @@ def get_rectangle_based_rotation(mask: np.ndarray) -> float:
             )
             score = mask[rectangle].sum()
             if score > best_score:
+                spine_x = x
                 best_score = score
                 best_angle = angle
 
-    return 90 - best_angle
+    return 90 - best_angle, spine_x
