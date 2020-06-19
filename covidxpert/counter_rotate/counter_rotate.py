@@ -46,7 +46,7 @@ def counter_rotate(
     blurred1 = rotate_image(blurred0, angle1)
     blurred2 = rotate_image(blurred0, angle2)
 
-    spine_x = spine_x/blurred0.shape[1]*image.shape[1]
+    spine_x = spine_x/thumb.shape[1]
 
     x1 = get_simmetry_axis(blurred0, 0.4)
     x2 = get_simmetry_axis(blurred1, 0.4)

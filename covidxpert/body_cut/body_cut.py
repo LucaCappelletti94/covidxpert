@@ -4,6 +4,7 @@ from ..utils import (
 import numpy as np
 import cv2
 
+import matplotlib.pyplot as plt
 
 def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:
     # Getting the rotated darkened thumb image
@@ -44,7 +45,7 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
 
     mask = normalize_image(median_mask(copy, median=median, factor=1.25))
     mask = fill_lower_max(mask)
-    left, right = trim_flip(mask, simmetry_axis*mask.shape[1])
+    left, right = trim_flip(mask, int(simmetry_axis*mask.shape[1]))
     mask = left & right
     mask = mask > 0
 
