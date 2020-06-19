@@ -35,10 +35,12 @@ def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:
     )
 
 
-def get_bounding_box(mask, step=20) -> float:
+def get_bounding_box(mask: np.ndarray, step: int = None) -> float:
     best_score = 0
     best_y = 0
     height = mask.shape[0]
+    if step is None:
+        step = height//40
     for lower_y in range(step, height, step):
         rectangle = np.zeros_like(mask, dtype=np.bool_)
         rectangle[height-lower_y:height] = True
@@ -53,7 +55,7 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
     """Return the body cut for given image.
 
     TODO! Update docstring
-    
+
     Parameters
     --------------------------------------
     image: np.ndarray,
@@ -88,4 +90,4 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
     if others is None:
         return result
 
-    return result, [other[body_slice] for other in others]
+    return (*result, [other[body_slice] for other in others])

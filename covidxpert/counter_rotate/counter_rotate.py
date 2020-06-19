@@ -46,7 +46,7 @@ def counter_rotate(
     angle1, spine_x = get_rectangle_based_rotation(spine)
     angle2 = get_lines_based_rotation(spine)
 
-    blurred0 = cv2.blur(thumb, (21, 21)) # pylint: disable=no-member
+    blurred0 = cv2.blur(thumb, (21, 21))  # pylint: disable=no-member
     blurred1 = rotate_image(blurred0, angle1)
     blurred2 = rotate_image(blurred0, angle2)
 
@@ -68,12 +68,12 @@ def counter_rotate(
         angle0, angle1, angle2
     ][best_rotation]
 
-    result = rotate_image(image, best_angle)
+    result = rotate_image(image, best_angle), best_angle, spine_x
 
     if others is None:
-        return result, best_angle, spine_x
+        return result
 
-    return result, best_angle, spine_x, [
+    return (*result, [
         rotate_image(other, best_angle)
         for other in others
-    ]
+    ])
