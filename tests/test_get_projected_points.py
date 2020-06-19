@@ -1,9 +1,7 @@
-from covidxpert.utils import get_projected_points
-from typing import List, Set, Dict, Tuple, Optional
+import pytest
 import numpy as np
 from tqdm.auto import tqdm
-import pytest
-
+from covidxpert.utils import get_projected_points
 from covidxpert.utils.test_utils import static_test
 
 
@@ -16,7 +14,7 @@ def test_static_get_projected_points():
                {'Input': (-np.inf, 1, 0, 0), 'Output': (0, 0, 0, 0)},
                {'Input': (-1, 2, -3, 4), 'Output': (2.0, 0, -2.0, 4)},
                {'Input': (1, 2, 3, 4), 'Output': (-2.0, 0, 2.0, 4)}]
-    static_test(get_projected_points,    l_tests)
+    static_test(get_projected_points, l_tests)
 
 
 def test_fuzzy_get_projected_points():
@@ -24,8 +22,8 @@ def test_fuzzy_get_projected_points():
     min_val, max_val = -1000, 1000
 
     for m, q, x, h in tqdm(
-        np.random.uniform(low=min_val, high=max_val, size=tests_size),
-        desc="Fuzzying test for get_projected_points in range"):
+            np.random.uniform(low=min_val, high=max_val, size=tests_size),
+            desc="Fuzzying test for get_projected_points in range"):
         if m == 0:
             with pytest.raises(ZeroDivisionError):
                 x0, y0, x1, y1 = get_projected_points(

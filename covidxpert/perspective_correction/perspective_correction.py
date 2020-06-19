@@ -1,9 +1,9 @@
+from typing import List, Union, Tuple
 import numpy as np
 import cv2
 from ..utils import add_padding
 from .get_corners import get_corners
 from .cut_bounding_box import cut_bounding_box
-from typing import List, Union, Tuple
 
 
 def get_new_cardinals(image: np.ndarray) -> np.ndarray:
@@ -20,7 +20,7 @@ def perspective_correction(image: np.ndarray, others: List[np.ndarray] = None) -
 
     Parameters
     -----------------------
-    image: np.ndarray, 
+    image: np.ndarray,
         The image whose perspective is to be corrected.
     others: List[np.ndarray] = None,
         Optional parameter to specify images to be transformed alongside the

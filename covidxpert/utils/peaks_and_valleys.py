@@ -1,5 +1,5 @@
-import numpy as np
 from typing import Tuple
+import numpy as np
 import cv2
 
 
@@ -108,7 +108,7 @@ def valleys_cut(image: np.ndarray, left_factor: float = 0.25, right_factor: floa
     Image with areas before and after left and right valleys in black.
     """
     left_valley, right_valley = main_valleys(
-        cv2.blur(image, (33, 33)),
+        cv2.blur(image, (33, 33)),  # pylint: disable=no-member
         left_factor,
         right_factor
     )

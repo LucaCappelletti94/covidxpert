@@ -1,6 +1,6 @@
-from covidxpert.utils import compute_linear_coefficients
-import numpy as np
 from tqdm.auto import tqdm
+import numpy as np
+from covidxpert.utils import compute_linear_coefficients
 
 
 def test_compute_linear_coefficients():
@@ -25,8 +25,8 @@ def test_compute_linear_coefficients():
     assert np.isclose(q, 5)
 
     for x0, y0, x1, y1 in tqdm(
-        np.random.uniform(-1000, 1000, (100, 4)), 
-        desc = "fuzzyng test for computed linear coefficients"
+            np.random.uniform(-1000, 1000, (100, 4)),
+            desc="fuzzyng test for computed linear coefficients"
     ):
 
         m, q = compute_linear_coefficients(x0, y0, x1, y1)
@@ -36,7 +36,7 @@ def test_compute_linear_coefficients():
         else:
             assert np.isclose(y0-(m*x0+q), 0)
             assert np.isclose(y1-(m*x1+q), 0)
-        
+
         m, q = compute_linear_coefficients(x1, y0, x0, y1)
         if np.isclose(x0, x1):
             assert np.isinf(m)

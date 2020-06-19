@@ -1,13 +1,12 @@
-from typing import List
 import numpy as np
 from ..utils import compute_linear_coefficients, get_projected_points
 
 
 def get_dominant_lines(
-    lines: np.ndarray,
-    height: int,
-    width: int,
-    max_inclination: float = 75,
+        lines: np.ndarray,
+        height: int,
+        width: int,
+        max_inclination: float = 75,
 ) -> np.ndarray:
     """Return at most k dominant lines within given inclination.
 
@@ -15,8 +14,10 @@ def get_dominant_lines(
     -------------------
     lines:np.ndarray,
         Array of lines to be parsed.
-    k:int=10,
-        Maximal amount of lines to be selected.
+    height:int,
+        Image height.
+    width:int,
+        Image width.
     max_inclination:float=70,
         Range of inclination to consider.
 

@@ -1,6 +1,6 @@
-from numba import njit, prange
-import numpy as np
 from typing import Tuple
+from numba import njit
+import numpy as np
 
 
 @njit

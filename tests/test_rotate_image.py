@@ -1,8 +1,9 @@
-from covidxpert import blur_bbox, perspective_correction
-from covidxpert.utils import rotate_image, load_image
+import os
 from glob import glob
 import matplotlib.pyplot as plt
-import os
+from covidxpert import blur_bbox, perspective_correction
+from covidxpert.utils import rotate_image, load_image
+
 
 def test_rotate_image():
     path = glob("tests/test_images/*.jpg")[0]
@@ -22,4 +23,3 @@ def test_rotate_image():
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fig.savefig(path)
     plt.close(fig)
-

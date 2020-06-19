@@ -26,6 +26,7 @@ __all__ = [
     "inpaint",
     "darken",
     "difference_of_gaussians_pyramid",
+    "compute_linear_coefficients",
     "get_projected_points",
     "polar2cartesian",
     "fill_small_white_blobs",

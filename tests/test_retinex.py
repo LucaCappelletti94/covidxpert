@@ -1,9 +1,9 @@
+import os
+from glob import glob
+from tqdm.auto import tqdm
+import matplotlib.pyplot as plt
 from covidxpert import load_image, perspective_correction
 from covidxpert.utils import automated_msrcr
-from tqdm.auto import tqdm
-from glob import glob
-import matplotlib.pyplot as plt
-import os
 
 
 def test_retinex():

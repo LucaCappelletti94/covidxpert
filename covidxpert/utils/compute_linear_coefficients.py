@@ -5,10 +5,10 @@ from numba import njit
 
 @njit
 def compute_linear_coefficients(
-    x0: float,
-    y0: float,
-    x1: float,
-    y1: float
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float
 ) -> Tuple[float, float]:
     """Return the linear coefficients for the line passing by the given points.
 

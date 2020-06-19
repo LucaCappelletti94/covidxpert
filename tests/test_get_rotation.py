@@ -1,8 +1,7 @@
-from covidxpert.counter_rotate.get_lines_based_rotation import get_lines_based_rotation, normalize_angle
-from covidxpert.utils import compute_linear_coefficients
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+from covidxpert.counter_rotate.get_lines_based_rotation import get_lines_based_rotation, normalize_angle
+from covidxpert.utils import compute_linear_coefficients
 
 
 def test_get_rotation():

@@ -1,11 +1,9 @@
-from ..utils import (
-    normalize_image, add_padding, trim_padding, darken, median_mask, trim_flip, fill_small_black_blobs, fill_small_white_blobs,
-    fill_lower_max, histogram_based_vertical_thresholding, get_thumbnail, rotate_image)
+from typing import List, Union, Tuple
 import numpy as np
 import cv2
-from typing import List, Union, Tuple
-
-import matplotlib.pyplot as plt
+from ..utils import (
+    normalize_image, add_padding, trim_padding, darken, median_mask, trim_flip, fill_small_black_blobs, fill_small_white_blobs,
+    fill_lower_max, get_thumbnail, rotate_image)
 
 
 def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:

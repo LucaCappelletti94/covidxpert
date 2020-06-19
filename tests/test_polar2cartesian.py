@@ -1,7 +1,6 @@
 from typing import Generator
-from covidxpert.utils import polar2cartesian
-
 import numpy as np
+from covidxpert.utils import polar2cartesian
 
 
 def test_polar2cartesian():

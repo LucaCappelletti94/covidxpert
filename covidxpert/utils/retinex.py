@@ -19,7 +19,7 @@ def single_scale_retinex(image: np.ndarray, sigma: int) -> np.ndarray:
     Retinexed image for a given sigma
     """
     retinex = np.log10(image) - \
-        np.log10(cv2.GaussianBlur(image, (0, 0), sigma))
+        np.log10(cv2.GaussianBlur(image, (0, 0), sigma))  # pylint: disable=no-member
 
     return retinex
 

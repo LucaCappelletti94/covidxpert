@@ -1,18 +1,18 @@
+from typing import Tuple, List, Union
+import cv2
 import numpy as np
-from ..utils import get_thumbnail, rotate_image, get_simmetry_axis, simmetry_loss, darken
+from ..utils import get_thumbnail, rotate_image, get_simmetry_axis, simmetry_loss
 from .get_spinal_cord_mask import get_spinal_cord_mask
 from .get_rectangle_based_rotation import get_rectangle_based_rotation
 from .get_lines_based_rotation import get_lines_based_rotation
-from typing import Tuple, List, Union
-import cv2
 
 
 def counter_rotate(
-    image: np.ndarray,
-    width: int = 256,
-    left_factor: float = 0.2,
-    right_factor: float = 0.4,
-    others: List[np.ndarray] = None
+        image: np.ndarray,
+        width: int = 256,
+        left_factor: float = 0.2,
+        right_factor: float = 0.4,
+        others: List[np.ndarray] = None
 ) -> Union[Tuple[np.ndarray, float, int], Tuple[np.ndarray, float, int, List[np.ndarray]]]:
     """Return counter-rotated image to optimize, its angle and its simmetry axis.
 

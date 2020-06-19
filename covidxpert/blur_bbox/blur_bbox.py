@@ -1,8 +1,8 @@
+from typing import List, Union, Tuple
+import cv2
 import numpy as np
 from .get_kernel_size import get_kernel_size
 from ..utils import trim_padding, add_padding, remove_artefacts
-import cv2
-from typing import List, Union, Tuple
 
 
 def count_from_left_side(mask: np.ndarray):
@@ -23,7 +23,7 @@ def build_slice(left: int, right: int, maximum: int):
     return slice(left, maximum if right == 0 else right)
 
 
-def strip_sides(image: np.ndarray, flat_mask: np.ndarray) -> np.ndarray:
+def strip_sides(flat_mask: np.ndarray) -> np.ndarray:
     return build_slice(
         count_from_left_side(flat_mask),
         -count_from_right_side(flat_mask),
@@ -35,7 +35,7 @@ def strip_black(image: np.ndarray, mask: np.ndarray, v_threshold: float, h_thres
     vertical_mask = mask.mean(axis=1) <= v_threshold
     horizzontal_mask = mask.mean(axis=0) <= h_threshold
 
-    return image[strip_sides(image, vertical_mask), strip_sides(image, horizzontal_mask)]
+    return image[strip_sides(vertical_mask), strip_sides(horizzontal_mask)]
 
 
 def compute_median_threshold(mask: np.ndarray) -> Tuple[float, float]:
@@ -49,9 +49,9 @@ def get_blur_mask(image: np.ndarray, padding: int):
     blurred = add_padding(image, padding)
     blurred = remove_artefacts(blurred)
     kernel = get_kernel_size(blurred)
-    blurred = cv2.medianBlur(blurred, kernel)
-    blurred = cv2.threshold(blurred, np.median(
-        blurred)/2, 255, cv2.THRESH_BINARY)[1]
+    blurred = cv2.medianBlur(blurred, kernel)  # pylint: disable=no-member
+    blurred = cv2.threshold(blurred, np.median(  # pylint: disable=no-member
+        blurred)/2, 255, cv2.THRESH_BINARY)[1]  # pylint: disable=no-member
     return trim_padding(blurred, padding)
 
 

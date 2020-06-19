@@ -1,6 +1,5 @@
 from typing import Generator
 import numpy as np
-from numba import njit
 
 
 def polar2cartesian(lines: np.ndarray) -> Generator:

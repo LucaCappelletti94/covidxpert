@@ -1,9 +1,9 @@
-from covidxpert import perspective_correction, blur_bbox, counter_rotate
-from covidxpert.utils import load_image, remove_artefacts
+import os
 from glob import glob
 from tqdm import tqdm
-import os
 import matplotlib.pyplot as plt
+from covidxpert import perspective_correction, blur_bbox, counter_rotate
+from covidxpert.utils import load_image, remove_artefacts
 
 
 def test_perspective_correction():

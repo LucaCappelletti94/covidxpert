@@ -1,9 +1,8 @@
-from covidxpert import load_image, perspective_correction, blur_bbox, get_body_cut, counter_rotate
-from covidxpert.utils import histogram_based_vertical_thresholding
-from tqdm.auto import tqdm
-from glob import glob
-import matplotlib.pyplot as plt
 import os
+from glob import glob
+from tqdm.auto import tqdm
+import matplotlib.pyplot as plt
+from covidxpert import load_image, perspective_correction, blur_bbox, get_body_cut, counter_rotate
 
 
 def test_pipeline():

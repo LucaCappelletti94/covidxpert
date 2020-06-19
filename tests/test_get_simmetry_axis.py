@@ -1,9 +1,9 @@
-from covidxpert import perspective_correction, blur_bbox
-from covidxpert.utils import load_image, get_simmetry_axis, remove_artefacts
-from tqdm.auto import tqdm
+import os
 from glob import glob
 import matplotlib.pyplot as plt
-import os
+from tqdm.auto import tqdm
+from covidxpert import perspective_correction, blur_bbox
+from covidxpert.utils import load_image, get_simmetry_axis, remove_artefacts
 
 
 def test_get_simmetry_axis():

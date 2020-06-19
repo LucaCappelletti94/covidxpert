@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import os
-from scipy import ndimage
 from .normalize_image import normalize_image
 
 

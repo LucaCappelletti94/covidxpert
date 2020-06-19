@@ -4,11 +4,11 @@ from .normalize_image import normalize_image
 
 
 def difference_of_gaussians_pyramid(
-    image: np.ndarray,
-    sigma: float = 1,
-    start_sigma: float = 5,
-    end_sigma: float = 50,
-    steps: int = 50
+        image: np.ndarray,
+        sigma: float = 1,
+        start_sigma: float = 5,
+        end_sigma: float = 50,
+        steps: int = 50
 ) -> np.ndarray:
     """Returns the inverted binary multiscale difference of Gaussian.
 
@@ -19,10 +19,10 @@ def difference_of_gaussians_pyramid(
     sigma: float,
         standard deviation for smoothing the image (if sigma_image = 0 no smoothing is performed)
         # TODO: add range for this parameter.
-    sigma_start: float,
-        starting std for Gaussian blurring 
+    start_sigma: float,
+        starting std for Gaussian blurring
         # TODO: add range for this parameter.
-    signa_end: float,
+    end_sigma: float,
         end-sigma for Gaussian blurring differences of Gaussians
         # TODO: add range for this parameter.
     steps: int,
@@ -83,6 +83,6 @@ def difference_of_gaussians_pyramid(
     return normalize_image(backgrounds), normalize_image(foregrounds)
 
 
-def check_parameters(image: np.ndarray, sigma: float, start_sigma: float, end_sigma: float, steps: int):
+def check_parameters(sigma: float, start_sigma: float, end_sigma: float, steps: int):
     if sigma < 0:
         raise ValueError('sigma < 0')

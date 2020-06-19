@@ -20,7 +20,7 @@ def histogram_based_vertical_thresholding(image: np.ndarray, mask: np.ndarray, p
     """
     mask = mask.max() - mask
     y = mask.mean(axis=1)
-    median = np.median(y[y>0]) / 5
+    median = np.median(y[y > 0]) / 5
     vertical_slice = build_slice(
         left=0,
         right=int(-count_from_right_side(y < median) * percentage),

@@ -1,5 +1,5 @@
-from ..utils import difference_of_gaussians_pyramid, normalize_image, median_mask, darken, valleys_cut
 import numpy as np
+from ..utils import difference_of_gaussians_pyramid, normalize_image, median_mask, darken, valleys_cut
 
 
 def get_spinal_cord_mask(image: np.ndarray, left_factor: float = 0.2, right_factor: float = 0.4) -> np.ndarray:

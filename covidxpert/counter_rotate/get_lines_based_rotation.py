@@ -1,9 +1,8 @@
 from itertools import chain
-import numpy as np
-from ..utils import polar2cartesian, compute_linear_coefficients, rotate_image, normalize_image, get_simmetry_axis
-from .get_dominant_lines import get_dominant_lines
-from typing import Tuple
 import cv2
+import numpy as np
+from ..utils import polar2cartesian, compute_linear_coefficients
+from .get_dominant_lines import get_dominant_lines
 
 
 def normalize_angle(angle: float) -> float:

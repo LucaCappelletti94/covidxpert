@@ -1,6 +1,4 @@
-import cv2
 import numpy as np
-from numba import njit
 
 
 def fill_lower_max(image: np.ndarray, lower_padding: int = 50) -> np.ndarray:

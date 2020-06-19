@@ -1,10 +1,10 @@
-from typing import List, Set, Dict, Tuple, Optional, Callable
+from typing import List, Dict, Tuple, Callable
 import numpy as np
-from tqdm.auto import tqdm
 import pytest
 
-def static_test(f: Callable, l_tests: List[Dict[str, Tuple]], 
-                key_in:str='Input', key_out:str='Output'):   
+
+def static_test(f: Callable, l_tests: List[Dict[str, Tuple]],
+                key_in: str = 'Input', key_out: str = 'Output'):
     """Validates the 'f' function on the list of tests 'l_tests'
 
     Parameters

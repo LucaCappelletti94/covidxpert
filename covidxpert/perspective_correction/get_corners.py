@@ -1,7 +1,7 @@
+from typing import Tuple
 import numpy as np
 import cv2
 from .get_masked_image import get_masked_image
-from typing import Tuple
 
 
 def get_top_left_corner(corners: np.ndarray) -> int:
@@ -41,7 +41,7 @@ def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: f
 
     # Get up to corners_number corners
     # and filter up only the 4 cardinal corners
-    corners = get_cardinal_corner_points(cv2.goodFeaturesToTrack( # pylint: disable=no-member
+    corners = get_cardinal_corner_points(cv2.goodFeaturesToTrack(  # pylint: disable=no-member
         image=image_mask,
         maxCorners=corners_number,
         qualityLevel=0.01,
@@ -50,7 +50,7 @@ def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: f
 
     polygon_rate = get_polygon_area(*corners.T) / np.prod(image_mask.shape)
     image_white_area = get_image_white_area(image_mask)
-    
+
     score = np.abs(1 - polygon_rate / image_white_area)
 
     return corners, score < area_threshold, score

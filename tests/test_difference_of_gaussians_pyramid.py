@@ -1,12 +1,11 @@
-from covidxpert.utils import difference_of_gaussians_pyramid
-from covidxpert import load_image
-
-import matplotlib.pyplot as plt
-from glob import glob
-from tqdm.auto import tqdm
 import os
+from glob import glob
 import pytest
 import numpy as np
+import matplotlib.pyplot as plt
+from tqdm.auto import tqdm
+from covidxpert.utils import difference_of_gaussians_pyramid
+from covidxpert import load_image
 
 
 def test_difference_of_gaussian_pyramid_wrong_parameters():

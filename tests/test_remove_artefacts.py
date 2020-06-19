@@ -1,16 +1,13 @@
-from covidxpert.utils.remove_artefacts import compute_artefacts, remove_artefacts,  fill_small_black_blobs, fill_small_white_blobs
-from covidxpert import load_image, perspective_correction
-
-from covidxpert.utils.normalize_image import normalize_image
-from covidxpert.utils.median_mask import median_mask
-
-
-import matplotlib.pyplot as plt
-from glob import glob
-from tqdm.auto import tqdm
 import os
+from glob import glob
 import pytest
 import numpy as np
+from tqdm.auto import tqdm
+import matplotlib.pyplot as plt
+from covidxpert.utils.remove_artefacts import compute_artefacts, remove_artefacts, fill_small_black_blobs, fill_small_white_blobs
+from covidxpert import load_image, perspective_correction
+from covidxpert.utils.normalize_image import normalize_image
+from covidxpert.utils.median_mask import median_mask
 
 
 def test_remove_artefacts():
@@ -88,10 +85,8 @@ def test_fill_small_blobs_fact_0():
 
 def test_fill_small_blobs_fact():
     n_sample = 4
-    nfig_row = 3 
-    factors = (-1, 1.5, 
-                2, 3, 5,
-                10, 20, 100)
+    nfig_row = 3
+    factors = (-1, 1.5, 2, 3, 5, 10, 20, 100)
     map_types = {'Black': fill_small_black_blobs, 'White': fill_small_white_blobs}
 
     for path in list(tqdm(glob("tests/test_images/*"), desc="Testing Fill Small Blobs Fact"))[:n_sample]:
@@ -99,11 +94,11 @@ def test_fill_small_blobs_fact():
         #mask = normalize_image(median_mask(original))
 
         for t in map_types:
-            fig, axes = plt.subplots(nrows=(len(factors)+1)//nfig_row, ncols=nfig_row, figsize=(15,10))
+            fig, axes = plt.subplots(nrows=(len(factors)+1)//nfig_row, ncols=nfig_row, figsize=(15, 10))
             #axes = axes.ravel()
             axes[0][0].imshow(normalize_image(median_mask(original)), cmap="gray")
             axes[0][0].set_title("Mask")
-            for j,fact in enumerate(factors, 1):
+            for j, fact in enumerate(factors, 1):
                 filled_mask = map_types[t](normalize_image(median_mask(original)), fact)
 
                 axes[j//nfig_row][j%nfig_row].imshow(filled_mask, cmap="gray")
@@ -114,11 +109,12 @@ def test_fill_small_blobs_fact():
 
             path = f"tests/fill_small_blobs/{os.path.basename(path)}"
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            fig.savefig(f"{path.split('.')[0]}_{t}_factors.jpg", bbox_inches = 'tight')
+            fig.savefig(f"{path.split('.')[0]}_{t}_factors.jpg", bbox_inches='tight')
             plt.close(fig)
 
+
 def test_fill_small_blobs_shape():
-    fact=20
+    fact = 20
     for path in list(tqdm(glob("tests/test_images/*"), desc="Testing Fill Small Blobs Shape")):
         original = load_image(path)
         mask = normalize_image(median_mask(original))

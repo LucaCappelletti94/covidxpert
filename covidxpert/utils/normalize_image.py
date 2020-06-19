@@ -1,5 +1,4 @@
 import numpy as np
-from numba import njit
 
 
 def normalize_image(image: np.ndarray) -> np.ndarray:
