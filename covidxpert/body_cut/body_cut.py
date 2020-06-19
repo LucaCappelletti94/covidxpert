@@ -3,6 +3,7 @@ from ..utils import (
     fill_lower_max, histogram_based_vertical_thresholding, get_thumbnail, rotate_image)
 import numpy as np
 import cv2
+from typing import List
 
 import matplotlib.pyplot as plt
 
@@ -48,7 +49,7 @@ def get_bounding_box(mask, step=20) -> float:
     return best_y
 
 
-def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_axis: int, hardness: float = 0.75, width: int = 256):
+def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_axis: int, hardness: float = 0.75, width: int = 256, others: List[np.ndarray] = None):
     rotated_darken = rotate_image(darken(image), angle)
     body = get_complete_body_mask(rotated_darken, width=width)
     median = np.median(rotated_darken[body != 0])
@@ -65,4 +66,8 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
 
     body_slice = slice(0, int(-best_y*hardness))
 
-    return rotated[body_slice], rotated_darken[body_slice]
+    result = rotated[body_slice], rotated_darken[body_slice]
+    if others is None:
+        return result
+
+    return result, [(other[body_slice], rotate_image(darken(other), angle)[body_slice]) for other in others]
