@@ -15,7 +15,7 @@ def get_new_cardinals(image: np.ndarray) -> np.ndarray:
     ])
 
 
-def perspective_correction(image: np.ndarray, others: List[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+def perspective_correction(image: np.ndarray, others: List[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, List[np.ndarray]]]:
     """Return image with perspective correction.
 
     Parameters

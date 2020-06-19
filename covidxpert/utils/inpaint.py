@@ -17,7 +17,8 @@ def inpaint(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
     ---------------------
     The image with masked areas filled in.
     """
-    backtorgb = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    cleared_image = cv2.inpaint(
-        backtorgb, normalize_image(mask), 11, cv2.INPAINT_TELEA)
-    return cv2.cvtColor(cleared_image, cv2.COLOR_RGB2GRAY)
+    backtorgb = cv2.cvtColor(  # pylint: disable=no-member
+        image, cv2.COLOR_GRAY2RGB)  # pylint: disable=no-member
+    cleared_image = cv2.inpaint(  # pylint: disable=no-member
+        backtorgb, normalize_image(mask), 11, cv2.INPAINT_TELEA)  # pylint: disable=no-member
+    return cv2.cvtColor(cleared_image, cv2.COLOR_RGB2GRAY)  # pylint: disable=no-member

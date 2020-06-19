@@ -19,7 +19,7 @@ def fill_lower_max(image: np.ndarray, lower_padding: int = 50) -> np.ndarray:
     The image with lower part filled in.
     """
     half_image = np.zeros_like(image)
-    half = half_image.shape[0]//2
+    half = half_image.shape[0]//2   # pylint: disable=unsubscriptable-object
     half_image[half:-lower_padding] = image[half:-lower_padding]
     argmax = np.argmax(half_image.mean(axis=1))
     half_image[argmax:] = half_image[argmax]

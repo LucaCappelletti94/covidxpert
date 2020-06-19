@@ -71,7 +71,7 @@ def fill_small_white_blobs(mask: np.ndarray, factor: float):
     """
     if factor == 0:
         raise ValueError('Factor must be different from 0')
-    _, output, stats, _ = cv2.connectedComponentsWithStats(
+    _, output, stats, _ = cv2.connectedComponentsWithStats( # pylint: disable=no-member
         mask, connectivity=8
     )
     sizes = stats[1:, -1]
@@ -101,7 +101,7 @@ def fill_small_black_blobs(mask, factor: int):
         raise ValueError('Factor must be different from 0')
 
     inverted = mask.max() - mask
-    _, output, stats, _ = cv2.connectedComponentsWithStats(
+    _, output, stats, _ = cv2.connectedComponentsWithStats( # pylint: disable=no-member
         inverted, connectivity=8)
     sizes = stats[1:, -1]
     area = np.prod(inverted.shape)

@@ -41,9 +41,15 @@ def difference_of_gaussians_pyramid(
 
     # TODO: Add exceptions for invalid parameter (negative etc..)
     check_parameters(image, sigma, start_sigma, end_sigma, steps)
-    
+
     # Normalizing the provided image.
-    image = cv2.normalize(image.astype(float), None, 0, 255, cv2.NORM_MINMAX)
+    image = cv2.normalize(  # pylint: disable=no-member
+        image.astype(float),
+        None,
+        0,
+        255,
+        cv2.NORM_MINMAX  # pylint: disable=no-member
+    )
 
     # Initializing the background and foreground
     backgrounds = np.zeros_like(image, dtype=np.uint8)
@@ -52,11 +58,21 @@ def difference_of_gaussians_pyramid(
     # If required
     if sigma > 0:
         # We smooth the input image.
-        image = cv2.GaussianBlur(image, (0, 0), sigma, cv2.BORDER_REPLICATE)
+        image = cv2.GaussianBlur(  # pylint: disable=no-member
+            image,
+            (0, 0),
+            sigma,
+            cv2.BORDER_REPLICATE  # pylint: disable=no-member
+        )
 
     for sigma in np.linspace(start_sigma, end_sigma, steps):
         # Applying blur to the provided image with the current step sigma.
-        blur = cv2.GaussianBlur(image, (0, 0), sigma, cv2.BORDER_REPLICATE)
+        blur = cv2.GaussianBlur( # pylint: disable=no-member
+            image,
+            (0, 0),
+            sigma,
+            cv2.BORDER_REPLICATE # pylint: disable=no-member
+        )
         # Compute diffences between gaussian blur and provided image.
         subtraction = image - blur
         # Summing obtained background mask to backgrounds.
@@ -66,7 +82,7 @@ def difference_of_gaussians_pyramid(
 
     return normalize_image(backgrounds), normalize_image(foregrounds)
 
+
 def check_parameters(image: np.ndarray, sigma: float, start_sigma: float, end_sigma: float, steps: int):
     if sigma < 0:
         raise ValueError('sigma < 0')
-
