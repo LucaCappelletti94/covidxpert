@@ -17,5 +17,5 @@ def load_image(path: str) -> np.ndarray:
     ----------------
     Return numpy array containing loaded image.
     """
-    image = cv2.imread(path, 0)
+    image = cv2.imread(path, 0) # pylint: disable=no-member
     return normalize_image(image)
