@@ -28,12 +28,13 @@ def get_lines_based_rotation(image: np.ndarray) -> float:
     """
 
     # Compute almost vertical lines with Hough from given image
-    lines = cv2.HoughLines(image, 1, np.pi / 180, 100, None, 0, 0)
+    lines = cv2.HoughLines(  # pylint: disable=no-member
+        image, 1, np.pi / 180, 100, None, 0, 0)
     lines = () if lines is None else lines
     lines = get_dominant_lines(polar2cartesian(lines), *image.shape)
 
     # Compute almost vertical lines with Hough from given image
-    prob_lines = cv2.HoughLinesP(
+    prob_lines = cv2.HoughLinesP(  # pylint: disable=no-member
         image,
         rho=1,
         theta=np.pi / 180,

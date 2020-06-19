@@ -41,7 +41,7 @@ def get_corners(image: np.ndarray, corners_number: int = 1000, area_threshold: f
 
     # Get up to corners_number corners
     # and filter up only the 4 cardinal corners
-    corners = get_cardinal_corner_points(cv2.goodFeaturesToTrack(
+    corners = get_cardinal_corner_points(cv2.goodFeaturesToTrack( # pylint: disable=no-member
         image=image_mask,
         maxCorners=corners_number,
         qualityLevel=0.01,
