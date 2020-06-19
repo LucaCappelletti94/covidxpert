@@ -50,6 +50,24 @@ def get_bounding_box(mask, step=20) -> float:
 
 
 def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_axis: int, hardness: float = 0.75, width: int = 256, others: List[np.ndarray] = None) -> Union[np.ndarray, np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+    """Return the body cut for given image.
+
+    TODO! Update docstring
+    
+    Parameters
+    --------------------------------------
+    image: np.ndarray,
+    rotated: np.ndarray,
+    angle: float,
+    simmetry_axis: int,
+    hardness: float = 0.75,
+    width: int = 256,
+    others: List[np.ndarray] = None
+
+    Returns
+    --------------------------------------
+
+    """
     rotated_darken = rotate_image(darken(image), angle)
     body = get_complete_body_mask(rotated_darken, width=width)
     median = np.median(rotated_darken[body != 0])
@@ -70,4 +88,4 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
     if others is None:
         return result
 
-    return result, [(other[body_slice], rotate_image(darken(other), angle)[body_slice]) for other in others]
+    return result, [other[body_slice] for other in others]
