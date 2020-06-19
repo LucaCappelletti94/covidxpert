@@ -6,6 +6,7 @@ import cv2
 
 import matplotlib.pyplot as plt
 
+
 def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:
     # Getting the rotated darkened thumb image
     thumb = get_thumbnail(image, width)
@@ -13,13 +14,24 @@ def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:
     body_mask = normalize_image(median_mask(
         thumb, np.median(thumb[thumb > 0]), factor=6))
     body_mask = add_padding(body_mask, 20)
-    body_mask = cv2.morphologyEx(body_mask, cv2.MORPH_CLOSE, np.ones((9, 3)))
+    body_mask = cv2.morphologyEx(  # pylint: disable=no-member
+        body_mask,
+        cv2.MORPH_CLOSE,  # pylint: disable=no-member
+        np.ones((9, 3))
+    )
     body_mask = fill_small_black_blobs(body_mask, 10)
     body_mask = fill_small_white_blobs(body_mask, 10)
     body_mask = trim_padding(body_mask, 20)
-    body_mask = cv2.erode(body_mask, np.ones((3, 3)), iterations=20)
+    body_mask = cv2.erode(  # pylint: disable=no-member
+        body_mask,
+        np.ones((3, 3)),
+        iterations=20
+    )
     body_mask = add_padding(trim_padding(body_mask, 5), 5)
-    return cv2.resize(body_mask, (image.shape[1], image.shape[0]))
+    return cv2.resize(  # pylint: disable=no-member
+        body_mask,
+        (image.shape[1], image.shape[0])
+    )
 
 
 def get_bounding_box(mask, step=20) -> float:
