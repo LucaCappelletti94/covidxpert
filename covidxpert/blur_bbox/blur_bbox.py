@@ -2,6 +2,7 @@ import numpy as np
 from .get_kernel_size import get_kernel_size
 from ..utils import trim_padding, add_padding, remove_artefacts
 import cv2
+from typing import List, Union, Tuple
 
 
 def count_from_left_side(mask: np.ndarray):
@@ -37,7 +38,7 @@ def strip_black(image: np.ndarray, mask: np.ndarray, v_threshold: float, h_thres
     return image[strip_sides(image, vertical_mask), strip_sides(image, horizzontal_mask)]
 
 
-def compute_median_threshold(mask: np.ndarray) -> float:
+def compute_median_threshold(mask: np.ndarray) -> Tuple[float, float]:
     masked_mask = strip_black(mask, mask, 0, 0)
     v_white_median = np.median(masked_mask.mean(axis=0))
     h_white_median = np.median(masked_mask.mean(axis=1))
@@ -54,6 +55,11 @@ def get_blur_mask(image: np.ndarray, padding: int):
     return trim_padding(blurred, padding)
 
 
-def blur_bbox(image: np.ndarray, padding: int = 50) -> np.ndarray:
+def blur_bbox(image: np.ndarray, padding: int = 50, others: List[np.ndarray] = None) -> Union[np.ndarray, Tuple[np.ndarray, List[np.ndarray]]]:
     mask = get_blur_mask(image, padding)
-    return strip_black(image, mask, *compute_median_threshold(mask))
+    result = strip_black(image, mask, *compute_median_threshold(mask))
+
+    if others is None:
+        return result
+
+    return result, [strip_black(other, mask, *compute_median_threshold(mask)) for other in others]
