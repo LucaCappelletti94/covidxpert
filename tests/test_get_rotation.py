@@ -22,8 +22,8 @@ def test_get_rotation():
         expected = normalize_angle(np.degrees(np.arctan(
             compute_linear_coefficients(*p1, *p2)[0]
         )))
-        rotation = get_lines_based_rotation(image)[0]
+        rotation = get_lines_based_rotation(image)
         assert np.isclose(expected, rotation, atol=2)
 
-    rotation = get_lines_based_rotation(baseline)[0]
+    rotation = get_lines_based_rotation(baseline)
     assert np.isclose(normalize_angle(0), rotation, atol=2)
