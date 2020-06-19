@@ -3,7 +3,7 @@ from ..utils import get_thumbnail, rotate_image, get_simmetry_axis, simmetry_los
 from .get_spinal_cord_mask import get_spinal_cord_mask
 from .get_rectangle_based_rotation import get_rectangle_based_rotation
 from .get_lines_based_rotation import get_lines_based_rotation
-from typing import Tuple
+from typing import Tuple, List, Union
 import cv2
 
 
@@ -11,8 +11,9 @@ def counter_rotate(
     image: np.ndarray,
     width: int = 256,
     left_factor: float = 0.2,
-    right_factor: float = 0.4
-) -> Tuple[np.ndarray, float, int]:
+    right_factor: float = 0.4,
+    others: List[np.ndarray] = None
+) -> Union[Tuple[np.ndarray, float, int], Tuple[np.ndarray, float, int, List[np.ndarray]]]:
     """Return counter-rotated image to optimize, its angle and its simmetry axis.
 
     Parameters
@@ -25,6 +26,9 @@ def counter_rotate(
         Percentage to interpolate from left valley minima to center peak.
     right_factor: float = 0.4,
         Percentage to interpolate from right valley minima to center peak.
+    others: List[np.ndarray] = None,
+        Optional parameter to specify images to be rotated alongside the
+        given original image.
 
     Returns
     ------------------
@@ -64,4 +68,12 @@ def counter_rotate(
         angle0, angle1, angle2
     ][best_rotation]
 
-    return rotate_image(image, best_angle), best_angle, spine_x
+    result = rotate_image(image, best_angle)
+
+    if others is None:
+        return result, best_angle, spine_x
+
+    return result, best_angle, spine_x, [
+        rotate_image(other, best_angle)
+        for other in others
+    ]
