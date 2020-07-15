@@ -1,5 +1,5 @@
 from tqdm.auto import tqdm
-from covidxpert import menpo
+from covidxpert.menpo import extract_menpo_points
 
 
 def test_menpo():
@@ -12,4 +12,4 @@ def test_menpo():
         image_path = f"tests/menpo_images/{path}.jpg"
         save_image_path = f"tests/menpo_images/{path}_processed.png"
         save_points_path = f"tests/menpo_images/{path}_points.pts"
-        menpo.extract_menpo_points(mask_path, image_path, save_image_path, save_points_path)
+        extract_menpo_points(mask_path, image_path, save_image_path, save_points_path)
