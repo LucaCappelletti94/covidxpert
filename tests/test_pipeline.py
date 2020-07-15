@@ -13,7 +13,7 @@ def test_pipeline():
         image_rotated, angle, x = counter_rotate(image_bbox)
         image_body_cut, _ = get_body_cut(image_bbox, image_rotated, angle, x)
 
-        fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
+        fig, axes = plt.subplots(ncols=5, figsize=(25, 6))
         axes = axes.ravel()
 
         axes[0].imshow(original, cmap="gray")
