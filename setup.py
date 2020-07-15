@@ -70,7 +70,8 @@ setup(
         "tensorflow",
         "numba",
         "cython",
-        "menpo"
+        "menpo",
+        "bezier"
     ],
     
     extras_require=extras,
