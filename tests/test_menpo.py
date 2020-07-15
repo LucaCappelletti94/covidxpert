@@ -10,5 +10,6 @@ def test_menpo():
     for path in tqdm(paths):
         mask_path = f"tests/menpo_images/{path}_mask.jpg"
         image_path = f"tests/menpo_images/{path}.jpg"
-        save_path = f"tests/{path}_points"
-        menpo.extract_menpo_points(mask_path, image_path, save_path)
+        save_image_path = f"tests/menpo_images/{path}_processed.png"
+        save_points_path = f"tests/menpo_images/{path}_points.pts"
+        menpo.extract_menpo_points(mask_path, image_path, save_image_path, save_points_path)

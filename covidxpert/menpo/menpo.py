@@ -6,7 +6,6 @@ from menpo.shape import PointCloud
 from menpo.io import export_landmark_file
 from ..perspective_correction.get_corners import get_cardinal_corner_points
 from ..utils import normalize_image, get_thumbnail, load_image
-from ..body_cut import get_body_cut
 from ..perspective_correction import perspective_correction
 from ..blur_bbox import blur_bbox
 from ..counter_rotate import counter_rotate
@@ -142,14 +141,36 @@ def convert_to_point_cloud(left_sampled, right_sampled) -> PointCloud:
     )
 
 
-def extract_menpo_points(mask_path, image_path, save_path):
-    mask = get_thumbnail(load_image(mask_path), 1024)
-    image = get_thumbnail(load_image(image_path), 1024)
+def extract_menpo_points(
+        mask_path: str,
+        image_path: str,
+        save_image_path: str,
+        save_points_path: str,
+        thumbnail_size: int = 1024
+):
+    """
+    Given the paths, extracts the menpo points, saves the image and the point could to a file
+
+    Parameters
+    ------------------
+    mask_path: str,
+        Path of the image mask
+    image_path: str,
+        Path of the image
+    save_image_path: str,
+        Path to save processed image
+    save_points_path: str,
+        Path to save the menpo points
+    thumbnail_size: int,
+        Controls the size of the image
+    """
+    mask = get_thumbnail(load_image(mask_path), thumbnail_size)
+    image = get_thumbnail(load_image(image_path), thumbnail_size)
 
     image, others = perspective_correction(image, others=[mask])
     image, others = blur_bbox(image, others=others)
     rotated, angle, x, others = counter_rotate(image, others=others)
-    body_cut, dark_body_cut, others = get_body_cut(image, rotated, angle, x, others=others)
+    cv2.imwrite(save_image_path, rotated)
 
     mask = others[0]
 
@@ -172,5 +193,4 @@ def extract_menpo_points(mask_path, image_path, save_path):
     ]
 
     point_cloud = convert_to_point_cloud(left_sampled, right_sampled)
-
-    export_landmark_file(point_cloud, f"{save_path}.pts", overwrite=True)
+    export_landmark_file(point_cloud, f"{save_points_path}", overwrite=True)
