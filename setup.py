@@ -68,7 +68,9 @@ setup(
         "tqdm",
         "scikit-image",
         "tensorflow",
-        "numba"
+        "numba",
+        "cython",
+        "menpo"
     ],
     extras_require=extras,
 )
