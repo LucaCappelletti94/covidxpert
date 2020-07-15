@@ -1,7 +1,7 @@
+from glob import glob
+from tqdm.auto import tqdm
 from covidxpert import load_image
 from covidxpert.utils import normalize_image
-from tqdm.auto import tqdm
-from glob import glob
 
 
 def test_normalize_image():

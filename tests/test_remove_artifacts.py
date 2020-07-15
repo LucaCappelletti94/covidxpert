@@ -1,9 +1,9 @@
-from covidxpert import load_image, perspective_correction
-from covidxpert.utils.remove_artefacts import remove_artefacts
-import matplotlib.pyplot as plt
-from tqdm.auto import tqdm
 import os
 from glob import glob
+import matplotlib.pyplot as plt
+from tqdm.auto import tqdm
+from covidxpert import load_image, perspective_correction
+from covidxpert.utils.remove_artefacts import remove_artefacts
 
 
 def test_remove_artifacts():

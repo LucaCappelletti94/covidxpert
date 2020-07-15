@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def add_padding(image: np.ndarray, padding: int = 10, constant_values:int=None) -> np.ndarray:
+def add_padding(image: np.ndarray, padding: int = 10, constant_values: int = None) -> np.ndarray:
     """Return the image with the given paddin amount.
 
     Parameters
@@ -10,6 +10,8 @@ def add_padding(image: np.ndarray, padding: int = 10, constant_values:int=None) 
         The image to be padded.
     padding: int,
         The amount to be added around the image.
+    constant_values: int,
+        TODO: description
 
     Returns
     -------------------
@@ -21,7 +23,7 @@ def add_padding(image: np.ndarray, padding: int = 10, constant_values:int=None) 
 
 
 def trim_padding(image: np.ndarray, padding: int) -> np.ndarray:
-    """Return the image without the given paddin amount.
+    """Return the image without the given padding amount.
 
     Parameters
     -------------------

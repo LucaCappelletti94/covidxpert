@@ -1,9 +1,9 @@
-from covidxpert import load_image, perspective_correction
-from covidxpert import blur_bbox
-from tqdm.auto import tqdm
+import os
 from glob import glob
 import matplotlib.pyplot as plt
-import os
+from tqdm.auto import tqdm
+from covidxpert import load_image, perspective_correction
+from covidxpert import blur_bbox
 
 
 def test_blur_bbox():
