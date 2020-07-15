@@ -72,5 +72,6 @@ setup(
         "cython",
         "menpo"
     ],
+    
     extras_require=extras,
 )
