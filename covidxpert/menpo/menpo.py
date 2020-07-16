@@ -136,9 +136,8 @@ def sampled_to_points(points_sampled):
 
 
 def convert_to_point_cloud(left_sampled, right_sampled) -> PointCloud:
-    return PointCloud(
-        sampled_to_points(left_sampled) + sampled_to_points(right_sampled)
-    )
+    pts_concat = np.array(sampled_to_points(left_sampled) + sampled_to_points(right_sampled))
+    return PointCloud(np.column_stack((pts_concat[:, 1], pts_concat[:, 0])))
 
 
 def extract_menpo_points(
