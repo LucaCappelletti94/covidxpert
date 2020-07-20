@@ -18,11 +18,13 @@ def flip_corners(corners: np.ndarray) -> np.ndarray:
 
 
 def get_cardinal_corner_points(corners: np.ndarray) -> np.ndarray:
-    flipped = flip_corners(corners)
+    normalized_corners = corners/(corners.max(axis=0) - corners.min(axis=0))
+    flipped = flip_corners(normalized_corners)
+    
     return corners[[
-        get_top_left_corner(corners),
+        get_top_left_corner(normalized_corners),
         get_top_left_corner(flipped),
-        get_bottom_right_corner(corners),
+        get_bottom_right_corner(normalized_corners),
         get_bottom_right_corner(flipped)
     ]].astype(int)
 
