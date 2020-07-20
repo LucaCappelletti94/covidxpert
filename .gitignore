@@ -10,4 +10,4 @@ __pycache__
 coverage.xml
 .ipynb_checkpoints
 .pytest_cache
-all_mask
+all_masks
