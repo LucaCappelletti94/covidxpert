@@ -66,67 +66,12 @@ def get_corners(mask):
     return corners, sorted_contours
 
 
-def split_contours_err(corners, contours):
-    parts = [
-        [] for _ in corners
-    ]
-
-    counter = -1
-    for p in contours:
-        for corner in corners:
-            if (corner == p).all():
-                counter += 1
-        parts[counter].append(p)
-
-    parts = [
-        np.array(part)
-        for part in parts
-    ]
-
-    x, y = list(zip(*[
-        part.mean(axis=0).T
-        for part in parts
-    ]))
-
-    x = list(x)
-    y = list(y)
-
-    top_part_index = np.argmin(y)
-    bottom_part_index = np.argmax(y)
-
-    x[bottom_part_index] = np.mean(x)
-    x[top_part_index] = np.mean(x)
-
-    left_part_index = np.argmin(x)
-    right_part_index = np.argmax(x)
-
-    top_part = parts[top_part_index]
-    bottom_part = parts[bottom_part_index]
-    left_part = parts[left_part_index]
-    right_part = parts[right_part_index]
-
-    # Sort left part from top to bottom
-    left_part = np.array(sorted(left_part, key=lambda e: e[1], reverse=False))
-    # Sort bottom part from left to right
-    bottom_part = np.array(sorted(bottom_part, key=lambda e: e[0], reverse=False))
-    # Sort right part from bottom to top
-    right_part = np.array(sorted(right_part, key=lambda e: e[1], reverse=True))
-    # Sort top part from right to left
-    top_part = np.array(sorted(top_part, key=lambda e: e[0], reverse=True))
-
-    return (
-        left_part,
-        bottom_part,
-        right_part,
-        top_part
-    )
 
 def split_contours(corners, contours):
     parts = [
         [] for _ in corners
     ]
     
-    #print('corners:', type(corners), len(corners),corners,'\ncontours:', type(contours), len(contours),contours)
     counter = -1
     for p in contours:
         for corner in corners:
@@ -140,58 +85,19 @@ def split_contours(corners, contours):
         for part in parts
     ]
     
-    #print('--- part[2]:',parts)
-    x, y = list(zip(*[
+    parts_mean = [
         part.mean(axis=0).T
         for part in parts if part.size>0
-    ]))
+    ]
+    
+    if len(parts_mean) != 4:
+        raise ValueError(f"There are {len(parts_mean)} different corners. It has to be 4!")
+        
+    x, y = list(zip(*parts_mean))
 
     x = list(x)
     y = list(y)
 
-    top_part_index = np.argmin(y)
-    bottom_part_index = np.argmax(y)
-
-    x[bottom_part_index] = np.mean(x)
-    x[top_part_index] = np.mean(x)
-
-    left_part_index = np.argmin(x)
-    right_part_index = np.argmax(x)
-
-    top_part = parts[top_part_index]
-    bottom_part = parts[bottom_part_index]
-    left_part = parts[left_part_index]
-    right_part = parts[right_part_index]
-
-    # Sort left part from top to bottom
-    left_part = np.array(sorted(left_part, key=lambda e: e[1], reverse=False))
-    # Sort bottom part from left to right
-    bottom_part = np.array(sorted(bottom_part, key=lambda e: e[0], reverse=False))
-    # Sort right part from bottom to top
-    right_part = np.array(sorted(right_part, key=lambda e: e[1], reverse=True))
-    # Sort top part from right to left
-    top_part = np.array(sorted(top_part, key=lambda e: e[0], reverse=True))
-
-    return (
-        left_part,
-        bottom_part,
-        right_part,
-        top_part
-    )
-
-def split_contours_opt(corners, contours):
-    corners, contours = np.array(corners), np.array(contours)
-    ind_part = np.where(np.in1d(contours, corners)
-                        .reshape(contours.shape)
-                        .all(axis=1))[0]
-    
-    #parts = map(lambda i, j: contours[ind_part[i]:ind_part[j]], 
-    #            *[range(0, len(ind_part)-1), range(1, len(ind_part))])
-    
-    parts = [contours[ind_part[i]:ind_part[j]] 
-             for i, j in zip(range(0, len(ind_part)-1), range(1, len(ind_part)))]
-    x, y = list(map(list, zip(*map(lambda x: np.mean(x, axis=0), parts))))
-    
     top_part_index = np.argmin(y)
     bottom_part_index = np.argmax(y)
 
@@ -278,7 +184,7 @@ def extract_menpo_points(
 
     left_corners, left_contours = get_corners(left)
     right_corners, right_contours = get_corners(right)
-
+    
     left_parts = split_contours(left_corners, left_contours)
     right_parts = split_contours(right_corners, right_contours)
 
@@ -294,3 +200,4 @@ def extract_menpo_points(
 
     point_cloud = convert_to_point_cloud(left_sampled, right_sampled)
     export_landmark_file(point_cloud, f"{save_points_path}", overwrite=True)
+    
