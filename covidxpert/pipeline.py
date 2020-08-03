@@ -18,7 +18,7 @@ def image_pipeline(
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
-    hardness: float = 0.9,
+    hardness: float = 0.95,
     artefacts: bool = True,
     retinex: bool = True,
     save_steps: bool = False
@@ -37,7 +37,7 @@ def image_pipeline(
         The size to resize the image.
     thumbnail_width: int = 256,
         Width to use for the thumbnails during processing.
-    hardness: float = 0.9,
+    hardness: float = 0.95,
         Hardness to use for the body cut.
     artefacts: bool = True,
         Wethever to remove artefacts.
@@ -125,7 +125,7 @@ def images_pipeline(
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
-    hardness: float = 0.9,
+    hardness: float = 0.95,
     artefacts: bool = True,
     retinex: bool = True,
     save_steps: bool = False,
@@ -146,7 +146,7 @@ def images_pipeline(
         The size to resize the image.
     thumbnail_width: int = 256,
         Width to use for the thumbnails during processing.
-    hardness: float = 0.9,
+    hardness: float = 0.95,
         Hardness to use for the body cut.
     artefacts: bool = True,
         Wethever to remove artefacts.
