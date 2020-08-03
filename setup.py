@@ -33,9 +33,7 @@ test_deps =[
     "pytest-cov",
     "coveralls",
     "validate_version_code",
-    "codacy-coverage",
-    "silence_tensorflow",
-    "tqdm"
+    "codacy-coverage"
 ]
 
 extras = {
@@ -70,7 +68,6 @@ setup(
         "tensorflow",
         "numba",
         "cython",
-        "menpo",
         "bezier"
     ],
     
