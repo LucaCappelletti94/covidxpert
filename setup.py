@@ -64,10 +64,7 @@ setup(
         "numpy",
         "opencv-python",
         "tqdm",
-        "scikit-image",
-        "tensorflow",
         "numba",
-        "cython",
         "bezier"
     ],
     
