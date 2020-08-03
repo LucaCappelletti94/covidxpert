@@ -31,7 +31,8 @@ def difference_of_gaussians_pyramid(
 
     Raises
     ------------------
-    # TODO: Add for what we get an exception.
+    ValueError,
+        If given sigma is less or equal to 0.
 
     Returns
     ------------------
@@ -39,8 +40,10 @@ def difference_of_gaussians_pyramid(
         returns the sum image
     """
 
-    # TODO: Add exceptions for invalid parameter (negative etc..)
-    check_parameters(image, sigma, start_sigma, end_sigma, steps)
+    if sigma < 0:
+        raise ValueError(
+            'Given sigma ({}) is less or equal to 0.'.format(sigma)
+        )
 
     # Normalizing the provided image.
     image = cv2.normalize(  # pylint: disable=no-member
@@ -67,11 +70,11 @@ def difference_of_gaussians_pyramid(
 
     for sigma in np.linspace(start_sigma, end_sigma, steps):
         # Applying blur to the provided image with the current step sigma.
-        blur = cv2.GaussianBlur( # pylint: disable=no-member
+        blur = cv2.GaussianBlur(  # pylint: disable=no-member
             image,
             (0, 0),
             sigma,
-            cv2.BORDER_REPLICATE # pylint: disable=no-member
+            cv2.BORDER_REPLICATE  # pylint: disable=no-member
         )
         # Compute diffences between gaussian blur and provided image.
         subtraction = image - blur
@@ -81,8 +84,3 @@ def difference_of_gaussians_pyramid(
         foregrounds[subtraction > 0] += 1
 
     return normalize_image(backgrounds), normalize_image(foregrounds)
-
-
-def check_parameters(image: np.ndarray, sigma: float, start_sigma: float, end_sigma: float, steps: int):
-    if sigma < 0:
-        raise ValueError('sigma < 0')
