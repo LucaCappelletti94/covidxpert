@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
-from .utils import load_image, remove_artefacts
+from .utils import load_image, remove_artefacts, get_thumbnail
 from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
 from .counter_rotate import counter_rotate
@@ -50,6 +50,9 @@ def image_pipeline(
     """
     # Loading the image.
     original = load_image(image_path)
+
+    # Resize given image
+    original = get_thumbnail(original, width=width)
 
     # Executes perspective correction
     image_perspective = perspective_correction(original)
