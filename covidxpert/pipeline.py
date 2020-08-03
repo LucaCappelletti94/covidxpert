@@ -18,8 +18,7 @@ def image_pipeline(
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
-    hardness: float = 0.95,
-    artefacts: bool = True,
+    hardness: float = 0.6,
     retinex: bool = True,
     save_steps: bool = False
 ):
@@ -37,10 +36,8 @@ def image_pipeline(
         The size to resize the image.
     thumbnail_width: int = 256,
         Width to use for the thumbnails during processing.
-    hardness: float = 0.95,
+    hardness: float = 0.6,
         Hardness to use for the body cut.
-    artefacts: bool = True,
-        Wethever to remove artefacts.
     retinex: bool = True,
         Wethever to apply multiscale retinex at the end of the pipeline.
     save_steps: bool = False,
@@ -52,9 +49,6 @@ def image_pipeline(
     # Loading the image.
     original = load_image(image_path)
 
-    # Resize given image
-    original = get_thumbnail(original, width=width)
-
     # Executes perspective correction
     image_perspective = perspective_correction(original)
 
@@ -63,14 +57,13 @@ def image_pipeline(
         image_perspective,
         padding=blur_bbox_padding
     )
+
     # Determines optimal counter rotation
     image_rotated, angle, x = counter_rotate(
         image_bbox,
         width=thumbnail_width
     )
-    # Remove artefacts
-    if artefacts:
-        image_bbox = remove_artefacts(image_bbox)
+
     # Cuts the body lower part
     image_body_cut, darken_image_body_cut = get_body_cut(
         image_bbox,
@@ -80,6 +73,14 @@ def image_pipeline(
         width=thumbnail_width,
         hardness=hardness
     )
+
+    # Executes secondary blur bbox cut
+    image_body_cut, (darken_image_body_cut,) = blur_bbox(
+        image_body_cut,
+        padding=blur_bbox_padding,
+        others=[darken_image_body_cut]
+    )
+
     directory_name = os.path.dirname(output_path)
     os.makedirs(directory_name, exist_ok=True)
     if not save_steps:
@@ -125,8 +126,7 @@ def images_pipeline(
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
-    hardness: float = 0.95,
-    artefacts: bool = True,
+    hardness: float = 0.6,
     retinex: bool = True,
     save_steps: bool = False,
     n_jobs: int = None,
@@ -146,10 +146,8 @@ def images_pipeline(
         The size to resize the image.
     thumbnail_width: int = 256,
         Width to use for the thumbnails during processing.
-    hardness: float = 0.95,
+    hardness: float = 0.6,
         Hardness to use for the body cut.
-    artefacts: bool = True,
-        Wethever to remove artefacts.
     retinex: bool = True,
         Wethever to apply multiscale retinex at the end of the pipeline.
     save_steps: bool = False,
@@ -192,7 +190,6 @@ def images_pipeline(
             blur_bbox_padding=blur_bbox_padding,
             thumbnail_width=thumbnail_width,
             hardness=hardness,
-            artefacts=artefacts,
             retinex=retinex,
             save_steps=save_steps
         )

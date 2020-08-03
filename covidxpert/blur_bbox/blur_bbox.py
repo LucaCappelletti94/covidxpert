@@ -50,8 +50,12 @@ def get_blur_mask(image: np.ndarray, padding: int):
     blurred = remove_artefacts(blurred)
     kernel = get_kernel_size(blurred)
     blurred = cv2.medianBlur(blurred, kernel)  # pylint: disable=no-member
-    blurred = cv2.threshold(blurred, np.median(  # pylint: disable=no-member
-        blurred)/2, 255, cv2.THRESH_BINARY)[1]  # pylint: disable=no-member
+    blurred = cv2.threshold(  # pylint: disable=no-member
+        blurred,
+        np.median(blurred)/2,
+        255,
+        cv2.THRESH_BINARY  # pylint: disable=no-member
+    )[1]
     return trim_padding(blurred, padding)
 
 

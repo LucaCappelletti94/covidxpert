@@ -14,6 +14,7 @@ def test_pipeline():
     images_pipeline(
         image_paths[:1],
         output_paths[:1],
+        verbose=False,
         n_jobs=0
     )
     images_pipeline(

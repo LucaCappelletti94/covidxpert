@@ -65,6 +65,7 @@ setup(
         "opencv-python",
         "tqdm",
         "numba",
+        "matplotlib",
         "bezier"
     ],
     

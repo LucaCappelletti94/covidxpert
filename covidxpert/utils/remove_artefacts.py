@@ -22,7 +22,9 @@ def compute_artefacts(image: np.ndarray) -> np.ndarray:
         type=cv2.THRESH_BINARY  # pylint: disable=no-member
     )[1]
     _, output, stats, _ = cv2.connectedComponentsWithStats(  # pylint: disable=no-member
-        result, connectivity=8)
+        result,
+        connectivity=8
+    )
     sizes = stats[1:, -1]
     area = np.prod(result.shape)
     artefacts = np.zeros(result.shape, dtype=bool)
