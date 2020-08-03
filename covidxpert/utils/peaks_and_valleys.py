@@ -91,9 +91,11 @@ def main_valleys(image: np.ndarray, left_factor=0.25, right_factor=0.4) -> Tuple
 
 def valleys_cut(image: np.ndarray, left_factor: float = 0.25, right_factor: float = 0.4) -> np.ndarray:
     """Return the image with black before and after left and right valleys.
-
+    
     These valleys are detected best on a blurred image.
 
+    Used in get_spinal_cord_mask.py.
+    
     Parameters
     ----------------------
     image: np.ndarray,
