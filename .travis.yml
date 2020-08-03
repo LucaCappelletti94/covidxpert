@@ -23,7 +23,8 @@ after_script:
 script:
 - rm -rf .coverage
 - coverage erase
-- pytest -s --cov=covidxpert --cov-report xml:coverage.xml
+- pytest -s
+- NUMBA_DISABLE_JIT=1 pytest -s --cov=covidxpert --cov-report xml:coverage.xml
 - coverage combine --append || true
 - coverage report
 - coverage xml
