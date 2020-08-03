@@ -33,8 +33,10 @@ def compute_artefacts(image: np.ndarray) -> np.ndarray:
 
     kernel = np.ones((10, 10), np.uint8)
 
-    artefacts = cv2.dilate(artefacts.astype(np.uint8),
-                           kernel)  # pylint: disable=no-member
+    artefacts = cv2.dilate(  # pylint: disable=no-member
+        artefacts.astype(np.uint8),
+        kernel
+    )
     artefacts = cv2.morphologyEx(  # pylint: disable=no-member
         artefacts, cv2.MORPH_CLOSE, kernel=np.ones((3, 3)), iterations=10)  # pylint: disable=no-member
 
