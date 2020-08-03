@@ -14,11 +14,13 @@ def test_pipeline():
     images_pipeline(
         image_paths[:1],
         output_paths[:1],
+        n_jobs=0
     )
     images_pipeline(
         image_paths,
         output_paths,
         save_steps=True,
+        n_jobs=0
     )
 
 

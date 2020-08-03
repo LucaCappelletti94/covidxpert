@@ -11,3 +11,4 @@ coverage.xml
 .ipynb_checkpoints
 .pytest_cache
 all_masks
+htmlcov
