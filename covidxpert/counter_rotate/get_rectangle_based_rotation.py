@@ -24,11 +24,6 @@ def get_inclined_rectangle(image_shape: Tuple[int, int], x: int, angle: float, w
     """
     rectangle = np.zeros(image_shape, dtype=np.bool_)
     half_width = width//2
-    if abs(angle) < 0.1:
-        lower_bound = max(0, x-half_width)
-        upper_bound = min(image_shape[1], x+half_width)
-        rectangle[:, lower_bound:upper_bound] = True
-        return rectangle
     m = np.tan(np.radians(angle))
     q = image_shape[0]/2 - m*x
     for y in range(image_shape[0]):
