@@ -106,6 +106,7 @@ def images_pipeline(
     blur_bbox_padding: int = 50,
     image_width: int = 256,
     hardness: float = 0.9,
+    save_steps: bool = False,
     n_jobs: int = None,
     verbose: bool = True
 ):
@@ -123,6 +124,11 @@ def images_pipeline(
         Image width for processed image.
     hardness: float = 0.9,
         Hardness to use for the body cut.
+    save_steps: bool = False,
+        Wethever to save the partial steps instead othe processed image.
+        This option is useful to debug which parameters are to blaim for
+        unexpected pipeline behaviour.
+        By default, this is False.
     n_jobs: int = None,
         Number of jobs to use for the processing task.
         If given value is None, the number of available CPUs is used.
@@ -158,9 +164,10 @@ def images_pipeline(
                     dict(
                         image_path=image_path,
                         output_path=output_path,
-                        blur_bbox_padding=50,
-                        image_width=256,
-                        hardness=0.75
+                        blur_bbox_padding=blur_bbox_padding,
+                        image_width=image_width,
+                        hardness=hardness,
+                        save_steps=save_steps
                     )
                     for image_path, output_path in zip(
                         image_paths,

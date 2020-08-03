@@ -1,39 +1,32 @@
 import os
 from glob import glob
-from tqdm.auto import tqdm
-import matplotlib.pyplot as plt
 from covidxpert import images_pipeline
+import pytest
 
 
 def test_pipeline():
-    for path in tqdm(glob("tests/test_images/*"), desc="Test pipeline"):
-        original = load_image(path)
-        image_perspective = perspective_correction(original)
-        image_bbox = blur_bbox(image_perspective)
-        image_rotated, angle, x = counter_rotate(image_bbox)
-        image_body_cut, _ = get_body_cut(image_bbox, image_rotated, angle, x)
+    """Testing execution of the complete pipeline."""
+    image_paths = glob("tests/test_images/*")
+    output_paths = [
+        "tests/pipeline/{}".format(os.path.basename(image_path))
+        for image_path in image_paths
+    ]
+    images_pipeline(
+        image_paths[:1],
+        output_paths[:1]
+    )
+    images_pipeline(
+        image_paths,
+        output_paths,
+        save_steps=True
+    )
 
-        fig, axes = plt.subplots(ncols=5, figsize=(25, 6))
-        axes = axes.ravel()
 
-        axes[0].imshow(original, cmap="gray")
-        axes[0].set_title("Original image")
-
-        axes[1].imshow(image_perspective, cmap="gray")
-        axes[1].set_title("Perspective correction")
-
-        axes[2].imshow(image_bbox, cmap="gray")
-        axes[2].set_title("Blur BBox image")
-
-        axes[3].imshow(image_rotated, cmap="gray")
-        axes[3].set_title("Rotated image")
-
-        axes[4].imshow(image_body_cut, cmap="gray")
-        axes[4].set_title("Body cut image")
-
-        [ax.set_axis_off() for ax in axes.ravel()]
-        fig.tight_layout()
-        path = f"tests/pipeline/{os.path.basename(path)}"
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        fig.savefig(path)
-        plt.close(fig)
+def test_pipeline_illegal_arguments():
+    image_paths = glob("tests/test_images/*")
+    output_paths = []
+    with pytest.raises(ValueError):
+        images_pipeline(
+            image_paths,
+            output_paths,
+        )
