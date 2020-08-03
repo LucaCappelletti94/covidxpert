@@ -10,11 +10,13 @@ from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
 from .counter_rotate import counter_rotate
 from .body_cut import get_body_cut
+import traceback
 
 
 def image_pipeline(
     image_path: str,
     output_path: str,
+    error_path: str = None,
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
@@ -30,6 +32,8 @@ def image_pipeline(
         Path from where to load the given image.
     output_path: str,
         Path where to save the processed image.
+    error_path: str = "error_pipeline/",
+        Path where to store the error info.
     blur_bbox_padding: int = 50,
         The padding to use around the blur bbox cut.
     width: int = 480,
@@ -46,78 +50,87 @@ def image_pipeline(
         unexpected pipeline behaviour.
         By default, this is False.
     """
-    # Loading the image.
-    original = load_image(image_path)
+    try:
+        
+        # Loading the image.
+        original = load_image(image_path)
 
-    # Executes perspective correction
-    image_perspective = perspective_correction(original)
+        # Executes perspective correction
+        image_perspective = perspective_correction(original)
 
-    # Executes blur bbox cut
-    image_bbox = blur_bbox(
-        image_perspective,
-        padding=blur_bbox_padding
-    )
-
-    # Determines optimal counter rotation
-    image_rotated, angle, x = counter_rotate(
-        image_bbox,
-        width=thumbnail_width
-    )
-
-    # Cuts the body lower part
-    image_body_cut, darken_image_body_cut = get_body_cut(
-        image_bbox,
-        image_rotated,
-        angle,
-        simmetry_axis=x,
-        width=thumbnail_width,
-        hardness=hardness
-    )
-
-    # Executes secondary blur bbox cut
-    image_body_cut, (darken_image_body_cut,) = blur_bbox(
-        image_body_cut,
-        padding=blur_bbox_padding,
-        others=[darken_image_body_cut]
-    )
-
-    directory_name = os.path.dirname(output_path)
-    os.makedirs(directory_name, exist_ok=True)
-    if not save_steps:
-        # Saving image to given path
-        cv2.imwrite(  # pylint: disable=no-member
-            output_path,
-            # Resize given image
-            get_thumbnail( 
-                image_body_cut if retinex else darken_image_body_cut,
-                width=width
-            )
+        # Executes blur bbox cut
+        image_bbox = blur_bbox(
+            image_perspective,
+            padding=blur_bbox_padding
         )
-    else:
-        fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
-        axes = axes.ravel()
 
-        axes[0].imshow(original, cmap="gray")
-        axes[0].set_title("Original image")
+        # Determines optimal counter rotation
+        image_rotated, angle, x = counter_rotate(
+            image_bbox,
+            width=thumbnail_width
+        )
 
-        axes[1].imshow(image_perspective, cmap="gray")
-        axes[1].set_title("Perspective correction")
+        # Cuts the body lower part
+        image_body_cut, darken_image_body_cut = get_body_cut(
+            image_bbox,
+            image_rotated,
+            angle,
+            simmetry_axis=x,
+            width=thumbnail_width,
+            hardness=hardness
+        )
 
-        axes[2].imshow(image_bbox, cmap="gray")
-        axes[2].set_title("Blur BBox image")
+        # Executes secondary blur bbox cut
+        image_body_cut, (darken_image_body_cut,) = blur_bbox(
+            image_body_cut,
+            padding=blur_bbox_padding,
+            others=[darken_image_body_cut]
+        )
 
-        axes[3].imshow(image_rotated, cmap="gray")
-        axes[3].set_title("Rotated image")
+        directory_name = os.path.dirname(output_path)
+        os.makedirs(directory_name, exist_ok=True)
+        if not save_steps:
+            # Saving image to given path
+            cv2.imwrite(  # pylint: disable=no-member
+                output_path,
+                # Resize given image
+                get_thumbnail( 
+                    image_body_cut if retinex else darken_image_body_cut,
+                    width=width
+                )
+            )
+        else:
+            fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
+            axes = axes.ravel()
 
-        axes[4].imshow(darken_image_body_cut, cmap="gray")
-        axes[4].set_title("Darkened image")
+            axes[0].imshow(original, cmap="gray")
+            axes[0].set_title("Original image")
 
-        axes[5].imshow(image_body_cut, cmap="gray")
-        axes[5].set_title("Body cut image")
-        [ax.set_axis_off() for ax in axes.ravel()]
-        fig.tight_layout()
-        fig.savefig(output_path)
-        plt.close(fig)
+            axes[1].imshow(image_perspective, cmap="gray")
+            axes[1].set_title("Perspective correction")
+
+            axes[2].imshow(image_bbox, cmap="gray")
+            axes[2].set_title("Blur BBox image")
+
+            axes[3].imshow(image_rotated, cmap="gray")
+            axes[3].set_title("Rotated image")
+
+            axes[4].imshow(darken_image_body_cut, cmap="gray")
+            axes[4].set_title("Darkened image")
+
+            axes[5].imshow(image_body_cut, cmap="gray")
+            axes[5].set_title("Body cut image")
+            [ax.set_axis_off() for ax in axes.ravel()]
+            fig.tight_layout()
+            fig.savefig(output_path)
+            plt.close(fig)
+    except Exception as e:
+        name = os.path.basename(image_path).split('.')[0]
+        error_path = error_path if error_path else "error_pipeline/"
+        os.makedirs(error_path, exist_ok=True)
+        with open(f'{os.path.join(error_path, name)}.csv', 'w') as file:
+            file.write(f'{image_path};{str(e)};{" ".join(traceback.format_exc().splitlines())}')
+
 
 
 def _image_pipeline(kwargs: Dict):
@@ -127,6 +140,7 @@ def _image_pipeline(kwargs: Dict):
 def images_pipeline(
     image_paths: List[str],
     output_paths: List[str],
+    error_path: str = "error_pipeline/",
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
@@ -144,6 +158,8 @@ def images_pipeline(
         Path from where to load the given image.
     output_path: str,
         Path where to save the processed image.
+    error_path: str = "error_pipeline/",
+        Path where to store the error info.
     blur_bbox_padding: int = 50,
         The padding to use around the blur bbox cut.
     width: int = 480,
@@ -176,7 +192,7 @@ def images_pipeline(
         raise ValueError(
             (
                 "Given image paths length ({}) does not match the length of "
-                "givem output paths length ({})."
+                "given output paths length ({})."
             ).format(
                 len(image_paths), len(output_paths)
             )
@@ -191,6 +207,7 @@ def images_pipeline(
         dict(
             image_path=image_path,
             output_path=output_path,
+            error_path=error_path,
             blur_bbox_padding=blur_bbox_padding,
             thumbnail_width=thumbnail_width,
             hardness=hardness,
