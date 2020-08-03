@@ -33,7 +33,8 @@ def compute_artefacts(image: np.ndarray) -> np.ndarray:
 
     kernel = np.ones((10, 10), np.uint8)
 
-    artefacts = cv2.dilate(artefacts.astype(np.uint8), kernel)  # pylint: disable=no-member
+    artefacts = cv2.dilate(artefacts.astype(np.uint8),
+                           kernel)  # pylint: disable=no-member
     artefacts = cv2.morphologyEx(  # pylint: disable=no-member
         artefacts, cv2.MORPH_CLOSE, kernel=np.ones((3, 3)), iterations=10)  # pylint: disable=no-member
 
@@ -65,12 +66,20 @@ def fill_small_white_blobs(mask: np.ndarray, factor: float):
     factor: float,
         Mask smoothing factor.
 
+    Raises
+    -----------------------------
+    ValueError,
+        When given factor is not greater than 0. 
+
     Returns
     -----------------------------
     Mask without white blobs smaller than area divided by factor.
     """
-    if factor == 0:
-        raise ValueError('Factor must be different from 0')
+    if factor <= 0:
+        raise ValueError(
+            'Factor ({}) must be greater than 0'.format(factor)
+        )
+
     _, output, stats, _ = cv2.connectedComponentsWithStats(  # pylint: disable=no-member
         mask, connectivity=8
     )
@@ -93,15 +102,22 @@ def fill_small_black_blobs(mask, factor: float):
     factor: float,
         Mask smoothing factor.
 
+    Raises
+    -----------------------------
+    ValueError,
+        When given factor is not greater than 0.
+
     Returns
     -----------------------------
     Mask without black blobs smaller than area divided by factor.
     """
-    if factor == 0:
-        raise ValueError('Factor must be different from 0')
+    if factor <= 0:
+        raise ValueError(
+            'Factor ({}) must be greater than 0'.format(factor)
+        )
 
     inverted = mask.max() - mask
-    _, output, stats, _ = cv2.connectedComponentsWithStats( # pylint: disable=no-member
+    _, output, stats, _ = cv2.connectedComponentsWithStats(  # pylint: disable=no-member
         inverted, connectivity=8)
     sizes = stats[1:, -1]
     area = np.prod(inverted.shape)
