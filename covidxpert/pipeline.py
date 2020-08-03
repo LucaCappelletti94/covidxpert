@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
-from .utils import load_image
+from .utils import load_image, remove_artefacts
 from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
 from .counter_rotate import counter_rotate
@@ -15,8 +15,11 @@ def image_pipeline(
     image_path: str,
     output_path: str,
     blur_bbox_padding: int = 50,
-    image_width: int = 256,
+    width: int = 480,
+    thumbnail_width: int = 256,
     hardness: float = 0.9,
+    artefacts: bool = True,
+    retinex: bool = True,
     save_steps: bool = False
 ):
     """Executes complete pipeline on given image.
@@ -29,10 +32,16 @@ def image_pipeline(
         Path where to save the processed image.
     blur_bbox_padding: int = 50,
         The padding to use around the blur bbox cut.
-    image_width: int = 256,
-        Image width for processed image.
+    width: int = 480,
+        The size to resize the image.
+    thumbnail_width: int = 256,
+        Width to use for the thumbnails during processing.
     hardness: float = 0.9,
         Hardness to use for the body cut.
+    artefacts: bool = True,
+        Wethever to remove artefacts.
+    retinex: bool = True,
+        Wethever to apply multiscale retinex at the end of the pipeline.
     save_steps: bool = False,
         Wethever to save the partial steps instead othe processed image.
         This option is useful to debug which parameters are to blaim for
@@ -53,22 +62,28 @@ def image_pipeline(
     # Determines optimal counter rotation
     image_rotated, angle, x = counter_rotate(
         image_bbox,
-        width=image_width
+        width=thumbnail_width
     )
+    # Remove artefacts
+    if artefacts:
+        image_bbox = remove_artefacts(image_bbox)
     # Cuts the body lower part
     image_body_cut, darken_image_body_cut = get_body_cut(
         image_bbox,
         image_rotated,
         angle,
         simmetry_axis=x,
-        width=image_width,
+        width=thumbnail_width,
         hardness=hardness
     )
     directory_name = os.path.dirname(output_path)
     os.makedirs(directory_name, exist_ok=True)
     if not save_steps:
         # Saving image to given path
-        plt.savefig(image_body_cut, output_path)
+        plt.savefig(
+            image_body_cut if retinex else darken_image_body_cut,
+            output_path
+        )
     else:
         fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
         axes = axes.ravel()
@@ -104,8 +119,11 @@ def images_pipeline(
     image_paths: List[str],
     output_paths: List[str],
     blur_bbox_padding: int = 50,
-    image_width: int = 256,
+    width: int = 480,
+    thumbnail_width: int = 256,
     hardness: float = 0.9,
+    artefacts: bool = True,
+    retinex: bool = True,
     save_steps: bool = False,
     n_jobs: int = None,
     verbose: bool = True
@@ -120,10 +138,16 @@ def images_pipeline(
         Path where to save the processed image.
     blur_bbox_padding: int = 50,
         The padding to use around the blur bbox cut.
-    image_width: int = 256,
-        Image width for processed image.
+    width: int = 480,
+        The size to resize the image.
+    thumbnail_width: int = 256,
+        Width to use for the thumbnails during processing.
     hardness: float = 0.9,
         Hardness to use for the body cut.
+    artefacts: bool = True,
+        Wethever to remove artefacts.
+    retinex: bool = True,
+        Wethever to apply multiscale retinex at the end of the pipeline.
     save_steps: bool = False,
         Wethever to save the partial steps instead othe processed image.
         This option is useful to debug which parameters are to blaim for
@@ -165,8 +189,10 @@ def images_pipeline(
                         image_path=image_path,
                         output_path=output_path,
                         blur_bbox_padding=blur_bbox_padding,
-                        image_width=image_width,
+                        thumbnail_width=thumbnail_width,
                         hardness=hardness,
+                        artefacts=artefacts,
+                        retinex=retinex,
                         save_steps=save_steps
                     )
                     for image_path, output_path in zip(
