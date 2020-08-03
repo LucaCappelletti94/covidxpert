@@ -68,6 +68,5 @@ setup(
         "matplotlib",
         "bezier"
     ],
-    
     extras_require=extras,
 )

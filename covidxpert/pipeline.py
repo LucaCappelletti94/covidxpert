@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
 import cv2
-from .utils import load_image, remove_artefacts, get_thumbnail
+from .utils import load_image, get_thumbnail
 from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
 from .counter_rotate import counter_rotate
@@ -87,7 +87,11 @@ def image_pipeline(
         # Saving image to given path
         cv2.imwrite(  # pylint: disable=no-member
             output_path,
-            image_body_cut if retinex else darken_image_body_cut
+            # Resize given image
+            get_thumbnail( 
+                image_body_cut if retinex else darken_image_body_cut,
+                width=width
+            )
         )
     else:
         fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
