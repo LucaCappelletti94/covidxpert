@@ -3,6 +3,7 @@ from .utils import load_image
 from .blur_bbox import blur_bbox, strip_sides
 from .body_cut import get_body_cut
 from .counter_rotate import counter_rotate
+from .menpo import menpo
 
 __all__ = [
     "perspective_correction",
@@ -10,5 +11,6 @@ __all__ = [
     "blur_bbox",
     "strip_sides",
     "get_body_cut",
-    "counter_rotate"
+    "counter_rotate",
+    "menpo"
 ]
