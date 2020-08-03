@@ -7,6 +7,20 @@ from ..utils import (
 
 
 def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:
+    """Return complete body mask.
+
+    Parameters
+    --------------------------------------
+    image: np.ndarray, 
+        Input image.
+    width: int,
+        Width to use for complete body mask.
+
+    Returns
+    --------------------------------------
+    Complete body mask.
+    """
+
     # Getting the rotated darkened thumb image
     thumb = get_thumbnail(image, width)
     # Computing mask
@@ -33,7 +47,21 @@ def get_complete_body_mask(image: np.ndarray, width=256) -> np.ndarray:
     )
 
 
-def get_bounding_box(mask: np.ndarray, step: int = None) -> float:
+def get_optimal_y_body_cut(mask: np.ndarray, step: int = None) -> float:
+    """Return optimal y for body cut.
+
+    Parameters
+    --------------------------------------
+    mask: np.ndarray, 
+        Input mask.
+    step: int,
+        Step size for each iteration.
+
+    Returns
+    --------------------------------------
+    Optimal y for body body cut.
+    """
+
     best_score = 0
     best_y = 0
     height = mask.shape[0]
@@ -52,21 +80,25 @@ def get_bounding_box(mask: np.ndarray, step: int = None) -> float:
 def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_axis: int, hardness: float = 0.75, width: int = 256, others: List[np.ndarray] = None) -> Union[np.ndarray, np.ndarray, Tuple[np.ndarray, np.ndarray]]:
     """Return the body cut for given image.
 
-    TODO! Update docstring
-
     Parameters
     --------------------------------------
-    image: np.ndarray,
+    image: np.ndarray, 
+        Input image
     rotated: np.ndarray,
+        Rotated image
     angle: float,
+        Angle of rotation used.
     simmetry_axis: int,
+        Axis of maximum symmetry used in the image.
     hardness: float = 0.75,
+        Hardness to use for the body cut.
     width: int = 256,
+        Width to use for complete body mask.
     others: List[np.ndarray] = None
 
     Returns
     --------------------------------------
-
+    Cropped body for given image
     """
     rotated_darken = rotate_image(darken(image), angle)
     body = get_complete_body_mask(rotated_darken, width=width)
@@ -80,7 +112,7 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
     mask = left & right
     mask = mask > 0
 
-    best_y = get_bounding_box(mask)
+    best_y = get_optimal_y_body_cut(mask)
 
     body_slice = slice(0, int(-best_y*hardness))
 
