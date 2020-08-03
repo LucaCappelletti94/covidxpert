@@ -30,8 +30,6 @@ def get_inclined_rectangle(image_shape: Tuple[int, int], x: int, angle: float, w
         xi = int((y-q)/m)
         lower_bound = max(0, xi-half_width)
         upper_bound = min(image_shape[1], xi+half_width)
-        if upper_bound <= 0:
-            continue
         rectangle[y, lower_bound:upper_bound] = True
     return rectangle
 
