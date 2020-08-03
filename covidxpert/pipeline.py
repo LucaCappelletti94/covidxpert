@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
+import cv2
 from .utils import load_image, remove_artefacts, get_thumbnail
 from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
@@ -83,9 +84,9 @@ def image_pipeline(
     os.makedirs(directory_name, exist_ok=True)
     if not save_steps:
         # Saving image to given path
-        plt.savefig(
-            image_body_cut if retinex else darken_image_body_cut,
-            output_path
+        cv2.imwrite(  # pylint: disable=no-member
+            output_path,
+            image_body_cut if retinex else darken_image_body_cut
         )
     else:
         fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
@@ -159,6 +160,7 @@ def images_pipeline(
     n_jobs: int = None,
         Number of jobs to use for the processing task.
         If given value is None, the number of available CPUs is used.
+        If 0 is used, we do not use multiprocessing.
     verbose: bool = True,
         Wethever to show the loading bar.
 
@@ -183,30 +185,38 @@ def images_pipeline(
 
     n_jobs = min(len(image_paths), n_jobs)
 
-    with Pool(n_jobs) as p:
-        list(tqdm(
-            p.imap(
-                _image_pipeline,
-                (
-                    dict(
-                        image_path=image_path,
-                        output_path=output_path,
-                        blur_bbox_padding=blur_bbox_padding,
-                        thumbnail_width=thumbnail_width,
-                        hardness=hardness,
-                        artefacts=artefacts,
-                        retinex=retinex,
-                        save_steps=save_steps
-                    )
-                    for image_path, output_path in zip(
-                        image_paths,
-                        output_paths
-                    )
-                )
-            ),
+    tasks = (
+        dict(
+            image_path=image_path,
+            output_path=output_path,
+            blur_bbox_padding=blur_bbox_padding,
+            thumbnail_width=thumbnail_width,
+            hardness=hardness,
+            artefacts=artefacts,
+            retinex=retinex,
+            save_steps=save_steps
+        )
+        for image_path, output_path in zip(
+            image_paths,
+            output_paths
+        )
+    )
+
+    if n_jobs == 0:
+        for kwargs in tqdm(
+            tasks,
             desc="Processing images",
             total=len(image_paths),
             disable=not verbose
-        ))
-        p.close()
-        p.join()
+        ):
+            _image_pipeline(kwargs)
+    else:
+        with Pool(n_jobs) as p:
+            list(tqdm(
+                p.imap(_image_pipeline, tasks),
+                desc="Processing images",
+                total=len(image_paths),
+                disable=not verbose
+            ))
+            p.close()
+            p.join()

@@ -14,9 +14,9 @@ def test_get_rotation():
     ]
     baseline = np.zeros((500, 500), dtype=np.uint8)
     for p1, p2 in lines:
-        image = cv2.cvtColor(baseline, cv2.COLOR_GRAY2BGR)
-        cv2.line(image, p1, p2, (255, 255, 255), 5, cv2.LINE_AA)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.cvtColor(baseline, cv2.COLOR_GRAY2BGR) # pylint: disable=no-member
+        cv2.line(image, p1, p2, (255, 255, 255), 5, cv2.LINE_AA) # pylint: disable=no-member
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # pylint: disable=no-member
 
         expected = normalize_angle(np.degrees(np.arctan(
             compute_linear_coefficients(*p1, *p2)[0]

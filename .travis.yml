@@ -1,5 +1,3 @@
-dist: trusty
-sudo: false
 git:
   depth: false
 addons:
@@ -7,8 +5,6 @@ addons:
     organization: lucacappelletti94-github
     token:
       secure: fRZs8S8hgIwFD0P4JvwQP4RA0ggV7h23TM2vr05pyVS4nG/hdUSSs6DCD3kdGEzVrnXfTRO9UHjRzmX4xZBxvq47edNd/AfxnABCnKEDkWv9OkNp2/JgqRz6We0DibUPo/OpYQGHYwLk5xn44hQRrOFN5/DJ7XsHPuz7eSqZf7OK9J0rhCfJIta0776/mxBv9iJa8bFG1kTxVcBOPabN66Fz+FcUeoe7DYcWiAWm5DxRKsyQT2USco1TcfrRDEOPWyE4h+tNO46g4iW4/q9Rn4sN0Rgbd/Mh5VCkhSoHZ7/Xoe5Id4xSzO/Bsm8tcHhkCOLloKH3nTjzl8CQeG1HN+HR5D3d/4xo277a8bp1rtwvIoS+zXlTod8aUMefs3LRYRsfES2WIzxmXPEPL8YiAmiQ7dZExtXrIWAkKCk8p2abfPQmFX3jP16SP7XKNQVetnkQehilHaNBAuG2a69Ow8e8Fgekj0/bXitb+xKkv6Ij6EHJtCeRPWT6iyNU9ca+/U7s1KrFgUDRoNHSwQcsV0IkbWuOJjW+ZINHCte118QQaHvdtdwQW4Snbi2iAVtM6y5K8lJPNaiLDNpgyyf9zYsLwlHyZnZo1NIue3s03wt5IgfDrSG1uEsKq/6CD3Pf0GiXR9Ljc4vEd1cUOiZiUQvOXPt3ze1wdYycLg2BQMQ=
-env:
-  - NUMBA_DISABLE_JIT
 language: python
 python:
 - '3.6'

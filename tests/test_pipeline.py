@@ -13,12 +13,12 @@ def test_pipeline():
     ]
     images_pipeline(
         image_paths[:1],
-        output_paths[:1]
+        output_paths[:1],
     )
     images_pipeline(
         image_paths,
         output_paths,
-        save_steps=True
+        save_steps=True,
     )
 
 
