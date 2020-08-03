@@ -1,5 +1,6 @@
-"""Module with methods to run the complete pipelie."""
+"""Module with methods to run the complete pipeline."""
 from multiprocessing import cpu_count, Pool
+import os
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
@@ -15,7 +16,8 @@ def image_pipeline(
     output_path: str,
     blur_bbox_padding: int = 50,
     image_width: int = 256,
-    hardness: float = 0.9
+    hardness: float = 0.9,
+    save_steps: bool = False
 ):
     """Executes complete pipeline on given image.
 
@@ -31,6 +33,11 @@ def image_pipeline(
         Image width for processed image.
     hardness: float = 0.9,
         Hardness to use for the body cut.
+    save_steps: bool = False,
+        Wethever to save the partial steps instead othe processed image.
+        This option is useful to debug which parameters are to blaim for
+        unexpected pipeline behaviour.
+        By default, this is False.
     """
     # Loading the image.
     original = load_image(image_path)
@@ -49,7 +56,7 @@ def image_pipeline(
         width=image_width
     )
     # Cuts the body lower part
-    image_body_cut, _ = get_body_cut(
+    image_body_cut, darken_image_body_cut = get_body_cut(
         image_bbox,
         image_rotated,
         angle,
@@ -57,8 +64,36 @@ def image_pipeline(
         width=image_width,
         hardness=hardness
     )
-    # Saving image to given path
-    plt.savefig(image_body_cut, output_path)
+    directory_name = os.path.dirname(output_path)
+    os.makedirs(directory_name, exist_ok=True)
+    if not save_steps:
+        # Saving image to given path
+        plt.savefig(image_body_cut, output_path)
+    else:
+        fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
+        axes = axes.ravel()
+
+        axes[0].imshow(original, cmap="gray")
+        axes[0].set_title("Original image")
+
+        axes[1].imshow(image_perspective, cmap="gray")
+        axes[1].set_title("Perspective correction")
+
+        axes[2].imshow(image_bbox, cmap="gray")
+        axes[2].set_title("Blur BBox image")
+
+        axes[3].imshow(image_rotated, cmap="gray")
+        axes[3].set_title("Rotated image")
+
+        axes[4].imshow(darken_image_body_cut, cmap="gray")
+        axes[4].set_title("Darkened image")
+
+        axes[5].imshow(image_body_cut, cmap="gray")
+        axes[5].set_title("Body cut image")
+        [ax.set_axis_off() for ax in axes.ravel()]
+        fig.tight_layout()
+        fig.savefig(output_path)
+        plt.close(fig)
 
 
 def _image_pipeline(kwargs: Dict):
@@ -104,7 +139,7 @@ def images_pipeline(
         raise ValueError(
             (
                 "Given image paths length ({}) does not match the length of "
-                "givem output paths length."
+                "givem output paths length ({})."
             ).format(
                 len(image_paths), len(output_paths)
             )
@@ -137,3 +172,5 @@ def images_pipeline(
             total=len(image_paths),
             disable=not verbose
         ))
+        p.close()
+        p.join()

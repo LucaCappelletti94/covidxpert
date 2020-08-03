@@ -2,7 +2,7 @@ import os
 from glob import glob
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
-from covidxpert import load_image, perspective_correction, blur_bbox, get_body_cut, counter_rotate
+from covidxpert import images_pipeline
 
 
 def test_pipeline():
