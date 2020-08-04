@@ -5,11 +5,13 @@ import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
 import cv2
+import compress_json
 from .utils import load_image, get_thumbnail
 from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
 from .counter_rotate import counter_rotate
 from .body_cut import get_body_cut
+import traceback
 
 
 def image_pipeline(
@@ -21,7 +23,8 @@ def image_pipeline(
     hardness: float = 0.6,
     retinex: bool = True,
     save_steps: bool = False,
-    cache: bool = True
+    cache: bool = False,
+    errors_path: str = None,
 ):
     """Executes complete pipeline on given image.
 
@@ -46,51 +49,79 @@ def image_pipeline(
         This option is useful to debug which parameters are to blaim for
         unexpected pipeline behaviour.
         By default, this is False.
-    cache: bool = True,
+    cache: bool = False,
         Wethever to skip processing an image if it was already processed.
+    errors_path: str = None,
+        Path where to store the error info.
+        Use None to not log the errors and raise them.
     """
-    # Check if we have already this image caches
-    if cache and os.path.exists(output_path):
-        # If this is the case we skip this image.
+    try:
+        # Check if we have already this image caches
+        if cache and os.path.exists(output_path):
+            # If this is the case we skip this image.
+            return None
+
+        # Loading the image.
+        original = load_image(image_path)
+
+        # Executes perspective correction
+        image_perspective = perspective_correction(original)
+
+        # Executes blur bbox cut
+        image_bbox = blur_bbox(
+            image_perspective,
+            padding=blur_bbox_padding
+        )
+
+        # Determines optimal counter rotation
+        image_rotated, angle, x = counter_rotate(
+            image_bbox,
+            width=thumbnail_width
+        )
+
+        # Cuts the body lower part
+        image_body_cut, darken_image_body_cut = get_body_cut(
+            image_bbox,
+            image_rotated,
+            angle,
+            simmetry_axis=x,
+            width=thumbnail_width,
+            hardness=hardness
+        )
+
+        # Executes secondary blur bbox cut
+        image_body_cut, (darken_image_body_cut,) = blur_bbox(
+            image_body_cut,
+            padding=blur_bbox_padding,
+            others=[darken_image_body_cut]
+        )
+    # If the user hit a keyboard interrupt we just stop.
+    except KeyboardInterrupt:
         return None
-
-    # Loading the image.
-    original = load_image(image_path)
-
-    # Executes perspective correction
-    image_perspective = perspective_correction(original)
-
-    # Executes blur bbox cut
-    image_bbox = blur_bbox(
-        image_perspective,
-        padding=blur_bbox_padding
-    )
-
-    # Determines optimal counter rotation
-    image_rotated, angle, x = counter_rotate(
-        image_bbox,
-        width=thumbnail_width
-    )
-
-    # Cuts the body lower part
-    image_body_cut, darken_image_body_cut = get_body_cut(
-        image_bbox,
-        image_rotated,
-        angle,
-        simmetry_axis=x,
-        width=thumbnail_width,
-        hardness=hardness
-    )
-
-    # Executes secondary blur bbox cut
-    image_body_cut, (darken_image_body_cut,) = blur_bbox(
-        image_body_cut,
-        padding=blur_bbox_padding,
-        others=[darken_image_body_cut]
-    )
+    # Otherwise we optionally write to disk to encountered exception.
+    except Exception as e:
+        if errors_path is None:
+            raise e
+        os.makedirs(errors_path, exist_ok=True)
+        compress_json.dump(
+            {
+                "image-path": image_path,
+                "text": str(e),
+                "class": type(e),
+                "traceback": " ".join(
+                    traceback.format_exc().splitlines()
+                )
+            },
+            "{}/{}.csv".format(
+                errors_path,
+                os.path.basename(image_path).split(".")[0]
+            )
+        )
+        return None
 
     directory_name = os.path.dirname(output_path)
     os.makedirs(directory_name, exist_ok=True)
+
     if not save_steps:
         # Saving image to given path
         cv2.imwrite(  # pylint: disable=no-member
@@ -141,7 +172,8 @@ def images_pipeline(
     hardness: float = 0.6,
     retinex: bool = True,
     save_steps: bool = False,
-    cache: bool = True,
+    cache: bool = False,
+    errors_path: str = None,
     n_jobs: int = None,
     verbose: bool = True
 ):
@@ -168,8 +200,11 @@ def images_pipeline(
         This option is useful to debug which parameters are to blaim for
         unexpected pipeline behaviour.
         By default, this is False.
-    cache: bool = True,
+    cache: bool = False,
         Wethever to skip processing an image if it was already processed.
+    errors_path: str = None,
+        Path where to store the error info.
+        Use None to not log the errors and raise them.
     n_jobs: int = None,
         Number of jobs to use for the processing task.
         If given value is None, the number of available CPUs is used.
@@ -187,7 +222,7 @@ def images_pipeline(
         raise ValueError(
             (
                 "Given image paths length ({}) does not match the length of "
-                "givem output paths length ({})."
+                "given output paths length ({})."
             ).format(
                 len(image_paths), len(output_paths)
             )
@@ -207,7 +242,8 @@ def images_pipeline(
             hardness=hardness,
             retinex=retinex,
             save_steps=save_steps,
-            cache=cache
+            cache=cache,
+            errors_path=errors_path
         )
         for image_path, output_path in zip(
             image_paths,
