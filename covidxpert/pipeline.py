@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 from typing import List, Dict
 import cv2
+import compress_json
 from .utils import load_image, get_thumbnail
 from .perspective_correction import perspective_correction
 from .blur_bbox import blur_bbox
@@ -16,13 +17,14 @@ import traceback
 def image_pipeline(
     image_path: str,
     output_path: str,
-    error_path: str = None,
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
     hardness: float = 0.6,
     retinex: bool = True,
-    save_steps: bool = False
+    save_steps: bool = False,
+    cache: bool = False,
+    errors_path: str = None,
 ):
     """Executes complete pipeline on given image.
 
@@ -32,8 +34,6 @@ def image_pipeline(
         Path from where to load the given image.
     output_path: str,
         Path where to save the processed image.
-    error_path: str = "error_pipeline/",
-        Path where to store the error info.
     blur_bbox_padding: int = 50,
         The padding to use around the blur bbox cut.
     width: int = 480,
@@ -49,9 +49,18 @@ def image_pipeline(
         This option is useful to debug which parameters are to blaim for
         unexpected pipeline behaviour.
         By default, this is False.
+    cache: bool = False,
+        Wethever to skip processing an image if it was already processed.
+    errors_path: str = None,
+        Path where to store the error info.
+        Use None to not log the errors and raise them.
     """
     try:
-        
+        # Check if we have already this image caches
+        if cache and os.path.exists(output_path):
+            # If this is the case we skip this image.
+            return None
+
         # Loading the image.
         original = load_image(image_path)
 
@@ -86,51 +95,68 @@ def image_pipeline(
             padding=blur_bbox_padding,
             others=[darken_image_body_cut]
         )
-
-        directory_name = os.path.dirname(output_path)
-        os.makedirs(directory_name, exist_ok=True)
-        if not save_steps:
-            # Saving image to given path
-            cv2.imwrite(  # pylint: disable=no-member
-                output_path,
-                # Resize given image
-                get_thumbnail( 
-                    image_body_cut if retinex else darken_image_body_cut,
-                    width=width
-                )
-            )
-        else:
-            fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
-            axes = axes.ravel()
-
-            axes[0].imshow(original, cmap="gray")
-            axes[0].set_title("Original image")
-
-            axes[1].imshow(image_perspective, cmap="gray")
-            axes[1].set_title("Perspective correction")
-
-            axes[2].imshow(image_bbox, cmap="gray")
-            axes[2].set_title("Blur BBox image")
-
-            axes[3].imshow(image_rotated, cmap="gray")
-            axes[3].set_title("Rotated image")
-
-            axes[4].imshow(darken_image_body_cut, cmap="gray")
-            axes[4].set_title("Darkened image")
-
-            axes[5].imshow(image_body_cut, cmap="gray")
-            axes[5].set_title("Body cut image")
-            [ax.set_axis_off() for ax in axes.ravel()]
-            fig.tight_layout()
-            fig.savefig(output_path)
-            plt.close(fig)
+    # If the user hit a keyboard interrupt we just stop.
+    except KeyboardInterrupt:
+        return None
+    # Otherwise we optionally write to disk to encountered exception.
     except Exception as e:
-        name = os.path.basename(image_path).split('.')[0]
-        error_path = error_path if error_path else "error_pipeline/"
-        os.makedirs(error_path, exist_ok=True)
-        with open(f'{os.path.join(error_path, name)}.csv', 'w') as file:
-            file.write(f'{image_path};{str(e)};{" ".join(traceback.format_exc().splitlines())}')
+        if errors_path is None:
+            raise e
+        os.makedirs(errors_path, exist_ok=True)
+        compress_json.dump(
+            {
+                "image-path": image_path,
+                "text": str(e),
+                "class": type(e),
+                "traceback": " ".join(
+                    traceback.format_exc().splitlines()
+                )
+            },
+            "{}/{}.csv".format(
+                errors_path,
+                os.path.basename(image_path).split(".")[0]
+            )
+        )
+        return None
 
+    directory_name = os.path.dirname(output_path)
+    os.makedirs(directory_name, exist_ok=True)
+
+    if not save_steps:
+        # Saving image to given path
+        cv2.imwrite(  # pylint: disable=no-member
+            output_path,
+            # Resize given image
+            get_thumbnail(
+                image_body_cut if retinex else darken_image_body_cut,
+                width=width
+            )
+        )
+    else:
+        fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
+        axes = axes.ravel()
+
+        axes[0].imshow(original, cmap="gray")
+        axes[0].set_title("Original image")
+
+        axes[1].imshow(image_perspective, cmap="gray")
+        axes[1].set_title("Perspective correction")
+
+        axes[2].imshow(image_bbox, cmap="gray")
+        axes[2].set_title("Blur BBox image")
+
+        axes[3].imshow(image_rotated, cmap="gray")
+        axes[3].set_title("Rotated image")
+
+        axes[4].imshow(darken_image_body_cut, cmap="gray")
+        axes[4].set_title("Darkened image")
+
+        axes[5].imshow(image_body_cut, cmap="gray")
+        axes[5].set_title("Body cut image")
+        [ax.set_axis_off() for ax in axes.ravel()]
+        fig.tight_layout()
+        fig.savefig(output_path)
+        plt.close(fig)
 
 
 def _image_pipeline(kwargs: Dict):
@@ -140,13 +166,14 @@ def _image_pipeline(kwargs: Dict):
 def images_pipeline(
     image_paths: List[str],
     output_paths: List[str],
-    error_path: str = "error_pipeline/",
     blur_bbox_padding: int = 50,
     width: int = 480,
     thumbnail_width: int = 256,
     hardness: float = 0.6,
     retinex: bool = True,
     save_steps: bool = False,
+    cache: bool = False,
+    errors_path: str = None,
     n_jobs: int = None,
     verbose: bool = True
 ):
@@ -158,8 +185,6 @@ def images_pipeline(
         Path from where to load the given image.
     output_path: str,
         Path where to save the processed image.
-    error_path: str = "error_pipeline/",
-        Path where to store the error info.
     blur_bbox_padding: int = 50,
         The padding to use around the blur bbox cut.
     width: int = 480,
@@ -175,6 +200,11 @@ def images_pipeline(
         This option is useful to debug which parameters are to blaim for
         unexpected pipeline behaviour.
         By default, this is False.
+    cache: bool = False,
+        Wethever to skip processing an image if it was already processed.
+    errors_path: str = None,
+        Path where to store the error info.
+        Use None to not log the errors and raise them.
     n_jobs: int = None,
         Number of jobs to use for the processing task.
         If given value is None, the number of available CPUs is used.
@@ -207,12 +237,13 @@ def images_pipeline(
         dict(
             image_path=image_path,
             output_path=output_path,
-            error_path=error_path,
             blur_bbox_padding=blur_bbox_padding,
             thumbnail_width=thumbnail_width,
             hardness=hardness,
             retinex=retinex,
-            save_steps=save_steps
+            save_steps=save_steps,
+            cache=cache,
+            errors_path=errors_path
         )
         for image_path, output_path in zip(
             image_paths,
