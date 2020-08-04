@@ -20,7 +20,8 @@ def image_pipeline(
     thumbnail_width: int = 256,
     hardness: float = 0.6,
     retinex: bool = True,
-    save_steps: bool = False
+    save_steps: bool = False,
+    cache: bool = True
 ):
     """Executes complete pipeline on given image.
 
@@ -45,7 +46,14 @@ def image_pipeline(
         This option is useful to debug which parameters are to blaim for
         unexpected pipeline behaviour.
         By default, this is False.
+    cache: bool = True,
+        Wethever to skip processing an image if it was already processed.
     """
+    # Check if we have already this image caches
+    if cache and os.path.exists(output_path):
+        # If this is the case we skip this image.
+        return None
+
     # Loading the image.
     original = load_image(image_path)
 
@@ -88,7 +96,7 @@ def image_pipeline(
         cv2.imwrite(  # pylint: disable=no-member
             output_path,
             # Resize given image
-            get_thumbnail( 
+            get_thumbnail(
                 image_body_cut if retinex else darken_image_body_cut,
                 width=width
             )
@@ -133,6 +141,7 @@ def images_pipeline(
     hardness: float = 0.6,
     retinex: bool = True,
     save_steps: bool = False,
+    cache: bool = True,
     n_jobs: int = None,
     verbose: bool = True
 ):
@@ -159,6 +168,8 @@ def images_pipeline(
         This option is useful to debug which parameters are to blaim for
         unexpected pipeline behaviour.
         By default, this is False.
+    cache: bool = True,
+        Wethever to skip processing an image if it was already processed.
     n_jobs: int = None,
         Number of jobs to use for the processing task.
         If given value is None, the number of available CPUs is used.
@@ -195,7 +206,8 @@ def images_pipeline(
             thumbnail_width=thumbnail_width,
             hardness=hardness,
             retinex=retinex,
-            save_steps=save_steps
+            save_steps=save_steps,
+            cache=cache
         )
         for image_path, output_path in zip(
             image_paths,
