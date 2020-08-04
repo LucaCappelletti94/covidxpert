@@ -66,7 +66,9 @@ setup(
         "tqdm",
         "numba",
         "matplotlib",
-        "bezier"
+        "bezier",
+        "compress_json",
+        "colorcorrect"
     ],
     extras_require=extras,
 )
