@@ -77,7 +77,15 @@ def get_optimal_y_body_cut(mask: np.ndarray, step: int = None) -> float:
     return best_y
 
 
-def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_axis: int, hardness: float = 0.75, width: int = 256, others: List[np.ndarray] = None) -> Union[np.ndarray, np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+def get_body_cut(
+    image: np.ndarray,
+    rotated: np.ndarray,
+    angle: float,
+    simmetry_axis: int,
+    hardness: float = 0.75,
+    width: int = 256,
+    others: List[np.ndarray] = None
+) -> Union[np.ndarray, np.ndarray, Tuple[np.ndarray, np.ndarray]]:
     """Return the body cut for given image.
 
     Parameters
@@ -114,7 +122,7 @@ def get_body_cut(image: np.ndarray, rotated: np.ndarray, angle: float, simmetry_
 
     best_y = get_optimal_y_body_cut(mask)
 
-    body_slice = slice(0, int(-best_y*hardness))
+    body_slice = slice(0, int(-best_y*hardness)) if best_y != 0 else slice(0, len(mask))
 
     result = rotated[body_slice], rotated_darken[body_slice]
     if others is None:

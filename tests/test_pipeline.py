@@ -8,7 +8,9 @@ def test_pipeline():
     """Testing execution of the complete pipeline."""
     image_paths = glob("tests/test_images/*")
     output_paths = [
-        "tests/pipeline/{}".format(os.path.basename(image_path))
+        "tests/pipeline/{}.jpg".format(
+            "".join(os.path.basename(image_path).split(".")[:-1])
+        )
         for image_path in image_paths
     ]
     images_pipeline(
