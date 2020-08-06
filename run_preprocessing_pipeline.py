@@ -1,8 +1,12 @@
+"""
+    Script that runs the preprocessing pipeline on input images.
+"""
 from notipy_me import Notipy
 from covidxpert import images_pipeline
 
 from glob import glob
 import pandas as pd
+import multiprocessing
 
 root = "~"
 dataset_path = f'{root}/datasets/{{}}'
