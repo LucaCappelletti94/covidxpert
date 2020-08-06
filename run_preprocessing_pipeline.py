@@ -8,7 +8,7 @@ from glob import glob
 import pandas as pd
 import multiprocessing
 
-root = "~"
+root = ".."
 dataset_path = f'{root}/datasets/{{}}'
 output_path = f'{root}/processed/{{}}'
 error_path = f'{root}/error_pipeline/'
