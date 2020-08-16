@@ -11,6 +11,9 @@ As usual, just download it using pip:
 
 .. code:: shell
 
+    sudo apt update
+    sudo apt install -y libsm6 libxext6
+    sudo apt-get install -y gcc g++ libxrender-dev
     pip install covidxpert
 
 Tests Coverage

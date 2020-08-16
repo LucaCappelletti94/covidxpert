@@ -50,6 +50,7 @@ setup(
     author_email="LucaCappelletti94",
     # Choose your license
     license='MIT',
+    python_requires='>3.5.2',
     include_package_data=True,
     classifiers=[
         'Development Status :: 3 - Alpha',
