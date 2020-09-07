@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pydicom as dicom
 from .normalize_image import normalize_image
 
 
@@ -15,5 +16,9 @@ def load_image(path: str) -> np.ndarray:
     ----------------
     Return numpy array containing loaded image.
     """
-    image = cv2.imread(path, cv2.IMREAD_GRAYSCALE) # pylint: disable=no-member
+    if path.endswith('.dcm'):
+        ds=dicom.dcmread(path)
+        image= cv2.cvtColor(ds.pixel_array, cv2.IMREAD_GRAYSCALE)
+    else:
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE) # pylint: disable=no-member
     return normalize_image(image)
