@@ -69,7 +69,8 @@ setup(
         "matplotlib",
         "bezier",
         "compress_json",
-        "colorcorrect"
+        "colorcorrect",
+        "pydicom"
     ],
     extras_require=extras,
 )
