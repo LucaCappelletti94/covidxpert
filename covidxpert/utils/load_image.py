@@ -18,7 +18,7 @@ def load_image(path: str) -> np.ndarray:
     """
     if path.endswith('.dcm'):
         ds=dicom.dcmread(path)
-        image= cv2.cvtColor(ds.pixel_array, cv2.IMREAD_GRAYSCALE)
+        image= ds.pixel_array #cv2.cvtColor(ds.pixel_array, cv2.IMREAD_GRAYSCALE)
     else:
         image = cv2.imread(path, cv2.IMREAD_GRAYSCALE) # pylint: disable=no-member
     return normalize_image(image)
