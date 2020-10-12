@@ -70,7 +70,8 @@ setup(
         "bezier",
         "compress_json",
         "colorcorrect",
-        "pydicom"
+        "pydicom",
+        "tensorflow"
     ],
     extras_require=extras,
 )
