@@ -15,7 +15,7 @@ def parse_function(filename: str, label: int):
         The filename of the file to read
     label: int,
         The label of the file"""
-    image_string = tf.read_file(filename)
+    image_string = tf.io.read_file(filename)
 
     #Don't use tf.image.decode_imagze, or the output shape will be undefined
     image = tf_image.decode_jpeg(image_string, channels=1)
