@@ -3,7 +3,6 @@ import tensorflow.keras as k
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, add
-from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 def resnet_block(input_tensor: Input, length: int, **kwargs):
     """Build a resent block.
