@@ -259,7 +259,7 @@ def images_pipeline(
     tasks = (
         dict(
             image_path=image_path,
-            output_path=output_path,
+            output_path=".".join(output_path.split(".")[:-1]) + ".jpg",
             blur_bbox_padding=blur_bbox_padding,
             thumbnail_width=thumbnail_width,
             hardness=hardness,
