@@ -6,28 +6,29 @@ import tensorflow as tf
 import tensorflow.image as tf_image
 from tensorflow.data.experimental import AUTOTUNE
 
-def parse_function(filename: str, label: int):
-    """Read the file and parse it as a black and white jpeg.
-    
-    Arguments
-    ---------
-    filename: str,
-        The filename of the file to read
-    label: int,
-        The label of the file"""
-    image_string = tf.io.read_file(filename)
+def parse_function(image_size):
+    def parse_function_inner(filename: str, label: int):
+        """Read the file and parse it as a black and white jpeg.
+        
+        Arguments
+        ---------
+        filename: str,
+            The filename of the file to read
+        label: int,
+            The label of the file"""
+        image_string = tf.io.read_file(filename)
 
-    #Don't use tf.image.decode_imagze, or the output shape will be undefined
-    image = tf_image.decode_jpeg(image_string, channels=1)
+        #Don't use tf.image.decode_imagze, or the output shape will be undefined
+        image = tf_image.decode_jpeg(image_string, channels=1)
 
-    #This will convert to float values in [0, 1]
-    image = tf_image.convert_image_dtype(image, tf.float32)
+        #This will convert to float values in [0, 1]
+        image = tf_image.convert_image_dtype(image, tf.float32)
 
-    # This was present in the example but using the random_crop
-    # it shouldn't be needed
-    #image = tf_image.resize_images(image, [64, 64])
-    return image, label
-
+        # This was present in the example but using the random_crop
+        # it shouldn't be needed
+        image = tf_image.resize_with_pad(image, *image_size)
+        return image, label
+    return parse_function_inner
 
 def data_augmentation(image_size, seed):
     """Prepare the data argumentation function using the parameters.
@@ -51,7 +52,7 @@ def data_augmentation(image_size, seed):
             The label of the image
         """
         image = tf_image.random_flip_left_right(image, seed=seed)
-        image = tf_image.random_flip_up_down(image, seed=seed)
+        #image = tf_image.random_flip_up_down(image, seed=seed)
         image = tf_image.random_crop(
             image, 
             size=image_size, 
@@ -64,12 +65,12 @@ def data_augmentation(image_size, seed):
             max_delta=32.0 / 255.0, 
             seed=seed
         )
-        image = tf_image.random_contrast(
-            image,
-            lower=0.3,
-            higher=0.7,
-            seed=seed
-        )
+        #image = tf_image.random_contrast(
+        #    image,
+        #    lower=0.3,
+        #    higher=0.7,
+        #    seed=seed
+        #)
 
         #Make sure the image is still in [0, 1]
         image = tf.clip_by_value(image, 0.0, 1.0)
@@ -77,7 +78,7 @@ def data_augmentation(image_size, seed):
         return image, label
     return data_augmentation_inner
 
-def load_images(filenames, labels, batch_size:int=1024, image_size=(256, 256), seed:int=1337) -> tf.data.Dataset:
+def load_images(filenames, labels, batch_size:int=1024, input_size=(480, 480), image_size=(256, 256, 1), seed:int=1337) -> tf.data.Dataset:
     """Prepare a keras Dataset with the images and labels.
     
     Arguments
@@ -98,7 +99,7 @@ def load_images(filenames, labels, batch_size:int=1024, image_size=(256, 256), s
     # shuffle and repeat before the loading of the images for speed reason
     dataset = dataset.shuffle(len(filenames), reshuffle_each_iteration=True, seed=seed)
     # Load the images
-    dataset = dataset.map(parse_function, num_parallel_calls=AUTOTUNE)
+    dataset = dataset.map(parse_function(input_size), num_parallel_calls=AUTOTUNE)
     # Augment them
     dataset = dataset.map(data_augmentation(image_size, seed), num_parallel_calls=AUTOTUNE)
     # Set the batch size and set the prefetch so that the CPU prepares images
