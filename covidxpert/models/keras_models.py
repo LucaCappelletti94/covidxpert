@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.metrics import AUC
+from tensorflow.keras.metrics import AUC, Recall, Precision
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
@@ -36,6 +36,8 @@ def load_keras_model(keras_model, img_shape):
         metrics=[
             "accuracy",
             AUC(curve="PR", name="AUPRC"),
-            AUC(curve="ROC", name="AUROC")
+            AUC(curve="ROC", name="AUROC"),
+            Recall(name="recall"),
+            Precision(name="precision"),
     ])
     return model
