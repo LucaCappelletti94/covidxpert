@@ -72,7 +72,8 @@ setup(
         "colorcorrect",
         "pydicom",
         "tensorflow",
-        "tensorflow_model_analysis"
+        "tensorflow_model_analysis",
+        "tensorflow-addons"
     ],
     extras_require=extras,
 )

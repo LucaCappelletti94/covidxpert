@@ -2,8 +2,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC, Recall, Precision
-from tensorflow_model_analysis.metrics import FallOut, MissRate, Specificity
-from tensorflow_model_analysis.metrics import F1Score, MatthewsCorrelationCoefficent
+#from tensorflow_model_analysis.metrics import FallOut, MissRate, Specificity
+#from tensorflow_model_analysis.metrics import F1Score, MatthewsCorrelationCoefficent
+from tensorflow_addons.metrics import F1Score, MatthewsCorrelationCoefficient
 
 def load_keras_model(keras_model, img_shape):
     """Adapt a keras model for our task making them accept a 
@@ -39,12 +40,12 @@ def load_keras_model(keras_model, img_shape):
             "accuracy",
             AUC(curve="PR", name="AUPRC"),
             AUC(curve="ROC", name="AUROC"),
-            F1Score(name="f1score"),
-            MatthewsCorrelationCoefficent(name="mcc"),
+            F1Score(2, name="f1score"),
+            MatthewsCorrelationCoefficent(2, name="mcc"),
             Recall(name="recall"),
             Precision(name="precision"),
-            Specificity(name="sepcificity"),
-            FallOut(name="fallout"),
-            MissRate(name="missrate"),
+            #Specificity(name="sepcificity"),
+            #FallOut(name="fallout"),
+            #MissRate(name="missrate"),
     ])
     return model
