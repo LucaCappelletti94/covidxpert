@@ -1,7 +1,7 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.metrics import AUC, Recall, Precision, S
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.metrics import AUC, Recall, Precision
 from tensorflow_model_analysis.metrics import FallOut, MissRate, Specificity
 from tensorflow_model_analysis.metrics import F1Score, MatthewsCorrelationCoefficent
 
