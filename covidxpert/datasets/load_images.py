@@ -5,12 +5,21 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.image as tf_image
 from tensorflow.data.experimental import AUTOTUNE
+from typing import Tuple, List
 
-def parse_function(image_size):
+def parse_function(image_size: Tuple[int, int]):
+    """Setup a parse function with the given image size.
+    
+    Parameters
+    ----------
+    image_size: Tuple[int, int],
+        The size of the resulting image, if the input image is smaller or bigger it
+        will be cropped or padded with zeros.
+    """
     def parse_function_inner(filename: str, label: int):
         """Read the file and parse it as a black and white jpeg.
         
-        Arguments
+        Parameters
         ---------
         filename: str,
             The filename of the file to read
@@ -30,10 +39,10 @@ def parse_function(image_size):
         return image, label
     return parse_function_inner
 
-def data_augmentation(image_size, seed):
+def data_augmentation(image_size:Tuple[int, int], seed:int):
     """Prepare the data argumentation function using the parameters.
     
-    Arguments
+    Parameters
     ---------
     image_size: Tuple[int, int],
         The result size of each image (this parameter is passed to
@@ -41,10 +50,10 @@ def data_augmentation(image_size, seed):
     seed: int,
         The random seed that each data augmentation function will use.
     """
-    def data_augmentation_inner(image, label):
+    def data_augmentation_inner(image: np.array, label: int):
         """Augment the passed image.
         
-        Arguments
+        Parameters
         ---------
         image: np.array,
             The image as a matrix.
@@ -78,10 +87,17 @@ def data_augmentation(image_size, seed):
         return image, label
     return data_augmentation_inner
 
-def load_images(filenames, labels, batch_size:int=1024, input_size=(480, 480), image_size=(256, 256, 1), seed:int=1337) -> tf.data.Dataset:
+def load_images(
+        filenames:List[str], 
+        labels:List[int], 
+        batch_size:int=1024, 
+        input_size:Tuple[int, int]=(480, 480), 
+        image_size:Tuple[int, int, int]=(256, 256, 1), 
+        seed:int=1337
+    ) -> tf.data.Dataset:
     """Prepare a keras Dataset with the images and labels.
     
-    Arguments
+    Parameters
     ---------
     filenames: List[str],
         The list of paths to the images
@@ -89,7 +105,9 @@ def load_images(filenames, labels, batch_size:int=1024, input_size=(480, 480), i
         The labels of each image.
     batch_size: int,
         The batchsize to use for the training.
-    image_size: Tuple[int, int],
+    input_size: Tuple[int, int],
+        The size of the input images
+    image_size: Tuple[int, int, int],
         The size of the result images, this size is passed to the
         random_crop data augmentation function.
     seed: int,
