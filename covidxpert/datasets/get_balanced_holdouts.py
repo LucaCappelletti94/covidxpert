@@ -15,7 +15,7 @@ def get_balanced_holdouts(
     holdout_numbers: int = 1,
     test_size: float = 0.2,
     random_state: int = 42
-) -> Generator[Tuple[Dataset, Dataset]]:
+) -> Generator[None, Tuple[Dataset, Dataset], None]:
     """Create a generator of holdouts.
 
     Parameters
