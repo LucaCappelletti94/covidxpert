@@ -10,7 +10,8 @@ from .load_images import load_images
 def get_balanced_holdouts(
     filenames: List[str],
     labels: List[int],
-    img_shape: Tuple[int, int],
+    input_size: Tuple[int, int],
+    img_shape: Tuple[int, int, int],
     batch_size: int,
     holdout_numbers: int = 1,
     test_size: float = 0.2,
@@ -24,7 +25,9 @@ def get_balanced_holdouts(
         The list of paths of the images.
     labels: List[int],
         The label of each image.
-    img_shape: Tuple[int, int],
+    input_size: Tuple[int, int],
+        The size of the input images
+    img_shape: Tuple[int, int, int],
         The shape of the images, if the size differs the image will be padded with zeros or cropped.
     batch_size: int,
         Batch size for the training of the model.
@@ -45,7 +48,7 @@ def get_balanced_holdouts(
         y_test = labels[test_index]
         # Convert them to datasets
         train_data = load_images(
-            x_train, y_train, image_size=img_shape, batch_size=batch_size)
+            x_train, y_train, image_size=img_shape, input_size=input_size, batch_size=batch_size)
         test_data = load_images(
-            x_test, y_test, image_size=img_shape, batch_size=batch_size)
+            x_test, y_test, image_size=img_shape, input_size=input_size, batch_size=batch_size)
         yield test_data, train_data
