@@ -7,12 +7,12 @@ import tensorflow.image as tf_image
 from tensorflow.data.experimental import AUTOTUNE
 from typing import Tuple, List
 
-def parse_function(image_size: Tuple[int, int]):
+def parse_function(img_shape: Tuple[int, int]):
     """Setup a parse function with the given image size.
     
     Parameters
     ----------
-    image_size: Tuple[int, int],
+    img_shape: Tuple[int, int],
         The size of the resulting image, if the input image is smaller or bigger it
         will be cropped or padded with zeros.
     """
@@ -35,16 +35,16 @@ def parse_function(image_size: Tuple[int, int]):
 
         # This was present in the example but using the random_crop
         # it shouldn't be needed
-        image = tf_image.resize_with_pad(image, *image_size)
+        image = tf_image.resize_with_pad(image, *img_shape)
         return image, label
     return parse_function_inner
 
-def data_augmentation(image_size:Tuple[int, int], seed:int):
+def data_augmentation(crop_shape:Tuple[int, int, int], seed:int):
     """Prepare the data argumentation function using the parameters.
     
     Parameters
     ---------
-    image_size: Tuple[int, int],
+    crop_shape: Tuple[int, int, int],
         The result size of each image (this parameter is passed to
         the random_crop function.
     seed: int,
@@ -64,7 +64,7 @@ def data_augmentation(image_size:Tuple[int, int], seed:int):
         #image = tf_image.random_flip_up_down(image, seed=seed)
         image = tf_image.random_crop(
             image, 
-            size=image_size, 
+            size=crop_shape, 
             seed=seed, 
             name="random_contrast"
         )
@@ -91,8 +91,8 @@ def load_images(
         filenames:List[str], 
         labels:List[int], 
         batch_size:int=1024, 
-        input_size:Tuple[int, int]=(480, 480), 
-        image_size:Tuple[int, int, int]=(256, 256, 1), 
+        img_shape:Tuple[int, int]=(480, 480), 
+        crop_shape:Tuple[int, int, int]=(256, 256, 1), 
         seed:int=1337
     ) -> tf.data.Dataset:
     """Prepare a keras Dataset with the images and labels.
@@ -105,9 +105,9 @@ def load_images(
         The labels of each image.
     batch_size: int,
         The batchsize to use for the training.
-    input_size: Tuple[int, int],
+    img_shape: Tuple[int, int],
         The size of the input images
-    image_size: Tuple[int, int, int],
+    crop_shape: Tuple[int, int, int],
         The size of the result images, this size is passed to the
         random_crop data augmentation function.
     seed: int,
@@ -117,9 +117,9 @@ def load_images(
     # shuffle and repeat before the loading of the images for speed reason
     dataset = dataset.shuffle(len(filenames), reshuffle_each_iteration=True, seed=seed)
     # Load the images
-    dataset = dataset.map(parse_function(input_size), num_parallel_calls=AUTOTUNE)
+    dataset = dataset.map(parse_function(img_shape), num_parallel_calls=AUTOTUNE)
     # Augment them
-    dataset = dataset.map(data_augmentation(image_size, seed), num_parallel_calls=AUTOTUNE)
+    dataset = dataset.map(data_augmentation(crop_shape, seed), num_parallel_calls=AUTOTUNE)
     # Set the batch size and set the prefetch so that the CPU prepares images
     # while the GPU is working on the batch
     dataset = dataset.batch(batch_size)
