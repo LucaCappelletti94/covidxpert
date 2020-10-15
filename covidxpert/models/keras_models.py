@@ -41,7 +41,7 @@ def load_keras_model(keras_model, img_shape):
             AUC(curve="PR", name="AUPRC"),
             AUC(curve="ROC", name="AUROC"),
             F1Score(2, name="f1score"),
-            MatthewsCorrelationCoefficent(2, name="mcc"),
+            MatthewsCorrelationCoefficient(2, name="mcc"),
             Recall(name="recall"),
             Precision(name="precision"),
             #Specificity(name="sepcificity"),
