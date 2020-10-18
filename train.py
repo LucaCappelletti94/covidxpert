@@ -6,7 +6,7 @@ MODELS_DIR = "./weights"
 BASE_DIR = "/home/lucacappelletti/processed/"
 
 import os
-from IPython import embed()
+from IPython import embed
 import numpy as np
 import pandas as pd
 from datetime import datetime
