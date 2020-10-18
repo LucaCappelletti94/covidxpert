@@ -22,6 +22,9 @@ class CustomMetric(Metric):
         self.result.assign(0)
 
     def update_state(self, y_true, y_pred, sample_weight=None):
+        y_true = tf.cast(y_true, self.dtype)
+        y_pred = tf.cast(y_pred, self.dtype)
+
         y_pred_pos = K.round(K.clip(y_pred, 0, 1))
         y_pred_neg = 1 - y_pred_pos
 
