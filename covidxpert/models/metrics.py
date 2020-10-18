@@ -140,4 +140,4 @@ class DiagnosticOddsRatio(CustomMetric):
         fpr = self.fp / (self.fp + self.tn + epsilon())
         tnr = self.tn / (self.tn + self.fp + epsilon())
         fnr = self.fn / (self.fn + self.tp + epsilon())
-        return (tpr + tnr) / (fpr + fnr + epslion())
+        return (tpr + tnr) / (fpr + fnr + epsilon())
