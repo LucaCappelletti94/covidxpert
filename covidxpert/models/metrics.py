@@ -39,10 +39,16 @@ class CustomMetric(Metric):
         raise NotImplementedError("This method should be implemented by subclasses")
 
 class F1Score(Metric):
+    def __init__(self, name, **kwargs):
+        super(F1Score, self).__init__(name=name, **kwargs)
+        
     def _custom_metric(self):
         return self.tp / (self.tp + 0.5 * (self.fp + self.fn) + tf.keras.backend.epsilon())
 
 class MatthewsCorrelationCoefficinet(Metric):
+    def __init__(self, name, **kwargs):
+        super(F1MatthewsCorrelationCoefficinetcore, self).__init__(name=name, **kwargs)
+
     def _custom_metric(self):
         numerator = (self.tp * self.tn - self.fp * self.fn)
         denominator = tf.math.sqrt((self.tp + self.fp) * (self.tp + self.fn) * (self.tn + self.fp) * (self.tn + self.fn))
