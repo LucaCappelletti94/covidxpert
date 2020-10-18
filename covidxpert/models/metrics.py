@@ -132,7 +132,7 @@ class NegativeLikelihoodRatio(CustomMetric):
     def _custom_metric(self):
         tnr = self.tn / (self.tn + self.fp + epsilon())
         fnr = self.fn / (self.fn + self.tp + epsilon())
-        return tpr / (fpr + epsilon())
+        return fnr / (tnr + epsilon())
 
 class DiagnosticOddsRatio(CustomMetric):
     def _custom_metric(self):
