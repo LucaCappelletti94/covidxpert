@@ -3,7 +3,8 @@ from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC, Recall, Precision
 from tensorflow.keras.metrics import TrueNegatives, TruePositives, FalseNegatives, FalsePositives
-from tensorflow_addons.metrics import F1Score, MatthewsCorrelationCoefficient
+
+from .metrics import f1score, matthews_correlation
 
 def load_keras_model(keras_model, img_shape):
     """Adapt a keras model for our task making them accept a 
@@ -39,8 +40,8 @@ def load_keras_model(keras_model, img_shape):
             "accuracy",
             AUC(curve="PR", name="AUPRC"),
             AUC(curve="ROC", name="AUROC"),
-            F1Score(1, name="f1score"),
-            MatthewsCorrelationCoefficient(1, name="mcc"),
+            F1Score(name="f1score"),
+            MatthewsCorrelationCoefficinet(name="mcc"),
             Recall(name="recall"),
             Precision(name="precision"),
             TruePositives(name="TP"),
