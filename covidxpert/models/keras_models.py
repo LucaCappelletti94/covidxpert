@@ -1,10 +1,9 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-from tensorflow.keras.metrics import AUC, Recall, Precision
-from tensorflow.keras.metrics import TrueNegatives, TruePositives, FalseNegatives, FalsePositives
+from tensorflow.keras.metrics import AUC
 
-from .metrics import F1Score, MatthewsCorrelationCoefficinet
+from .metrics import *
 
 def load_keras_model(keras_model, img_shape):
     """Adapt a keras model for our task making them accept a 
@@ -40,13 +39,22 @@ def load_keras_model(keras_model, img_shape):
             "accuracy",
             AUC(curve="PR", name="AUPRC"),
             AUC(curve="ROC", name="AUROC"),
-            F1Score(name="f1score"),
-            MatthewsCorrelationCoefficinet(name="mcc"),
             Recall(name="recall"),
+            Specificity(name="specificity"),
             Precision(name="precision"),
-            TruePositives(name="TP"),
-            TrueNegatives(name="TN"),
-            FalsePositives(name="FP"),
-            FalseNegatives(name="FN"),
+            NegativePredictiveValue(name="NPV"),
+            MissRate(name="missrate"),
+            FallOut(name="fallout"),
+            FalseDiscoveryRate(name="FDR"),
+            FalseOmissionRate(name="FOR"),
+            PrevalenceThreshold(name="PT"),
+            ThreatScore(name="TS"),
+            Accuracy(name="accuracy_2"),
+            BalancedAccuracy(name="BA"),
+            F1Score(name="f1-score"),
+            MatthewsCorrelationCoefficinet(name="MCC"),
+            FowlkesMallowsIndex(name="FMI"),
+            Informedness(name="informedness"),
+            Markedness(name="markedness"),
     ])
     return model
