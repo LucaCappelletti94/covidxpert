@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
+from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, GlobalAveragePooling2D
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC
 
@@ -27,7 +27,8 @@ def load_keras_model(keras_model, img_shape):
         classes=2,
     )
 
-    o = Flatten()(kmodel.output)
+    o = GlobalAveragePooling2D()(kmodel.output)
+    o = Flatten()(o)
     o = Dense(1, activation="sigmoid")(o)
 
     model = Model(i, o)
