@@ -48,7 +48,7 @@ class Recall(CustomMetric):
 
 class Specificity(CustomMetric):
     def _custom_metric(self):
-        return self.tn / (self.tp + self.fn + epsilon())
+        return self.tn / (self.tn + self.fp + epsilon())
 
 class Precision(CustomMetric):
     def _custom_metric(self):
@@ -86,7 +86,7 @@ class ThreatScore(CustomMetric):
         
 class Accuracy(CustomMetric):
     def _custom_metric(self):
-        return (self.tp + self.fn) / (self.tp + self.tn + self.fp + self.fn + epsilon())
+        return (self.tp + self.tn) / (self.tp + self.tn + self.fp + self.fn + epsilon())
         
 class BalancedAccuracy(CustomMetric):
     def _custom_metric(self):
@@ -121,3 +121,23 @@ class Markedness(CustomMetric):
         ppv = self.tp / (self.tp + self.fp + epsilon())
         npv = self.tn / (self.tn + self.fn + epsilon())
         return ppv + npv - 1
+
+class PositiveLikelihoodRatio(CustomMetric):
+    def _custom_metric(self):
+        tpr = self.tp / (self.tp + self.fn + epsilon())
+        fpr = self.fp / (self.fp + self.tn + epsilon())
+        return tpr / (fpr + epslion())
+
+class NegativeLikelihoodRatio(CustomMetric):
+    def _custom_metric(self):
+        tnr = self.tn / (self.tn + self.fp + epsilon())
+        fnr = self.fn / (self.fn + self.tp + epsilon())
+        return tpr / (fpr + epslion())
+
+class DiagnosticOddsRatio(CustomMetric):
+    def _custom_metric(self):
+        tpr = self.tp / (self.tp + self.fn + epsilon())
+        fpr = self.fp / (self.fp + self.tn + epsilon())
+        tnr = self.tn / (self.tn + self.fp + epsilon())
+        fnr = self.fn / (self.fn + self.tp + epsilon())
+        return (tpr + tnr) / (fpr + fnr + epslion())

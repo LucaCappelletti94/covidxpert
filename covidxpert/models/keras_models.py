@@ -56,5 +56,8 @@ def load_keras_model(keras_model, img_shape):
             FowlkesMallowsIndex(name="FMI"),
             Informedness(name="informedness"),
             Markedness(name="markedness"),
+            PositiveLikelihoodRatio(name="LR+"),
+            NegativeLikelihoodRatio(name="LR-"),
+            DiagnosticOddsRatio(name="DOR"),
     ])
     return model
