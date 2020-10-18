@@ -4,7 +4,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC, Recall, Precision
 from tensorflow.keras.metrics import TrueNegatives, TruePositives, FalseNegatives, FalsePositives
 
-from .metrics import f1score, matthews_correlation
+from .metrics import F1Score, MatthewsCorrelationCoefficinet
 
 def load_keras_model(keras_model, img_shape):
     """Adapt a keras model for our task making them accept a 
