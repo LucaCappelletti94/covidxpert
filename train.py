@@ -1,5 +1,5 @@
 #!/bin/python
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 IMG_SHAPE=(460, 460)
 CROP_SHAPE=(440, 440, 1)
 MODELS_DIR = "./weights"
