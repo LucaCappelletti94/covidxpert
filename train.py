@@ -40,11 +40,11 @@ class_weights = {
 test, train = next(get_balanced_holdouts(filenames, labels, IMG_SHAPE, CROP_SHAPE, BATCH_SIZE))
 
 # Load the model
-from tensorflow.keras.applications import ResNet50V2
-model = load_keras_model(ResNet50V2, CROP_SHAPE)
+from tensorflow.keras.applications import InceptionResNetV2
+model = load_keras_model(InceptionResNetV2, CROP_SHAPE)
 model.summary()
 
-ROOT_FOLDER = os.path.join(MODELS_DIR, "ResNet50V2")
+ROOT_FOLDER = os.path.join(MODELS_DIR, "InceptionResNetV2")
 
 try:
     # Train the model
