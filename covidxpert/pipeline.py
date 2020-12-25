@@ -15,6 +15,79 @@ from .body_cut import get_body_cut
 import traceback
 
 
+def just_resize_pipeline(
+    image_path: str,
+    output_path: str,
+    width: int = 480,
+    cache: bool = True,
+    errors_path: str = None,
+):
+    """Executes complete pipeline on given image.
+
+    Parameters
+    ---------------------------
+    image_path: str,
+        Path from where to load the given image.
+    output_path: str,
+        Path where to save the processed image.
+        Use None to not save the image.
+    width: int = 480,
+        The size to resize the image.
+    cache: bool = True,
+        Wethever to skip processing an image if it was already processed.
+    errors_path: str = None,
+        Path where to store the error info.
+        Use None to not log the errors and raise them.
+    """
+    try:
+        # Check if we have already this image caches
+        if cache and output_path is not None and os.path.exists(output_path):
+            # If this is the case we skip this image.
+            return None
+
+        # Loading the image.
+        original = load_image(image_path)
+
+        # Computing thumbnail
+        thumb = get_thumbnail(
+            original, width=width
+        )
+
+        # Saving image to given path
+        cv2.imwrite(  # pylint: disable=no-member
+            output_path,
+            # Resize given image
+            thumb
+        )
+
+    # If the user hit a keyboard interrupt we just stop.
+    except KeyboardInterrupt as e:
+        raise e
+    # Otherwise we optionally write to disk to encountered exception.
+    except Exception as e:
+        if errors_path is None:
+            raise e
+        os.makedirs(errors_path, exist_ok=True)
+        compress_json.dump(
+            {
+                "image-path": image_path,
+                "text": str(e),
+                "class": str(type(e)),
+                "traceback": " ".join(
+                    traceback.format_exc().splitlines()
+                )
+            },
+            "{}/{}.json".format(
+                errors_path,
+                os.path.basename(image_path).split(".")[0]
+            ),
+            json_kwargs=dict(
+                indent=4
+            )
+        )
+        return None
+
+
 def image_pipeline(
     image_path: str,
     output_path: str = None,
@@ -71,7 +144,8 @@ def image_pipeline(
 
         # Computing thumbnail
         image_perspective = get_thumbnail(
-            image_perspective, width=initial_width)
+            image_perspective, width=initial_width
+        )
 
         # Executes blur bbox cut
         image_bbox = blur_bbox(
@@ -291,3 +365,79 @@ def images_pipeline(
             ))
             p.close()
             p.join()
+
+
+def resize_images_pipeline(
+    image_paths: List[str],
+    output_paths: List[str],
+    width: int = 480,
+    cache: bool = True,
+    errors_path: str = None,
+    n_jobs: int = None,
+    verbose: bool = True
+):
+    """Executes complete pipeline on given image.
+
+    Parameters
+    ---------------------------
+    image_path: str,
+        Path from where to load the given image.
+    output_path: str,
+        Path where to save the processed image.
+    width: int = 480,
+        The size to resize the image.
+    cache: bool = True,
+        Wethever to skip processing an image if it was already processed.
+    errors_path: str = None,
+        Path where to store the error info.
+        Use None to not log the errors and raise them.
+    n_jobs: int = None,
+        Number of jobs to use for the processing task.
+        If given value is None, the number of available CPUs is used.
+        If 0 is used, we do not use multiprocessing.
+    verbose: bool = True,
+        Wethever to show the loading bar.
+
+    Raises
+    -------------------------
+    ValueError,
+        If given image paths length does not match given output paths length.
+    """
+
+    if len(image_paths) != len(output_paths):
+        raise ValueError(
+            (
+                "Given image paths length ({}) does not match the length of "
+                "given output paths length ({})."
+            ).format(
+                len(image_paths), len(output_paths)
+            )
+        )
+
+    if n_jobs is None:
+        n_jobs = cpu_count()
+
+    n_jobs = min(len(image_paths), n_jobs)
+
+    tasks = (
+        dict(
+            image_path=image_path,
+            output_path=output_path,
+            cache=cache,
+            errors_path=errors_path
+        )
+        for image_path, output_path in zip(
+            image_paths,
+            output_paths
+        )
+    )
+
+    with Pool(n_jobs) as p:
+        list(tqdm(
+            p.imap(_image_pipeline, tasks),
+            desc="Processing images",
+            total=len(image_paths),
+            disable=not verbose
+        ))
+        p.close()
+        p.join()
