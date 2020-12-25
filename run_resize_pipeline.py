@@ -5,7 +5,7 @@ from covidxpert import images_pipeline, resize_images_pipeline
 
 from glob import glob
 import pandas as pd
-import multiprocessing
+from multiprocessing import cpu_count
 
 if __name__ == "__main__":
     root = ".."
@@ -24,5 +24,6 @@ if __name__ == "__main__":
         out_path,
         width=width,
         cache=True,
-        errors_path=error_path
+        errors_path=error_path,
+        n_jobs=cpu_count()//2  # Using just half of the cores to avoid monopolizing the machine
     )
