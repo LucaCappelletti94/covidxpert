@@ -71,8 +71,9 @@ setup(
         "compress_json",
         "colorcorrect",
         "pydicom",
-        "tensorflow",
-        "colour"
+        "tensorflow>=2.0.1",
+        "colour",
+        "colour_demosaicing"
     ],
     extras_require=extras,
 )
