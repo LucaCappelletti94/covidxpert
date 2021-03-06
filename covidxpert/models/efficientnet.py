@@ -1,14 +1,15 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense, GlobalAveragePooling2D, BatchNormalization, Dropout
-import efficientnet.keras as efn 
+from tensorflow.keras.applications import EfficientNetB3
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC
+from .metrics import *
 from typing import Tuple
 
 
 def load_efficientnet_model(img_shape: Tuple[int, int, int]):
     """ 
-    
+    Build an efficientnet.
 
     Arguments
     ---------
@@ -20,8 +21,8 @@ def load_efficientnet_model(img_shape: Tuple[int, int, int]):
     
     i = Input(shape=img_shape)
     
-    base_model = efn.EfficientNetB3(
-        weigths='imagenet',
+    base_model = EfficientNetB3(
+        weights='imagenet',
         include_top=False,
         input_tensor=i
     )
