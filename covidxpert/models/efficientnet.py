@@ -5,7 +5,26 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.metrics import AUC
 from .metrics import *
 from typing import Tuple
+from .keras_models import load_keras_model
 
+def top_model_function(h):
+   """
+   It is used by load_keras_model. 
+   It adds layers to the classification model.
+
+   Arguments
+   ---------
+
+   h: kerasTensor
+
+   """
+   h = BatchNormalization()(h)
+   h = Dropout(0.2)(h)
+   h = Dense(128, activation="relu")(h)
+   h = Dropout(0.2)(h)
+   h = Dense(64, activation="relu")(h)
+
+   return h
 
 def load_efficientnet_model(img_shape: Tuple[int, int, int]):
     """ 
@@ -18,52 +37,5 @@ def load_efficientnet_model(img_shape: Tuple[int, int, int]):
         The shape of image. 
 
     """
+    return load_keras_model( EfficientNetB3,  img_shape, top_model_function, None)
     
-    i = Input(shape=img_shape)
-    
-    base_model = EfficientNetB3(
-        weights='imagenet',
-        include_top=False,
-        input_tensor=i
-    )
-    
-    h = GlobalAveragePooling2D(name="avg_pool")(base_model.output)
-    h = BatchNormalization()(h)
-    h = Dropout(0.2)(h)
-    h = Dense(128, activation="relu")(h)
-    h = Dropout(0.2)(h)
-    h = Dense(64, activation="relu")(h)
-    h = Dense(1, activation="sigmoid")(h)
-
-    model= Model(i, h)
-
-    model.compile(
-        optimizer = "nadam",
-        loss = "binary_crossentropy",
-        metrics = [
-            Accuracy(name="accuracy"),
-            BalancedAccuracy(name="BA"),
-            AUC(curve="PR", name="AUPRC"),
-            AUC(curve="ROC", name="AUROC"),
-            F1Score(name="f1-score"),
-            MatthewsCorrelationCoefficinet(name="MCC"),
-            Recall(name="recall"),
-            Specificity(name="specificity"),
-            Precision(name="precision"),
-            NegativePredictiveValue(name="NPV"),
-            MissRate(name="missrate"),
-            FallOut(name="fallout"),
-            FalseDiscoveryRate(name="FDR"),
-            FalseOmissionRate(name="FOR"),
-            PrevalenceThreshold(name="PT"),
-            ThreatScore(name="TS"),
-            FowlkesMallowsIndex(name="FMI"),
-            Informedness(name="informedness"),
-            Markedness(name="markedness"),
-            PositiveLikelihoodRatio(name="LR+"),
-            NegativeLikelihoodRatio(name="LR-"),
-            DiagnosticOddsRatio(name="DOR"),
-        ]
-    )
-
-    return model
