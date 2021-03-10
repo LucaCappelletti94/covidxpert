@@ -5,10 +5,19 @@ from tensorflow.keras.metrics import AUC
 
 from .metrics import *
 
-def load_keras_model(keras_model, img_shape):
-    """Adapt a keras model for our task making them accept a 
-        gray-scale image and adding a basic mlp on the top of it.
-    
+def load_keras_model(keras_model, img_shape, top_model_function, weights=None):
+    """The function accepts a gray-scale image, it applies a convolutional layer
+        with three filters to the image. 
+        Then, it applies the Keras model provided as an argument by the user.
+        To the output of this model, we apply a Global Average Pooling. 
+        The output of the Global Average Pooling is the input of the 
+        top_model_function. 
+        The top_model_function adds layers to the classification model. 
+        On top of the classification model, the function adds a Dense layer 
+        with a sigmoid as its activation function.
+        Finally, it returns the compiled model ready to be trained. 
+
+    +
     Arguments
     ---------
     keras_model,
@@ -16,6 +25,13 @@ def load_keras_model(keras_model, img_shape):
         They can be found under tf.keras.applications.
     img_shape: Tuple[int, int],
         The shape of the image.
+    weights: str
+        The weights of keras model. 
+        One of None (random initialization), 'imagenet' (pre-training on 
+        ImageNet), or the path to the weights file to be loaded. 
+        Defaults to None. 
+    top_model_function: Callable[ KerasTensor, KerasTensor]
+        Adds layers to the classification model.
     """
     i = Input(shape=img_shape)
     h = Conv2D(3, kernel_size=(1, 1))(i)
@@ -23,12 +39,12 @@ def load_keras_model(keras_model, img_shape):
     kmodel = keras_model(
         input_tensor=h,
         include_top=False,
-        weights=None,
+        weights=weights,
         classes=2,
     )
 
     o = GlobalAveragePooling2D()(kmodel.output)
-    o = Flatten()(o)
+    o = top_model_function(o)
     o = Dense(1, activation="sigmoid")(o)
 
     model = Model(i, o)
