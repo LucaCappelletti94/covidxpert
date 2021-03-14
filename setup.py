@@ -67,7 +67,6 @@ setup(
         "tqdm",
         "numba",
         "matplotlib",
-        "bezier",
         "compress_json",
         "colorcorrect",
         "pydicom",
