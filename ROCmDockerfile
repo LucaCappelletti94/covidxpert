@@ -10,7 +10,8 @@ RUN apt-get update -qyy && \
     libnuma-dev \
     wget curl tmux byobu htop nano vim
 
-COPY . .
+RUN mkdir covidxpert
+COPY . ./covidxpert
 RUN cd covidxpert && python3 -m pip install .
 RUN python3 -m jupyter nbextension enable --py widgetsnbextension
 
