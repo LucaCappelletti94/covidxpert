@@ -8,7 +8,7 @@ import pandas as pd
 import multiprocessing
 
 if __name__ == "__main__":
-    root = ".."
+    root = "/io/data"
     dataset_path = f'{root}/datasets/{{}}'
     output_path = f'{root}/processed/{{}}'
     error_path = f'{root}/error_pipeline/'
