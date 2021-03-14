@@ -1,0 +1,17 @@
+FROM rocm/tensorflow
+
+RUN apt-get update -qyy && \
+    apt-get install -qyy \
+    build-essential\
+    binutils-dev  \
+    libunwind-dev \
+    libblocksruntime-dev \
+    liblzma-dev \
+    libnuma-dev \
+    wget curl tmux byobu htop nano vim
+
+COPY . .
+RUN cd covidxpert && python3 -m pip install .
+RUN python3 -m jupyter nbextension enable --py widgetsnbextension
+
+WORKDIR /io
