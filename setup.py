@@ -67,11 +67,12 @@ setup(
         "tqdm",
         "numba",
         "matplotlib",
-        "bezier",
         "compress_json",
         "colorcorrect",
         "pydicom",
-        "colour-science"
+        "tensorflow>=2.0.1",
+        "colour",
+        "colour_demosaicing"
     ],
     extras_require=extras,
 )
