@@ -6,7 +6,7 @@ from colour_demosaicing import (
     mosaicing_CFA_Bayer)
 
 
-def demosaicking(image: np.ndarray, method: str = "bilinear", pattern: str = 'RGGB') -> np.ndarray:
+def demosaicking(image: np.ndarray, method: str = "bilinear", pattern: str = "RGGB") -> np.ndarray:
     """Returns the demosaicked image given a method.
 
     Parameters
