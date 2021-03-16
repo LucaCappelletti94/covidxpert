@@ -8,7 +8,7 @@ from multiprocessing import cpu_count
 
 if __name__ == "__main__":
     root = "/io/data"
-    dataset_path = f'{root}/resized_processed/{{}}'
+    dataset_path = f'{root}/processed/{{}}'
     output_path = f'{root}/demosaicking_processed/{{}}'
     error_path = f'{root}/error_pipeline/'
 
