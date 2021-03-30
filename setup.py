@@ -61,6 +61,7 @@ setup(
     tests_require=test_deps,
     # Add here the package dependencies
     install_requires=[
+        "extra_keras_metrics",
         "pandas",
         "numpy",
         "opencv-python",

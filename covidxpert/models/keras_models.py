@@ -1,25 +1,34 @@
 from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Nadam
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-from tensorflow.keras.metrics import AUC, Recall, Precision
-from tensorflow.keras.metrics import TrueNegatives, TruePositives, FalseNegatives, FalsePositives
-from tensorflow_addons.metrics import F1Score, MatthewsCorrelationCoefficient
+from extra_keras_metrics import get_complete_binary_metrics
 
-def load_keras_model(keras_model, img_shape):
+from typing import Tuple
+
+def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwargs=None):
     """Adapt a keras model for our task making them accept a 
         gray-scale image and adding a basic mlp on the top of it.
     
     Arguments
     ---------
-    keras_model,
+    keras_model: tensorflow.keras.models.Model,
         One of the model specified at https://keras.io/api/applications/
         They can be found under tf.keras.applications.
     img_shape: Tuple[int, int],
         The shape of the image.
+    nadam_kwargs: dict,
+        The keywords aaguments to be passed to the Nadam Optimizer.
     """
+    # Use an empty dict as default avoiding the quirks of having a mutable default.
+    if nadam_kwargs is None:
+        nadam_kwargs = {}
+
     i = Input(shape=img_shape)
+    # All the models in keras.applications expects Rgb images, so we fix the shape
+    # by adding an extra convolution at the start.
     h = Conv2D(3, kernel_size=(1, 1))(i)
 
+    # Initialize the model
     kmodel = keras_model(
         input_tensor=h,
         include_top=False,
@@ -27,25 +36,15 @@ def load_keras_model(keras_model, img_shape):
         classes=2,
     )
 
+    # Build a simple perceptron over the extracted features.
     o = Flatten()(kmodel.output)
     o = Dense(1, activation="sigmoid")(o)
 
+    # Compile the model
     model = Model(i, o)
-
     model.compile(
-        optimizer="nadam",
+        optimizer=Nadam(**nadam_kwargs),
         loss="binary_crossentropy",
-        metrics=[
-            "accuracy",
-            AUC(curve="PR", name="AUPRC"),
-            AUC(curve="ROC", name="AUROC"),
-            F1Score(1, name="f1score"),
-            MatthewsCorrelationCoefficient(1, name="mcc"),
-            Recall(name="recall"),
-            Precision(name="precision"),
-            TruePositives(name="TP"),
-            TrueNegatives(name="TN"),
-            FalsePositives(name="FP"),
-            FalseNegatives(name="FN"),
-    ])
+        metrics=get_complete_binary_metrics()
+    )
     return model
