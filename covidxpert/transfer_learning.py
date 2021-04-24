@@ -28,8 +28,8 @@ def train(
     dataset_name: str,
     task_name: str,
     holdout_number: int,
-    train_data: tf.Dataset,
-    test_data: tf.Dataset,
+    train_df: pd.DataFrame,
+    test_df: pd.DataFrame,
     early_stopping_patience: int = 6,
     early_stopping_min_delta: int = 0.001,
     reduce_lr_on_plateau_patience: int = 3,
@@ -51,10 +51,10 @@ def train(
         The name of the current task, this is just used for the cache.
     holdout_number: int,
         Which holdout we are cucrently training, this is just used for the cache.
-    train_data: tf.Dataset,
-        A tensorflow dataset to pass to the fit method of the model.
-    test_data: tf.Dataset,
-        A tensorflow dataset to pass to the fit method of the model.
+    train_data: pd.DataFrame,
+        A dataframe to pass to the fit method of the model.
+    test_data: pd.DataFrame,
+        A dataframe to pass to the fit method of the model.
     early_stopping_patience: int = 6,
         How many epochs the early stopping will wait for the model to improve 
         before stopping.
@@ -74,6 +74,22 @@ def train(
     cache_dir: str = "./results/",
         The directory to use for the cache.
     """
+    # Convert them to datasets
+    train_data = load_images(
+        train_df.image_path, train_df.label,
+        img_shape=img_shape,
+        crop_shape=crop_shape,
+        batch_size=batch_size,
+        random_state=random_state,
+    )
+    test_data = load_images(
+        test_df.image_path, test_df.label,
+        img_shape=img_shape,
+        batch_size=batch_size,
+        random_state=random_state,
+        augment_images=False,
+    )
+
     history = pd.DataFrame(model.fit(
         train_data,
         validation_data=test_data,
@@ -183,32 +199,17 @@ def get_balanced_holdouts(
     random_state: int = 42,
         The "seed" of the holdouts and data augmentation.
     """
+    classes = dataframe[["normal", "covid19", "other", "pneumonia"]].values.argmax(axis=1)
     
     # use a stratified split to get a train and test split which should have
     # reduced covariate shift
     sss = StratifiedShuffleSplit(
         n_splits=holdout_numbers, test_size=test_size, random_state=random_state)
 
-    for holdout_number, (train_index, test_index) in enumerate(sss.split(dataframe, dataframe.label)):
+    for holdout_number, (train_index, test_index) in enumerate(sss.split(dataframe, classes)):
         # Apply the indices to get the slices
         train_df = dataframe.iloc[train_index]
         test_df  = dataframe.iloc[test_index]
-
-        # Convert them to datasets
-        train_data = load_images(
-            train_df.image_path, train_df.label,
-            img_shape=img_shape,
-            crop_shape=crop_shape,
-            batch_size=batch_size,
-            random_state=random_state,
-        )
-        test_data = load_images(
-            test_df.image_path, test_df.label,
-            img_shape=img_shape,
-            batch_size=batch_size,
-            random_state=random_state,
-            augment_images=False,
-        )
 
         yield holdout_number, train_data, test_data 
 
@@ -263,12 +264,16 @@ def main_train_loop(
     cache_dir: str = "./results/",
         The directory to use for the cache.
     """
-    for model in get_models_generator(img_shape, nadam_kwargs):
-        for task_name, task_dataframe in get_task_dataframes(dataframe):
-            for holdout_number, train_data, test_data in get_balanced_holdouts(task_dataframe):
-                train(
+    total_perf = []
+    for holdout_number, train_df, test_df in get_balanced_holdouts(dataframe):
+        for model in get_models_generator(img_shape, nadam_kwargs):
+            for task_name, task_train_df, _task_name, task_test_df in zip(
+                get_task_dataframes(train_df), 
+                get_task_dataframes(test_df), 
+            ):
+                _history, model, perf = train(
                     model, dataset_name, task_name, holdout_number, 
-                    train_data, test_data,
+                    task_train_df, task_test_df,
                     early_stopping_patience,
                     early_stopping_min_delta,
                     reduce_lr_on_plateau_patience,
@@ -278,3 +283,6 @@ def main_train_loop(
                     verbose,
                     cache_dir
                 )
+                total_perf.append(perf)
+                
+    return pd.concat(total_perf)
