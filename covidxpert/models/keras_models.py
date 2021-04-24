@@ -36,12 +36,12 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
         classes=2,
     )
 
-    # Build a simple perceptron over the extracted features.
-    o = Flatten()(kmodel.output)
+    o = GlobalAveragePooling2D()(kmodel.output)
+    o = Flatten()(o)
     o = Dense(1, activation="sigmoid")(o)
 
     # Compile the model
-    model = Model(i, o)
+    model = Model(i, o, name=kmodel.name)
     model.compile(
         optimizer=Nadam(**nadam_kwargs),
         loss="binary_crossentropy",

@@ -39,12 +39,12 @@ def setup_data_augmentation(crop_shape:Tuple[int, int, int], random_state:int):
             max_delta=32.0 / 255.0, 
             seed=seed
         )
-        #image = tf_image.random_contrast(
-        #    image,
-        #    lower=0.3,
-        #    higher=0.7,
-        #    seed=seed
-        #)
+        image = tf_image.random_contrast(
+            image,
+            lower=0.3,
+            higher=0.7,
+            seed=seed
+        )
 
         #Make sure the image is still in [0, 1]
         image = tf.clip_by_value(image, 0.0, 1.0)
