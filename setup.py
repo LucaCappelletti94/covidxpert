@@ -77,6 +77,7 @@ setup(
         "cache_decorator",
         "colour-science>=0.3.16",
         "colour_demosaicing",
+        "silence_tensorflow"
     ],
     extras_require=extras,
 )
