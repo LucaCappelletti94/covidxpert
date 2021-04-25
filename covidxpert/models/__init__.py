@@ -1,6 +1,5 @@
-from .resnet import build_resnet, resnet
+from .keras_models import load_keras_model
 
 __all__ = [
-    "build_resnet",
-    "resnet"
+    "load_keras_model",
 ]

@@ -61,6 +61,7 @@ setup(
     tests_require=test_deps,
     # Add here the package dependencies
     install_requires=[
+        "extra_keras_metrics",
         "pandas",
         "numpy",
         "opencv-python",
@@ -71,8 +72,12 @@ setup(
         "colorcorrect",
         "pydicom",
         "tensorflow>=2.0.1",
+        "tensorflow_model_analysis",
+        "tensorflow-addons",
+        "tf_image",
+        "cache_decorator",
         "colour",
-        "colour_demosaicing"
+        "colour_demosaicing",
     ],
     extras_require=extras,
 )

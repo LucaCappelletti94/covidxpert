@@ -1,5 +1,7 @@
-from .load_images import load_images
+from .image_loader import setup_image_loader
+from .build_dataset import build_dataset
 
 __all__ = [
-    "load_images"
+    "setup_image_loader",
+    "build_dataset",
 ]
