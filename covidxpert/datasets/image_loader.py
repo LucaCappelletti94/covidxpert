@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorflow.image as tf_image
 from typing import Tuple
 
 def setup_image_loader(img_shape: Tuple[int, int]):
@@ -23,13 +22,13 @@ def setup_image_loader(img_shape: Tuple[int, int]):
         image_string = tf.io.read_file(filename)
 
         #Don't use tf.image.decode_imagze, or the output shape will be undefined
-        image = tf_image.decode_jpeg(image_string, channels=1)
+        image = tf.image.decode_jpeg(image_string, channels=1)
 
         #This will convert to float values in [0, 1]
-        image = tf_image.convert_image_dtype(image, tf.float32)
+        image = tf.image.convert_image_dtype(image, tf.float32)
 
         # This was present in the example but using the random_crop
         # it shouldn't be needed
-        image = tf_image.resize(image, img_shape[:2])
+        image = tf.image.resize(image, img_shape[:2])
         return image, label
     return image_loader

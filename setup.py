@@ -74,7 +74,6 @@ setup(
         "tensorflow>=2.0.1",
         "tensorflow_model_analysis",
         "tensorflow-addons",
-        "tf_image",
         "cache_decorator",
         "colour-science>=0.3.16",
         "colour_demosaicing",

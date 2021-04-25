@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import tensorflow.image as tf_image
 from typing import Tuple
 
 
@@ -25,21 +24,21 @@ def setup_data_augmentation(crop_shape:Tuple[int, int, int], random_state:int):
         label: int,
             The label of the image
         """
-        image = tf_image.random_flip_left_right(image, seed=random_state)
-        #image = tf_image.random_flip_up_down(image, seed=random_state)
-        image = tf_image.random_crop(
+        image = tf.image.random_flip_left_right(image, seed=random_state)
+        #image = tf.image.random_flip_up_down(image, seed=random_state)
+        image = tf.image.random_crop(
             image, 
             size=crop_shape, 
             seed=random_state, 
             name="random_contrast"
         )
 
-        image = tf_image.random_brightness(
+        image = tf.image.random_brightness(
             image, 
             max_delta=32.0 / 255.0, 
             seed=random_state
         )
-        image = tf_image.random_contrast(
+        image = tf.image.random_contrast(
             image,
             lower=0.3,
             upper=0.7,
