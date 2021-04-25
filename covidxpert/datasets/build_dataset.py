@@ -44,7 +44,7 @@ def build_dataset(
     dataset = dataset.shuffle(
         len(filenames), 
         reshuffle_each_iteration=True,
-         seed=random_state
+        seed=random_state
     )
 
     # Load the images

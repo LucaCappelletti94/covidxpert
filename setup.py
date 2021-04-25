@@ -74,7 +74,9 @@ setup(
         "pydicom",
         "tensorflow",
         "tensorflow_model_analysis",
-        "tensorflow-addons"
+        "tensorflow-addons",
+        "tf_image",
+        "cache_decorator",
     ],
     extras_require=extras,
 )

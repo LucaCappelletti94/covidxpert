@@ -1,12 +1,12 @@
-from .models import resnet, load_keras_model
-from .datasets import load_images, get_balanced_holdouts
+from .models import load_keras_model
+from .datasets import setup_image_loader
 from .pipeline import image_pipeline, images_pipeline
+from .transfer_learning import main_train_loop
 
 __all__ = [
-    "resnet",
     "load_keras_model",
-    "load_images",
+    "setup_image_loader",
     "image_pipeline",
     "images_pipeline",
-    "get_balanced_holdouts"
+    "main_train_loop",
 ]

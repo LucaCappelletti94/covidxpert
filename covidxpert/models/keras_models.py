@@ -1,6 +1,6 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Nadam
-from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten
+from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, GlobalAveragePooling2D
 from extra_keras_metrics import get_complete_binary_metrics
 
 from typing import Tuple
@@ -37,7 +37,6 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
     )
 
     o = GlobalAveragePooling2D()(kmodel.output)
-    o = Flatten()(o)
     o = Dense(1, activation="sigmoid")(o)
 
     # Compile the model

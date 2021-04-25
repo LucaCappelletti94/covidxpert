@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow.image as tf_image
 from typing import Tuple
 
 def setup_image_loader(img_shape: Tuple[int, int]):
@@ -29,6 +30,6 @@ def setup_image_loader(img_shape: Tuple[int, int]):
 
         # This was present in the example but using the random_crop
         # it shouldn't be needed
-        image = tf_image.resize_with_pad(image, *img_shape)
+        image = tf_image.resize(image, img_shape[:2])
         return image, label
     return image_loader

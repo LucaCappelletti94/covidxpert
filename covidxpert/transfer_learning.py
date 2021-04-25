@@ -3,19 +3,24 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2, EfficientNetB4
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
+import pandas as pd
 from pandas import DataFrame
 from sklearn.model_selection import StratifiedShuffleSplit
 
-from .load_images import load_images
+from tqdm.auto import tqdm
+
+from .models import load_keras_model
+from .datasets import build_dataset
+from cache_decorator import Cache
 
 
 @Cache(
-    path=(
-        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model.name}/history_{_hash}.csv",
-        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model.name}/model_{_hash}.keras",
-        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model.name}/performance_{_hash}.csv",
+    (
+        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/history_{_hash}.csv",
+        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/model_{_hash}.keras",
+        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/performance_{_hash}.csv",
     ),
-    ignore_args=(
+    args_to_ignore=(
         "model",
         "train_data",
         "test_data",
@@ -25,11 +30,16 @@ from .load_images import load_images
 )
 def train(
     model: Model,
+    model_name: str,
     dataset_name: str,
     task_name: str,
     holdout_number: int,
     train_df: pd.DataFrame,
     test_df: pd.DataFrame,
+    img_shape: Tuple[int, int],
+    crop_shape: Tuple[int, int] = (256, 256, 1),
+    batch_size: int = 1024,
+    random_state: int = 31337,
     early_stopping_patience: int = 6,
     early_stopping_min_delta: int = 0.001,
     reduce_lr_on_plateau_patience: int = 3,
@@ -75,15 +85,15 @@ def train(
         The directory to use for the cache.
     """
     # Convert them to datasets
-    train_data = load_images(
-        train_df.image_path, train_df.label,
+    train_data = build_dataset(
+        train_df.img_path, train_df.label,
         img_shape=img_shape,
         crop_shape=crop_shape,
         batch_size=batch_size,
         random_state=random_state,
     )
-    test_data = load_images(
-        test_df.image_path, test_df.label,
+    test_data = build_dataset(
+        test_df.img_path, test_df.label,
         img_shape=img_shape,
         batch_size=batch_size,
         random_state=random_state,
@@ -146,12 +156,13 @@ def get_task_dataframes(dataframe: pd.DataFrame):
     We hope that doing so we will improve the performance of the model since
     the data are un-balanced.
     """
+    result = []
 
     covid_or_pneumonia_vs_other = pd.DataFrame({
         "img_path": dataframe.img_path,
         "label": dataframe.covid19 | dataframe.pneumonia,
     })
-    yield "covid_or_pneumonia_vs_other", covid_or_pneumonia_vs_other
+    result.append(("covid_or_pneumonia_vs_other", covid_or_pneumonia_vs_other))
 
     only_covid_or_pneumonia = dataframe[covid_or_pneumonia_vs_other.label.astype(
         bool)]
@@ -159,20 +170,19 @@ def get_task_dataframes(dataframe: pd.DataFrame):
         "img_path": only_covid_or_pneumonia.img_path,
         "label": only_covid_or_pneumonia.covid19,
     })
-    yield "covid_vs_pneumonia", covid_vs_pneumonia
+    result.append(("covid_vs_pneumonia", covid_vs_pneumonia))
 
     covid_vs_other = pd.DataFrame({
         "img_path": dataframe.img_path,
         "label": dataframe.covid19,
     })
-    yield "covid_vs_other", covid_vs_other
+    result.append(("covid_vs_other", covid_vs_other))
+
+    return result
 
 
 def get_balanced_holdouts(
     dataframe: pd.DataFrame,
-    img_shape: Tuple[int, int],
-    crop_shape: Tuple[int, int, int],
-    batch_size: int,
     holdout_numbers: int = 1,
     test_size: float = 0.2,
     random_state: int = 42
@@ -206,33 +216,46 @@ def get_balanced_holdouts(
     sss = StratifiedShuffleSplit(
         n_splits=holdout_numbers, test_size=test_size, random_state=random_state)
 
-    for holdout_number, (train_index, test_index) in enumerate(sss.split(dataframe, classes)):
+    for holdout_number, (train_index, test_index) in tqdm(
+            enumerate(sss.split(dataframe, classes)),
+            desc="Holdout",
+            leave=False,    
+            total=holdout_numbers,
+        ):
         # Apply the indices to get the slices
         train_df = dataframe.iloc[train_index]
         test_df  = dataframe.iloc[test_index]
 
-        yield holdout_number, train_data, test_data 
+        yield holdout_number, train_df, test_df 
 
-def get_models_generator(img_shape: Tuple[int, int], nadam_kwargs=None):
-    return [
-        load_keras_model(model)
-        for model in [
-            ResNet50V2, 
-            InceptionResNetV2,
-            EfficientNetB4,
-        ]
-    ]
+def get_models_generator(img_shape: Tuple[int, int]):
+    return tqdm((
+            load_keras_model(model, img_shape)
+            for model in [
+                ResNet50V2, 
+                InceptionResNetV2,
+                EfficientNetB4,
+            ]
+        ),
+        desc="Models",
+        leave=False,
+        total=3,
+    )
 
 def main_train_loop(
     dataset_name:str, 
     dataframe: pd.DataFrame,
     img_shape: Tuple[int, int], 
+    crop_shape: Tuple[int, int] = (256, 256, 1), 
     nadam_kwargs=None,
+    holdout_numbers: int = 1,
+    batch_size: int = 1024,
     early_stopping_patience: int = 6,
     early_stopping_min_delta: int = 0.001,
     reduce_lr_on_plateau_patience: int = 3,
     reduce_lr_on_plateau_min_delta: int = 0.001,
     max_epochs: int = 1000,
+    random_state: int = 31337,
     restore_best_weights: bool = True,
     verbose=True,
     cache_dir="./results/"
@@ -265,24 +288,37 @@ def main_train_loop(
         The directory to use for the cache.
     """
     total_perf = []
-    for holdout_number, train_df, test_df in get_balanced_holdouts(dataframe):
-        for model in get_models_generator(img_shape, nadam_kwargs):
-            for task_name, task_train_df, _task_name, task_test_df in zip(
-                get_task_dataframes(train_df), 
-                get_task_dataframes(test_df), 
+    for holdout_number, train_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
+        for model in get_models_generator(img_shape):
+            for (task_name, task_train_df), (_task_name, task_test_df) in tqdm(zip(
+                    get_task_dataframes(train_df), 
+                    get_task_dataframes(test_df), 
+                ),
+                desc="Task",
+                total=3,
+                leave=False,
             ):
                 _history, model, perf = train(
-                    model, dataset_name, task_name, holdout_number, 
-                    task_train_df, task_test_df,
-                    early_stopping_patience,
-                    early_stopping_min_delta,
-                    reduce_lr_on_plateau_patience,
-                    reduce_lr_on_plateau_min_delta,
-                    max_epochs,
-                    restore_best_weights,
-                    verbose,
-                    cache_dir
+                    model=model, 
+                    model_name=model.name, 
+                    dataset_name=dataset_name, 
+                    task_name=task_name, 
+                    holdout_number=holdout_number, 
+                    train_df=task_train_df, 
+                    test_df=task_test_df,
+                    img_shape=img_shape,
+                    crop_shape=crop_shape,
+                    batch_size=batch_size,
+                    random_state=random_state,
+                    early_stopping_patience=early_stopping_patience,
+                    early_stopping_min_delta=early_stopping_min_delta,
+                    reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,
+                    reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,
+                    max_epochs=max_epochs,
+                    restore_best_weights=restore_best_weights,
+                    verbose=verbose,
+                    cache_dir=cache_dir,
                 )
                 total_perf.append(perf)
-                
+
     return pd.concat(total_perf)
