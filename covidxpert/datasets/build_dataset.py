@@ -3,7 +3,6 @@ The code takes inspiration by the following tutorial from Andreww Ng:
 https://cs230.stanford.edu/blog/datapipeline/#building-an-image-data-pipeline
 """
 import tensorflow as tf
-from tensorflow.data.experimental import AUTOTUNE
 from typing import Tuple, List
 
 from .image_loader import setup_image_loader
@@ -50,18 +49,18 @@ def build_dataset(
     # Load the images
     dataset = dataset.map(
         setup_image_loader(img_shape), 
-        num_parallel_calls=AUTOTUNE
+        num_parallel_calls=tf.data.experimental.AUTOTUNE
     )
 
     # Augment them if needed
     if augment_images:
         dataset = dataset.map(
             setup_data_augmentation(crop_shape, random_state), 
-            num_parallel_calls=AUTOTUNE
+            num_parallel_calls=tf.data.experimental.AUTOTUNE
         )
 
     # Set the batch size and set the prefetch so that the CPU prepares images
     # while the GPU is working on the batch
     dataset = dataset.batch(batch_size)
-    dataset = dataset.prefetch(AUTOTUNE)
+    dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
     return dataset
