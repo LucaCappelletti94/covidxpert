@@ -241,7 +241,7 @@ def get_models_generator(img_shape: Tuple[int, int]):
     ),
         desc="Models",
         leave=False,
-        total=3,
+        total=2,
     )
 
 
