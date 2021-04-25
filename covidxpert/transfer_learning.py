@@ -1,6 +1,6 @@
 from typing import Generator, List, Tuple
 from tensorflow.keras.models import Model
-from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2#, #EfficientNetB4
+from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2  # , #EfficientNetB4
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 import pandas as pd
@@ -209,44 +209,47 @@ def get_balanced_holdouts(
     random_state: int = 42,
         The "seed" of the holdouts and data augmentation.
     """
-    classes = dataframe[["normal", "covid19", "other", "pneumonia"]].values.argmax(axis=1)
-    
+    classes = dataframe[["normal", "covid19",
+                         "other", "pneumonia"]].values.argmax(axis=1)
+
     # use a stratified split to get a train and test split which should have
     # reduced covariate shift
     sss = StratifiedShuffleSplit(
         n_splits=holdout_numbers, test_size=test_size, random_state=random_state)
 
     for holdout_number, (train_index, test_index) in tqdm(
-            enumerate(sss.split(dataframe, classes)),
-            desc="Holdout",
-            leave=False,    
-            total=holdout_numbers,
-        ):
+        enumerate(sss.split(dataframe, classes)),
+        desc="Holdout",
+        leave=False,
+        total=holdout_numbers,
+    ):
         # Apply the indices to get the slices
         train_df = dataframe.iloc[train_index]
-        test_df  = dataframe.iloc[test_index]
+        test_df = dataframe.iloc[test_index]
 
-        yield holdout_number, train_df, test_df 
+        yield holdout_number, train_df, test_df
+
 
 def get_models_generator(img_shape: Tuple[int, int]):
     return tqdm((
-            load_keras_model(model, img_shape)
-            for model in [
-                ResNet50V2, 
+        load_keras_model(model, img_shape)
+        for model in [
+                ResNet50V2,
                 InceptionResNetV2,
-                #EfficientNetB4,
-            ]
-        ),
+                # EfficientNetB4,
+                ]
+    ),
         desc="Models",
         leave=False,
         total=3,
     )
 
+
 def main_train_loop(
-    dataset_name:str, 
+    dataset_name: str,
     dataframe: pd.DataFrame,
-    img_shape: Tuple[int, int], 
-    crop_shape: Tuple[int, int] = (256, 256, 1), 
+    img_shape: Tuple[int, int],
+    crop_shape: Tuple[int, int] = (256, 256, 1),
     nadam_kwargs=None,
     holdout_numbers: int = 10,
     batch_size: int = 256,
@@ -291,20 +294,20 @@ def main_train_loop(
     for holdout_number, train_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
         for model in get_models_generator(img_shape):
             for (task_name, task_train_df), (_task_name, task_test_df) in tqdm(zip(
-                    get_task_dataframes(train_df), 
-                    get_task_dataframes(test_df), 
+                    get_task_dataframes(train_df),
+                    get_task_dataframes(test_df),
                 ),
                 desc="Task",
                 total=3,
                 leave=False,
             ):
                 _history, model, perf = train(
-                    model=model, 
-                    model_name=model.name, 
-                    dataset_name=dataset_name, 
-                    task_name=task_name, 
-                    holdout_number=holdout_number, 
-                    train_df=task_train_df, 
+                    model=model,
+                    model_name=model.name,
+                    dataset_name=dataset_name,
+                    task_name=task_name,
+                    holdout_number=holdout_number,
+                    train_df=task_train_df,
                     test_df=task_test_df,
                     img_shape=img_shape,
                     crop_shape=crop_shape,
