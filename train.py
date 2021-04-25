@@ -1,6 +1,7 @@
 #!/bin/python
 
 import os
+import silence_tensorflow.auto
 import pandas as pd
 from covidxpert import main_train_loop
 
