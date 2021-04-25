@@ -1,6 +1,6 @@
 from typing import Generator, List, Tuple
 from tensorflow.keras.models import Model
-from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2, EfficientNetB4
+from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2#, #EfficientNetB4
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 import pandas as pd
@@ -234,7 +234,7 @@ def get_models_generator(img_shape: Tuple[int, int]):
             for model in [
                 ResNet50V2, 
                 InceptionResNetV2,
-                EfficientNetB4,
+                #EfficientNetB4,
             ]
         ),
         desc="Models",
