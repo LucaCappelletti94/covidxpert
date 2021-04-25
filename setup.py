@@ -76,7 +76,7 @@ setup(
         "tensorflow-addons",
         "tf_image",
         "cache_decorator",
-        "colour",
+        "colour-science>=0.3.16",
         "colour_demosaicing",
     ],
     extras_require=extras,
