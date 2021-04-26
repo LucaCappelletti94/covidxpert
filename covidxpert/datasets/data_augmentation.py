@@ -24,8 +24,8 @@ def setup_data_augmentation(crop_shape:Tuple[int, int, int], random_state:int):
         label: int,
             The label of the image
         """
-        image = tf.image.random_flip_left_right(image, seed=random_state)
-        #image = tf.image.random_flip_up_down(image, seed=random_state)
+        # image = tf.image.random_flip_left_right(image, seed=random_state)
+        # image = tf.image.random_flip_up_down(image, seed=random_state)
         image = tf.image.random_crop(
             image, 
             size=crop_shape, 
@@ -35,7 +35,7 @@ def setup_data_augmentation(crop_shape:Tuple[int, int, int], random_state:int):
 
         image = tf.image.random_brightness(
             image, 
-            max_delta=32.0 / 255.0, 
+            max_delta=32.0 / 255.0,
             seed=random_state
         )
         image = tf.image.random_contrast(

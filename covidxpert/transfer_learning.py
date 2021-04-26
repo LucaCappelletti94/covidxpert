@@ -91,6 +91,7 @@ def train(
         crop_shape=crop_shape,
         batch_size=batch_size,
         random_state=random_state,
+        augment_images=False,
     )
     test_data = build_dataset(
         test_df.img_path, test_df.label,
