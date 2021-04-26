@@ -30,14 +30,14 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
 
     # Initialize the model
     kmodel = keras_model(
-        input_tensor=h,
+        input_shape=(*img_shape[:2], 3),
         include_top=False,
         weights="imagenet",
         classes=2,
         pooling="avg",
     )
 
-    o = Dense(1, activation="sigmoid")(kmodel.output)
+    o = Dense(1, activation="sigmoid")(kmodel(h))
 
     # Compile the model
     model = Model(i, o, name=kmodel.name)
