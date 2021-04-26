@@ -18,7 +18,7 @@ with strategy.scope():
     performance = main_train_loop(
         dataset_name=dataset_name,
         dataframe=df,
-        img_shape=(256, 256, 1),
+        img_shape=(480, 480, 1),
     )
 
 performance.to_csv("{}.csv".format(dataset_name), index=False)
