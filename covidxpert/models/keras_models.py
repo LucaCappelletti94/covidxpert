@@ -1,7 +1,7 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Nadam
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, GlobalAveragePooling2D
-from extra_keras_metrics import get_complete_binary_metrics
+from tensorflow.keras.metrics import AUC
 
 from typing import Tuple
 
@@ -44,6 +44,10 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
     model.compile(
         optimizer=Nadam(**nadam_kwargs),
         loss="binary_crossentropy",
-        metrics=get_complete_binary_metrics()
+        metrics=[
+            "accuracy",
+            AUC(curve="PR", name="AUPRC"),
+            AUC(curve="ROC", name="AUROC"),
+        ]
     )
     return model
