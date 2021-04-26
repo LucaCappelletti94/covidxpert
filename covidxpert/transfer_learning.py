@@ -17,7 +17,7 @@ from cache_decorator import Cache
 @Cache(
     [
         "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/history_{_hash}.csv",
-        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/model_{_hash}.keras",
+        "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/model_{_hash}.keras.tar.gz",
         "{cache_dir}/{dataset_name}/{task_name}/{holdout_number}/{model_name}/performance_{_hash}.csv",
     ],
     args_to_ignore=(
