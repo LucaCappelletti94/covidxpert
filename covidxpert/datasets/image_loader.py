@@ -29,6 +29,6 @@ def setup_image_loader(img_shape: Tuple[int, int]):
 
         # This was present in the example but using the random_crop
         # it shouldn't be needed
-        image = tf.image.resize(image, img_shape[:2])
+        image = tf.image.resize_with_pad(image, img_shape[0], img_shape[1])
         return image, label
     return image_loader

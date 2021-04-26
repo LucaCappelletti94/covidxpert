@@ -32,12 +32,12 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
     kmodel = keras_model(
         input_tensor=h,
         include_top=False,
-        weights=None,
+        weights="imagenet",
         classes=2,
+        pooling="avg",
     )
 
-    o = GlobalAveragePooling2D()(kmodel.output)
-    o = Dense(1, activation="sigmoid")(o)
+    o = Dense(1, activation="sigmoid")(kmodel.output)
 
     # Compile the model
     model = Model(i, o, name=kmodel.name)

@@ -6,16 +6,13 @@ import tensorflow as tf
 from typing import Tuple, List
 
 from .image_loader import setup_image_loader
-from .data_augmentation import setup_data_augmentation
 
 def build_dataset(
         filenames:List[str], 
         labels:List[int], 
         batch_size:int=1024,  
         img_shape:Tuple[int, int]=(480, 480), 
-        crop_shape:Tuple[int, int, int]=(256, 256, 1),
         random_state:int=1337,
-        augment_images:bool=True,
     ) -> tf.data.Dataset:
     """Prepare a keras Dataset with the images and labels.
     
@@ -51,13 +48,6 @@ def build_dataset(
         setup_image_loader(img_shape), 
         num_parallel_calls=tf.data.experimental.AUTOTUNE
     )
-
-    # Augment them if needed
-    if augment_images:
-        dataset = dataset.map(
-            setup_data_augmentation(crop_shape, random_state), 
-            num_parallel_calls=tf.data.experimental.AUTOTUNE
-        )
 
     # Set the batch size and set the prefetch so that the CPU prepares images
     # while the GPU is working on the batch

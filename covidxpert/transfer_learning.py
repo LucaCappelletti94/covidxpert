@@ -37,7 +37,6 @@ def train(
     train_df: pd.DataFrame,
     test_df: pd.DataFrame,
     img_shape: Tuple[int, int],
-    crop_shape: Tuple[int, int] = (256, 256, 1),
     batch_size: int = 1024,
     random_state: int = 31337,
     early_stopping_patience: int = 6,
@@ -88,17 +87,14 @@ def train(
     train_data = build_dataset(
         train_df.img_path, train_df.label,
         img_shape=img_shape,
-        crop_shape=crop_shape,
         batch_size=batch_size,
         random_state=random_state,
-        augment_images=False,
     )
     test_data = build_dataset(
         test_df.img_path, test_df.label,
         img_shape=img_shape,
         batch_size=batch_size,
         random_state=random_state,
-        augment_images=False,
     )
 
     history = pd.DataFrame(model.fit(
@@ -250,7 +246,6 @@ def main_train_loop(
     dataset_name: str,
     dataframe: pd.DataFrame,
     img_shape: Tuple[int, int],
-    crop_shape: Tuple[int, int] = (256, 256, 1),
     nadam_kwargs=None,
     holdout_numbers: int = 10,
     batch_size: int = 256,
@@ -311,7 +306,6 @@ def main_train_loop(
                     train_df=task_train_df,
                     test_df=task_test_df,
                     img_shape=img_shape,
-                    crop_shape=crop_shape,
                     batch_size=batch_size,
                     random_state=random_state,
                     early_stopping_patience=early_stopping_patience,
