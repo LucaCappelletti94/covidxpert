@@ -12,13 +12,10 @@ dataset_name = "processed"
 
 df.img_path = [os.path.join("..", dataset_name, x) for x in df.img_path]
 
-strategy = tf.distribute.MirroredStrategy()
-
-with strategy.scope():
-    performance = main_train_loop(
-        dataset_name=dataset_name,
-        dataframe=df,
-        img_shape=(480, 480, 1),
-    )
+performance = main_train_loop(
+    dataset_name=dataset_name,
+    dataframe=df,
+    img_shape=(480, 480, 1),
+)
 
 performance.to_csv("{}.csv".format(dataset_name), index=False)
