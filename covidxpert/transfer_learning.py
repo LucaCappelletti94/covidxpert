@@ -14,7 +14,6 @@ from tqdm.auto import tqdm
 
 from .models import load_keras_model
 from .datasets import build_dataset
-from .utils import reset_keras
 from cache_decorator import Cache
 
 
@@ -51,7 +50,7 @@ def train(
     max_epochs: int = 1000,
     restore_best_weights: bool = True,
     verbose: bool = True,
-    cache_dir: str = "./results/", 
+    cache_dir: str = "./results/",
     nadam_kwargs=None
 ) -> Tuple[pd.DataFrame, Model, pd.DataFrame]:
     """Train the model and returns the history, model and performance csv.
@@ -154,7 +153,7 @@ def train(
             )),
             "run_type": "training"
         },
-        {
+            {
             **dict(zip(
                 model.metrics_names,
                 model.evaluate(
@@ -164,7 +163,7 @@ def train(
             )),
             "run_type": "validation"
         },
-        {
+            {
             **dict(zip(
                 model.metrics_names,
                 model.evaluate(
@@ -264,10 +263,9 @@ def get_balanced_holdouts(
         train_df = dataframe.iloc[train_index]
         test_df = dataframe.iloc[test_index]
 
-
         sub_train_idx, sub_val_idx = next(StratifiedShuffleSplit(
-            n_splits=1, 
-            test_size=val_size, 
+            n_splits=1,
+            test_size=val_size,
             random_state=random_state
         ).split(train_df, classes[train_index]))
 
@@ -340,8 +338,8 @@ def main_train_loop(
     for holdout_number, train_df, val_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
         for model_builder in get_models_generator(img_shape):
 
-            strategy = tf.distribute.MirroredStrategy()   
-            with strategy.scope():  
+            strategy = tf.distribute.MirroredStrategy()
+            with strategy.scope():
                 model = model_builder()
 
                 for (task_name, task_train_df), (_, task_val_df), (_, task_test_df) in tqdm(zip(
@@ -375,9 +373,5 @@ def main_train_loop(
                         cache_dir=cache_dir,
                     )
                     total_perf.append(perf)
-                # once the transfer learning is finished
-                # reset keras and delete the model to free the GPU RAM
-                # for the next model
-                reset_keras(model)
 
     return pd.concat(total_perf)

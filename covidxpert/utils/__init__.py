@@ -16,7 +16,6 @@ from .thumbnail import get_thumbnail
 from .peaks_and_valleys import valleys_cut
 from .retinex import automated_msrcr
 from .demosaicking import demosaicking
-from .reset_keras import reset_keras
 
 __all__ = [
     "load_image",
@@ -43,5 +42,4 @@ __all__ = [
     "get_simmetry_axis",
     "automated_msrcr",
     "demosaicking",
-    "reset_keras",
 ]
