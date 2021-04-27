@@ -1,4 +1,7 @@
 from typing import Generator, List, Tuple
+import tensorflow as tf
+from tensorflow.keras.optimizers import Nadam
+from tensorflow.keras.metrics import AUC
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2  # , #EfficientNetB4
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
@@ -11,6 +14,7 @@ from tqdm.auto import tqdm
 
 from .models import load_keras_model
 from .datasets import build_dataset
+from .utils import reset_keras
 from cache_decorator import Cache
 
 
@@ -35,6 +39,7 @@ def train(
     task_name: str,
     holdout_number: int,
     train_df: pd.DataFrame,
+    val_df: pd.DataFrame,
     test_df: pd.DataFrame,
     img_shape: Tuple[int, int],
     batch_size: int = 1024,
@@ -46,7 +51,8 @@ def train(
     max_epochs: int = 1000,
     restore_best_weights: bool = True,
     verbose: bool = True,
-    cache_dir: str = "./results/"
+    cache_dir: str = "./results/", 
+    nadam_kwargs=None
 ) -> Tuple[pd.DataFrame, Model, pd.DataFrame]:
     """Train the model and returns the history, model and performance csv.
 
@@ -82,10 +88,18 @@ def train(
         If the training will be verbose or not.
     cache_dir: str = "./results/",
         The directory to use for the cache.
+    nadam_kwargs: dict,
+        The keywords aaguments to be passed to the Nadam Optimizer.
     """
     # Convert them to datasets
     train_data = build_dataset(
         train_df.img_path, train_df.label,
+        img_shape=img_shape,
+        batch_size=batch_size,
+        random_state=random_state,
+    )
+    val_data = build_dataset(
+        val_df.img_path, val_df.label,
         img_shape=img_shape,
         batch_size=batch_size,
         random_state=random_state,
@@ -97,19 +111,32 @@ def train(
         random_state=random_state,
     )
 
+    # Use an empty dict as default avoiding the quirks of having a mutable default.
+    nadam_kwargs = nadam_kwargs or {}
+
+    model.compile(
+        optimizer=Nadam(**nadam_kwargs),
+        loss="binary_crossentropy",
+        metrics=[
+            "accuracy",
+            AUC(curve="PR", name="AUPRC"),
+            AUC(curve="ROC", name="AUROC"),
+        ]
+    )
+
     history = pd.DataFrame(model.fit(
         train_data,
-        validation_data=test_data,
+        validation_data=val_data,
         epochs=max_epochs,
         callbacks=[
             EarlyStopping(
-                monitor="loss",
+                monitor="val_loss",
                 patience=early_stopping_patience,
                 min_delta=early_stopping_min_delta,
                 restore_best_weights=restore_best_weights,
             ),
             ReduceLROnPlateau(
-                monitor="loss",
+                monitor="val_loss",
                 patience=reduce_lr_on_plateau_patience,
                 min_delta=reduce_lr_on_plateau_min_delta,
             )
@@ -127,7 +154,17 @@ def train(
             )),
             "run_type": "training"
         },
-            {
+        {
+            **dict(zip(
+                model.metrics_names,
+                model.evaluate(
+                    val_data,
+                    verbose=verbose
+                )
+            )),
+            "run_type": "validation"
+        },
+        {
             **dict(zip(
                 model.metrics_names,
                 model.evaluate(
@@ -182,6 +219,7 @@ def get_balanced_holdouts(
     dataframe: pd.DataFrame,
     holdout_numbers: int = 1,
     test_size: float = 0.2,
+    val_size: float = 0.05,
     random_state: int = 42
 ) -> Generator:
     """Create a generator of holdouts.
@@ -203,6 +241,8 @@ def get_balanced_holdouts(
         How many holdouts will be done.
     test_size: float = 0.2,
         Which fraction of the dataset will be used to test the model.
+    val_size: float = 0.05,
+        Which fraction of the training data will be used for the validation of the model.
     random_state: int = 42,
         The "seed" of the holdouts and data augmentation.
     """
@@ -224,12 +264,22 @@ def get_balanced_holdouts(
         train_df = dataframe.iloc[train_index]
         test_df = dataframe.iloc[test_index]
 
-        yield holdout_number, train_df, test_df
+
+        sub_train_idx, sub_val_idx = next(StratifiedShuffleSplit(
+            n_splits=1, 
+            test_size=val_size, 
+            random_state=random_state
+        ).split(train_df, classes[train_index]))
+
+        val_df = train_df.iloc[sub_val_idx]
+        train_df = train_df.iloc[sub_train_idx]
+
+        yield holdout_number, train_df, val_df, test_df
 
 
 def get_models_generator(img_shape: Tuple[int, int]):
     return tqdm((
-        load_keras_model(model, img_shape)
+        lambda: load_keras_model(model, img_shape)
         for model in [
                 ResNet50V2,
                 InceptionResNetV2,
@@ -249,9 +299,9 @@ def main_train_loop(
     nadam_kwargs=None,
     holdout_numbers: int = 10,
     batch_size: int = 256,
-    early_stopping_patience: int = 6,
+    early_stopping_patience: int = 4,
     early_stopping_min_delta: int = 0.001,
-    reduce_lr_on_plateau_patience: int = 3,
+    reduce_lr_on_plateau_patience: int = 2,
     reduce_lr_on_plateau_min_delta: int = 0.001,
     max_epochs: int = 1000,
     random_state: int = 31337,
@@ -287,36 +337,47 @@ def main_train_loop(
         The directory to use for the cache.
     """
     total_perf = []
-    for holdout_number, train_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
-        for model in get_models_generator(img_shape):
-            for (task_name, task_train_df), (_task_name, task_test_df) in tqdm(zip(
-                    get_task_dataframes(train_df),
-                    get_task_dataframes(test_df),
-                ),
-                desc="Task",
-                total=3,
-                leave=False,
-            ):
-                _history, model, perf = train(
-                    model=model,
-                    model_name=model.name,
-                    dataset_name=dataset_name,
-                    task_name=task_name,
-                    holdout_number=holdout_number,
-                    train_df=task_train_df,
-                    test_df=task_test_df,
-                    img_shape=img_shape,
-                    batch_size=batch_size,
-                    random_state=random_state,
-                    early_stopping_patience=early_stopping_patience,
-                    early_stopping_min_delta=early_stopping_min_delta,
-                    reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,
-                    reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,
-                    max_epochs=max_epochs,
-                    restore_best_weights=restore_best_weights,
-                    verbose=verbose,
-                    cache_dir=cache_dir,
-                )
-                total_perf.append(perf)
+    for holdout_number, train_df, val_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
+        for model_builder in get_models_generator(img_shape):
+
+            strategy = tf.distribute.MirroredStrategy()   
+            with strategy.scope():  
+                model = model_builder()
+
+                for (task_name, task_train_df), (_, task_val_df), (_, task_test_df) in tqdm(zip(
+                        get_task_dataframes(train_df),
+                        get_task_dataframes(val_df),
+                        get_task_dataframes(test_df),
+                    ),
+                    desc="Task",
+                    total=3,
+                    leave=False,
+                ):
+                    _history, model, perf = train(
+                        model=model,
+                        model_name=model.name,
+                        dataset_name=dataset_name,
+                        task_name=task_name,
+                        holdout_number=holdout_number,
+                        train_df=task_train_df,
+                        val_df=task_val_df,
+                        test_df=task_test_df,
+                        img_shape=img_shape,
+                        batch_size=batch_size,
+                        random_state=random_state,
+                        early_stopping_patience=early_stopping_patience,
+                        early_stopping_min_delta=early_stopping_min_delta,
+                        reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,
+                        reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,
+                        max_epochs=max_epochs,
+                        restore_best_weights=restore_best_weights,
+                        verbose=verbose,
+                        cache_dir=cache_dir,
+                    )
+                    total_perf.append(perf)
+                # once the transfer learning is finished
+                # reset keras and delete the model to free the GPU RAM
+                # for the next model
+                reset_keras(model)
 
     return pd.concat(total_perf)

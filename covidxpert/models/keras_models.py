@@ -1,11 +1,9 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Nadam
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, GlobalAveragePooling2D
-from tensorflow.keras.metrics import AUC
 
 from typing import Tuple
 
-def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwargs=None):
+def load_keras_model(keras_model: Model, img_shape: Tuple[int, int]):
     """Adapt a keras model for our task making them accept a 
         gray-scale image and adding a basic mlp on the top of it.
     
@@ -16,12 +14,7 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
         They can be found under tf.keras.applications.
     img_shape: Tuple[int, int],
         The shape of the image.
-    nadam_kwargs: dict,
-        The keywords aaguments to be passed to the Nadam Optimizer.
     """
-    # Use an empty dict as default avoiding the quirks of having a mutable default.
-    if nadam_kwargs is None:
-        nadam_kwargs = {}
 
     i = Input(shape=img_shape)
     # All the models in keras.applications expects Rgb images, so we fix the shape
@@ -41,13 +34,4 @@ def load_keras_model(keras_model: Model, img_shape: Tuple[int, int], nadam_kwarg
 
     # Compile the model
     model = Model(i, o, name=kmodel.name)
-    model.compile(
-        optimizer=Nadam(**nadam_kwargs),
-        loss="binary_crossentropy",
-        metrics=[
-            "accuracy",
-            AUC(curve="PR", name="AUPRC"),
-            AUC(curve="ROC", name="AUROC"),
-        ]
-    )
     return model
