@@ -77,7 +77,8 @@ setup(
         "cache_decorator",
         "colour-science>=0.3.16",
         "colour_demosaicing",
-        "silence_tensorflow"
+        "silence_tensorflow",
+        "scikit-learn"
     ],
     extras_require=extras,
 )
