@@ -25,8 +25,10 @@ from cache_decorator import Cache
     ],
     args_to_ignore=(
         "model",
-        "train_data",
-        "test_data",
+        "train_df",
+        "val_df",
+        "val_df",
+        "test_df",
         "verbose",
         "cache_dir",
         "verbose",
