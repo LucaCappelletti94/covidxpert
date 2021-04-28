@@ -277,7 +277,7 @@ def get_balanced_holdouts(
 
 
 def main_train_loop(
-    keras_model: [None, Model],
+    keras_model: [[None], Model],
     model_name: str,
     dataset_name: str,
     dataframe: pd.DataFrame,
@@ -360,12 +360,12 @@ def main_train_loop(
     )
 )
 def run_holdout(
-    keras_model: Callable[None, Model],
+    keras_model: Callable[[None], Model],
     model_name: str,
-    train_df: pd.DataFrame, 
-    val_df: pd.DataFrame, 
-    test_df: pd.DataFrame, 
-    dataset_name: str, 
+    train_df: pd.DataFrame,
+    val_df: pd.DataFrame,
+    test_df: pd.DataFrame,
+    dataset_name: str,
     holdout_number: int,
     img_shape: Tuple[int, int],
     batch_size: int = 256,
@@ -378,7 +378,7 @@ def run_holdout(
     restore_best_weights: bool = True,
     verbose: bool = True,
     cache_dir: str = "./results/"
-    ):
+):
     """
     Arguments
     ---------
@@ -404,8 +404,8 @@ def run_holdout(
         The directory to use for the cache.
     """
     total_perf = []
-    strategy = tf.distribute.MirroredStrategy()   
-    with strategy.scope():  
+    strategy = tf.distribute.MirroredStrategy()
+    with strategy.scope():
         model = load_keras_model(keras_model, img_shape)
         for (task_name, task_train_df), (_, task_val_df), (_, task_test_df) in tqdm(zip(
                 get_task_dataframes(train_df),
