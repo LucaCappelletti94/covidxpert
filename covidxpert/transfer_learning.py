@@ -14,7 +14,6 @@ from tqdm.auto import tqdm
 
 from .models import load_keras_model
 from .datasets import build_dataset
-from .utils import reset_keras
 from cache_decorator import Cache
 
 
@@ -52,7 +51,7 @@ def train(
     max_epochs: int = 1000,
     restore_best_weights: bool = True,
     verbose: bool = True,
-    cache_dir: str = "./results/", 
+    cache_dir: str = "./results/",
     nadam_kwargs=None
 ) -> Tuple[pd.DataFrame, Model, pd.DataFrame]:
     """Train the model and returns the history, model and performance csv.
@@ -155,7 +154,7 @@ def train(
             )),
             "run_type": "training"
         },
-        {
+            {
             **dict(zip(
                 model.metrics_names,
                 model.evaluate(
@@ -165,7 +164,7 @@ def train(
             )),
             "run_type": "validation"
         },
-        {
+            {
             **dict(zip(
                 model.metrics_names,
                 model.evaluate(
@@ -265,10 +264,9 @@ def get_balanced_holdouts(
         train_df = dataframe.iloc[train_index]
         test_df = dataframe.iloc[test_index]
 
-
         sub_train_idx, sub_val_idx = next(StratifiedShuffleSplit(
-            n_splits=1, 
-            test_size=val_size, 
+            n_splits=1,
+            test_size=val_size,
             random_state=random_state
         ).split(train_df, classes[train_index]))
 
@@ -287,9 +285,9 @@ def main_train_loop(
     nadam_kwargs=None,
     holdout_numbers: int = 10,
     batch_size: int = 256,
-    early_stopping_patience: int = 4,
+    early_stopping_patience: int = 8,
     early_stopping_min_delta: int = 0.001,
-    reduce_lr_on_plateau_patience: int = 2,
+    reduce_lr_on_plateau_patience: int = 4,
     reduce_lr_on_plateau_min_delta: int = 0.001,
     max_epochs: int = 1000,
     random_state: int = 31337,
