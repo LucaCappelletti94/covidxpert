@@ -3,7 +3,7 @@
 import os
 import silence_tensorflow.auto
 import tensorflow as tf
-from tensorflow.keras.applications import ResNet50V2
+from tensorflow.keras.applications import ResNet50V2, InceptionResNetV2
 import pandas as pd
 from covidxpert import main_train_loop
 
@@ -14,8 +14,9 @@ dataset_name = "processed"
 df.img_path = [os.path.join("..", dataset_name, x) for x in df.img_path]
 
 performance = main_train_loop(
-    model_builder= ResNet50V2,
-    model_name   ="ResNet50V2",
+    keras_model=InceptionResNetV2,
+    model_name="InceptionResNetV2",
+    batch_size=256,
     dataset_name=dataset_name,
     dataframe=df,
     img_shape=(480, 480, 1),
