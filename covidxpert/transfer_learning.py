@@ -1,4 +1,4 @@
-from typing import Generator, List, Tuple
+from typing import *
 import tensorflow as tf
 from tensorflow.keras.optimizers import Nadam
 from tensorflow.keras.metrics import AUC
@@ -30,6 +30,7 @@ from cache_decorator import Cache
         "test_data",
         "verbose",
         "cache_dir",
+        "verbose",
     )
 )
 def train(
@@ -277,22 +278,9 @@ def get_balanced_holdouts(
         yield holdout_number, train_df, val_df, test_df
 
 
-def get_models_generator(img_shape: Tuple[int, int]):
-    return tqdm((
-        lambda: load_keras_model(model, img_shape)
-        for model in [
-                ResNet50V2,
-                InceptionResNetV2,
-                # EfficientNetB4,
-                ]
-    ),
-        desc="Models",
-        leave=False,
-        total=2,
-    )
-
-
 def main_train_loop(
+    keras_model: [None, Model],
+    model_name: str,
     dataset_name: str,
     dataframe: pd.DataFrame,
     img_shape: Tuple[int, int],
@@ -306,8 +294,8 @@ def main_train_loop(
     max_epochs: int = 1000,
     random_state: int = 31337,
     restore_best_weights: bool = True,
-    verbose=True,
-    cache_dir="./results/"
+    verbose: bool = True,
+    cache_dir: str = "./results/"
 ):
     """Run the training loop for all the models and tasks on the given dataset.
 
@@ -316,7 +304,7 @@ def main_train_loop(
     img_shape: Tuple[int, int],
         The shape of the image.
     nadam_kwargs: dict,
-        The keywords aaguments to be passed to the Nadam Optimizer.
+        The keywords arguments to be passed to the Nadam Optimizer.
     early_stopping_patience: int = 6,
         How many epochs the early stopping will wait for the model to improve 
         before stopping.
@@ -338,46 +326,122 @@ def main_train_loop(
     """
     total_perf = []
     for holdout_number, train_df, val_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
-        for model_builder in get_models_generator(img_shape):
-
-            strategy = tf.distribute.MirroredStrategy()   
-            with strategy.scope():  
-                model = model_builder()
-
-                for (task_name, task_train_df), (_, task_val_df), (_, task_test_df) in tqdm(zip(
-                        get_task_dataframes(train_df),
-                        get_task_dataframes(val_df),
-                        get_task_dataframes(test_df),
-                    ),
-                    desc="Task",
-                    total=3,
-                    leave=False,
-                ):
-                    _history, model, perf = train(
-                        model=model,
-                        model_name=model.name,
-                        dataset_name=dataset_name,
-                        task_name=task_name,
-                        holdout_number=holdout_number,
-                        train_df=task_train_df,
-                        val_df=task_val_df,
-                        test_df=task_test_df,
-                        img_shape=img_shape,
-                        batch_size=batch_size,
-                        random_state=random_state,
-                        early_stopping_patience=early_stopping_patience,
-                        early_stopping_min_delta=early_stopping_min_delta,
-                        reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,
-                        reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,
-                        max_epochs=max_epochs,
-                        restore_best_weights=restore_best_weights,
-                        verbose=verbose,
-                        cache_dir=cache_dir,
-                    )
-                    total_perf.append(perf)
-                # once the transfer learning is finished
-                # reset keras and delete the model to free the GPU RAM
-                # for the next model
-                reset_keras(model)
+        total_perf.extend(run_holdout(
+            keras_model=keras_model,
+            model_name=model_name,
+            train_df=train_df,
+            val_df=val_df,
+            test_df=test_df,
+            dataset_name=dataset_name,
+            holdout_number=holdout_number,
+            img_shape=img_shape,
+            batch_size=batch_size,
+            random_state=random_state,
+            early_stopping_min_delta=early_stopping_min_delta,
+            early_stopping_patience=early_stopping_patience,
+            reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,
+            reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,
+            max_epochs=max_epochs,
+            restore_best_weights=restore_best_weights,
+            verbose=verbose,
+            cache_dir=cache_dir,
+        ))
 
     return pd.concat(total_perf)
+
+
+@Cache(
+    "{cache_dir}/{dataset_name}/{holdout_number}/{model_name}/perf_{_hash}.csv",
+    args_to_ignore=(
+        "keras_model",
+        "train_df",
+        "val_df",
+        "test_df",
+        "cache_dir",
+        "verbose",
+    )
+)
+def run_holdout(
+    keras_model: Callable[None, Model],
+    model_name: str,
+    train_df: pd.DataFrame, 
+    val_df: pd.DataFrame, 
+    test_df: pd.DataFrame, 
+    dataset_name: str, 
+    holdout_number: int,
+    img_shape: Tuple[int, int],
+    batch_size: int = 256,
+    random_state: int = 31337,
+    early_stopping_patience: int = 4,
+    early_stopping_min_delta: int = 0.001,
+    reduce_lr_on_plateau_patience: int = 2,
+    reduce_lr_on_plateau_min_delta: int = 0.001,
+    max_epochs: int = 1000,
+    restore_best_weights: bool = True,
+    verbose: bool = True,
+    cache_dir: str = "./results/"
+    ):
+    """
+    Arguments
+    ---------
+    img_shape: Tuple[int, int],
+        The shape of the image.
+    early_stopping_patience: int = 6,
+        How many epochs the early stopping will wait for the model to improve 
+        before stopping.
+    early_stopping_min_delta: float = 0.001,
+        The minimum improvement the model will need to not be stopped.
+    early_stopping_patience: int = 6,
+        How many epochs the readuce lr on plateau will wait for the model to improve 
+        before reducing the learning rate.
+    early_stopping_min_delta: float = 0.001,
+        The minimum improvement the model will need to not reduce the learning rate.
+    max_epochs: int = 1000,
+        Max number of epochs the modell will train for.
+    restore_best_weight: bool = True,
+        Whether or not to restore at the end the best weights in the training.
+    verbose: bool = True,
+        If the training will be verbose or not.
+    cache_dir: str = "./results/",
+        The directory to use for the cache.
+    """
+    total_perf = []
+    strategy = tf.distribute.MirroredStrategy()   
+    with strategy.scope():  
+        model = load_keras_model(keras_model, img_shape)
+        for (task_name, task_train_df), (_, task_val_df), (_, task_test_df) in tqdm(zip(
+                get_task_dataframes(train_df),
+                get_task_dataframes(val_df),
+                get_task_dataframes(test_df),
+            ),
+            desc="Task",
+            total=3,
+            leave=False,
+        ):
+            _history, model, perf = train(
+                model=model,
+                model_name=model_name,
+                dataset_name=dataset_name,
+                task_name=task_name,
+                holdout_number=holdout_number,
+                train_df=task_train_df,
+                val_df=task_val_df,
+                test_df=task_test_df,
+                img_shape=img_shape,
+                batch_size=batch_size,
+                random_state=random_state,
+                early_stopping_patience=early_stopping_patience,
+                early_stopping_min_delta=early_stopping_min_delta,
+                reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,
+                reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,
+                max_epochs=max_epochs,
+                restore_best_weights=restore_best_weights,
+                verbose=verbose,
+                cache_dir=cache_dir,
+            )
+            total_perf.append(perf)
+        # once the transfer learning is finished
+        # reset keras and delete the model to free the GPU RAM
+        # for the next model
+        reset_keras(model)
+    return total_perf
