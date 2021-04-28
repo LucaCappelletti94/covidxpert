@@ -438,8 +438,4 @@ def run_holdout(
                 cache_dir=cache_dir,
             )
             total_perf.append(perf)
-        # once the transfer learning is finished
-        # reset keras and delete the model to free the GPU RAM
-        # for the next model
-        reset_keras(model)
     return total_perf
