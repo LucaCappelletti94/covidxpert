@@ -380,7 +380,7 @@ def run_holdout(
     restore_best_weights: bool = True,
     verbose: bool = True,
     cache_dir: str = "./results/"
-):
+) -> pd.DataFrame:
     """
     Arguments
     ---------
@@ -440,4 +440,4 @@ def run_holdout(
                 cache_dir=cache_dir,
             )
             total_perf.append(perf)
-    return total_perf
+    return pd.concat(total_perf)
