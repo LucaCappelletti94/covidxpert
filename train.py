@@ -9,7 +9,7 @@ from covidxpert import main_train_loop
 
 df = pd.read_csv("../df_all_common_cols.csv")
 
-dataset_name = "processed"
+dataset_name = "resized_processed"
 
 df.img_path = [os.path.join("..", dataset_name, x) for x in df.img_path]
 

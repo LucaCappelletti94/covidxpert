@@ -326,7 +326,7 @@ def main_train_loop(
     """
     total_perf = []
     for holdout_number, train_df, val_df, test_df in get_balanced_holdouts(dataframe, holdout_numbers):
-        total_perf.extend(run_holdout(
+        total_perf.append(run_holdout(
             keras_model=keras_model,
             model_name=model_name,
             train_df=train_df,
