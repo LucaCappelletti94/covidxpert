@@ -45,7 +45,6 @@ def just_resize_pipeline(
             # If this is the case we skip this image.
             return None
 
-
         # Loading the image.
         original = load_image(image_path)
 
@@ -62,8 +61,6 @@ def just_resize_pipeline(
             # Resize given image
             thumb
         )
-
-        print("HO FATTTOOOOOOO")
 
     # If the user hit a keyboard interrupt we just stop.
     except KeyboardInterrupt as e:
@@ -441,15 +438,24 @@ def resize_images_pipeline(
         )
     )
 
-    with Pool(n_jobs) as p:
-        list(tqdm(
-            p.imap(_just_resize_pipeline, tasks),
-            desc="Processing images",
+    if n_jobs == 0:
+        for kwargs in tqdm(
+            tasks,
+            desc="Resizing images",
             total=len(image_paths),
             disable=not verbose
-        ))
-        p.close()
-        p.join()
+        ):
+            _just_resize_pipeline(kwargs)
+    else:
+        with Pool(n_jobs) as p:
+            list(tqdm(
+                p.imap(_just_resize_pipeline, tasks),
+                desc="Resizing images",
+                total=len(image_paths),
+                disable=not verbose
+            ))
+            p.close()
+            p.join()
 
 
 def demo_pipeline(
