@@ -88,6 +88,10 @@ def just_resize_pipeline(
         return None
 
 
+def _just_resize_pipeline(kwargs: Dict):
+    just_resize_pipeline(**kwargs)
+
+
 def image_pipeline(
     image_path: str,
     output_path: str = None,
@@ -434,7 +438,7 @@ def resize_images_pipeline(
 
     with Pool(n_jobs) as p:
         list(tqdm(
-            p.imap(_image_pipeline, tasks),
+            p.imap(_just_resize_pipeline, tasks),
             desc="Processing images",
             total=len(image_paths),
             disable=not verbose
