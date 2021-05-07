@@ -45,6 +45,7 @@ def just_resize_pipeline(
             # If this is the case we skip this image.
             return None
 
+
         # Loading the image.
         original = load_image(image_path)
 
@@ -53,12 +54,16 @@ def just_resize_pipeline(
             original, width=width
         )
 
+        print(output_path)
+
         # Saving image to given path
         cv2.imwrite(  # pylint: disable=no-member
             output_path,
             # Resize given image
             thumb
         )
+
+        print("HO FATTTOOOOOOO")
 
     # If the user hit a keyboard interrupt we just stop.
     except KeyboardInterrupt as e:
