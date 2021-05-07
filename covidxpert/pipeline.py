@@ -53,7 +53,7 @@ def just_resize_pipeline(
             original, width=width
         )
 
-        print(output_path)
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
         # Saving image to given path
         cv2.imwrite(  # pylint: disable=no-member
