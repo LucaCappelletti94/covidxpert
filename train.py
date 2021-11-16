@@ -44,6 +44,9 @@ for dataset_name in tqdm(
             img_shape=(480, 480, 1),
         )
 
+        performance["dataset_name"] = dataset_name
+        performance["model_name"] = model_name
+
         performance.to_csv(
             "{}_{}.csv".format(
                 model_name,
