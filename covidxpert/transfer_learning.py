@@ -439,6 +439,7 @@ def run_holdout(
                 verbose=verbose,
                 cache_dir=cache_dir,
             )
+            perf["holdout_number"] = holdout_number
             perf["task_name"] = task_name
             total_perf.append(perf)
     return pd.concat(total_perf)
