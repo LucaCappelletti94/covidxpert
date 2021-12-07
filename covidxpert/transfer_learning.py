@@ -233,7 +233,7 @@ def get_holdouts(df: pd.DataFrame) -> Generator:
     datasets_to_rotate = ['COVID-19 Radiography Database', 'covid-chestxray-dataset', 'Actualmed-COVID-chestxray-dataset']
     dataset_to_remove = 'all_masks'
     df = df[(df.dataset!=dataset_to_remove)]
-    
+
     map_exp = {f'holdout_{k}': {'train': val[0][0], 'validation': val[0][1], 'test': val[0][2]}
                 for k, val in enumerate(zip(permutations(datasets_to_rotate, r=len(datasets_to_rotate))))
               }
@@ -358,7 +358,7 @@ def main_train_loop(
         The directory to use for the cache.
     """
     total_perf = []
-    for holdout_number, train_df, val_df, test_df in get_holdouts(dataframe, holdout_numbers):
+    for holdout_number, train_df, val_df, test_df in get_holdouts(dataframe):
         total_perf.append(run_holdout(
             keras_model=keras_model,
             model_name=model_name,
