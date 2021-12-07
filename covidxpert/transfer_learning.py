@@ -231,6 +231,8 @@ def get_holdouts(df: pd.DataFrame) -> Generator:
     """
     filter_cols = ['img_path', 'normal', 'covid19', 'pneumonia', 'other']
     datasets_to_rotate = ['COVID-19 Radiography Database', 'covid-chestxray-dataset', 'Actualmed-COVID-chestxray-dataset']
+    dataset_to_remove = 'all_masks'
+    df = df[(df.dataset!=dataset_to_remove)]
     
     map_exp = {f'holdout_{k}': {'train': val[0][0], 'validation': val[0][1], 'test': val[0][2]}
                 for k, val in enumerate(zip(permutations(datasets_to_rotate, r=len(datasets_to_rotate))))
