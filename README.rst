@@ -30,13 +30,13 @@ libGL errors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you get the following error:
 
-..code:: shell
+.. code:: shell
 
     libGL.so.1: cannot open shared object file: No such file or directory
     
 You can solve it by running:
 
-..code:: shell
+.. code:: shell
     
     apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
