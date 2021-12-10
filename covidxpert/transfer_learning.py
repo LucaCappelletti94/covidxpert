@@ -344,7 +344,7 @@ def main_train_loop(
         The directory to use for the cache.
     """
     total_perf = []
-    for holdout_number, train_df, val_df, test_df in get_holdouts(dataframe, holdout_numbers):
+    for holdout_number, train_df, val_df, test_df in get_holdouts(dataframe):
         total_perf.append(run_holdout(
             keras_model=keras_model,
             model_name=model_name,

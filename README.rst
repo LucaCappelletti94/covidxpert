@@ -23,7 +23,23 @@ get slightly different results, here's three of them:
 
 |coveralls| |sonar_coverage| |code_climate_coverage|
 
-Model to distinguish covid cases from viral pneumonia cases.
+Trobleshooting errors
+-----------------------------------------------
+
+libGL errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you get the following error:
+
+.. code:: shell
+
+    libGL.so.1: cannot open shared object file: No such file or directory
+    
+You can solve it by running:
+
+.. code:: shell
+    
+    apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/covidxpert.png
    :target: https://travis-ci.org/LucaCappelletti94/covidxpert
