@@ -308,7 +308,7 @@ def main_train_loop(
     batch_size: int = 256,
     early_stopping_patience: int = 32,
     early_stopping_min_delta: int = 0,
-    reduce_lr_on_plateau_patience: int = 2,
+    reduce_lr_on_plateau_patience: int = 8,
     reduce_lr_on_plateau_min_delta: int = 0.001,
     max_epochs: int = 1000,
     random_state: int = 31337,
