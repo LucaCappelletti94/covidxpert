@@ -1,0 +1,55 @@
+{
+    "creation_time": 1642211218.3662457,
+    "creation_time_human": "2022-01-15 01:46:58",
+    "time_delta": 179820.4472577572,
+    "time_delta_human": "2 days, 1 hour and 57 minutes",
+    "file_dump_time": 0.002706289291381836,
+    "file_dump_time_human": "0 seconds",
+    "file_dump_size": 898,
+    "file_dump_size_human": "898 Bytes",
+    "load_kwargs": {},
+    "dump_kwargs": {},
+    "function_name": "run_holdout",
+    "function_file": "/root/covidxpert/covidxpert/transfer_learning.py:372",
+    "args_to_ignore": [
+        "keras_model",
+        "train_df",
+        "val_df",
+        "test_df",
+        "cache_dir",
+        "verbose"
+    ],
+    "source": "@Cache(\n    \"{cache_dir}/{dataset_name}/{holdout_number}/{model_name}/perf_{_hash}.csv\",\n    args_to_ignore=(\n        \"keras_model\",\n        \"train_df\",\n        \"val_df\",\n        \"test_df\",\n        \"cache_dir\",\n        \"verbose\",\n    )\n)\ndef run_holdout(\n    keras_model: Callable[[None], Model],\n    model_name: str,\n    train_df: pd.DataFrame,\n    val_df: pd.DataFrame,\n    test_df: pd.DataFrame,\n    dataset_name: str,\n    holdout_number: int,\n    img_shape: Tuple[int, int],\n    batch_size: int = 256,\n    random_state: int = 31337,\n    early_stopping_patience: int = 4,\n    early_stopping_min_delta: int = 0.001,\n    reduce_lr_on_plateau_patience: int = 2,\n    reduce_lr_on_plateau_min_delta: int = 0.001,\n    max_epochs: int = 1000,\n    restore_best_weights: bool = True,\n    verbose: bool = True,\n    cache_dir: str = \"./results/\"\n) -> pd.DataFrame:\n    \"\"\"\n    Arguments\n    ---------\n    img_shape: Tuple[int, int],\n        The shape of the image.\n    early_stopping_patience: int = 6,\n        How many epochs the early stopping will wait for the model to improve \n        before stopping.\n    early_stopping_min_delta: float = 0.001,\n        The minimum improvement the model will need to not be stopped.\n    early_stopping_patience: int = 6,\n        How many epochs the readuce lr on plateau will wait for the model to improve \n        before reducing the learning rate.\n    early_stopping_min_delta: float = 0.001,\n        The minimum improvement the model will need to not reduce the learning rate.\n    max_epochs: int = 1000,\n        Max number of epochs the modell will train for.\n    restore_best_weight: bool = True,\n        Whether or not to restore at the end the best weights in the training.\n    verbose: bool = True,\n        If the training will be verbose or not.\n    cache_dir: str = \"./results/\",\n        The directory to use for the cache.\n    \"\"\"\n    total_perf = []\n    strategy = tf.distribute.MirroredStrategy()\n    with strategy.scope():\n        model = load_keras_model(keras_model, img_shape)\n        for (task_name, task_train_df), (_, task_val_df), (_, task_test_df) in tqdm(zip(\n                get_task_dataframes(train_df),\n                get_task_dataframes(val_df),\n                get_task_dataframes(test_df),\n            ),\n            desc=\"Task\",\n            total=3,\n            leave=False,\n        ):\n            _history, model, perf = train(\n                model=model,\n                model_name=model_name,\n                dataset_name=dataset_name,\n                task_name=task_name,\n                holdout_number=holdout_number,\n                train_df=task_train_df,\n                val_df=task_val_df,\n                test_df=task_test_df,\n                img_shape=img_shape,\n                batch_size=batch_size,\n                random_state=random_state,\n                early_stopping_patience=early_stopping_patience,\n                early_stopping_min_delta=early_stopping_min_delta,\n                reduce_lr_on_plateau_patience=reduce_lr_on_plateau_patience,\n                reduce_lr_on_plateau_min_delta=reduce_lr_on_plateau_min_delta,\n                max_epochs=max_epochs,\n                restore_best_weights=restore_best_weights,\n                verbose=verbose,\n                cache_dir=cache_dir,\n            )\n            perf[\"holdout_number\"] = holdout_number\n            perf[\"task_name\"] = task_name\n            total_perf.append(perf)\n    return pd.concat(total_perf)\n",
+    "backend_metadata": {
+        "type": "pandas",
+        "columns_types": {
+            "loss": "float64",
+            "accuracy": "float64",
+            "AUPRC": "float64",
+            "AUROC": "float64",
+            "run_type": "str",
+            "holdout_number": "int64",
+            "task_name": "str"
+        },
+        "index_type": "int64",
+        "columns_names_type": "str"
+    },
+    "parameters": {
+        "restore_best_weights": true,
+        "max_epochs": 1000,
+        "reduce_lr_on_plateau_min_delta": 0.001,
+        "reduce_lr_on_plateau_patience": 8,
+        "early_stopping_min_delta": 0,
+        "early_stopping_patience": 32,
+        "random_state": 31337,
+        "batch_size": 128,
+        "model_name": "InceptionResNetV2",
+        "dataset_name": "processed",
+        "holdout_number": 5,
+        "img_shape": [
+            480,
+            480,
+            1
+        ]
+    }
+}
